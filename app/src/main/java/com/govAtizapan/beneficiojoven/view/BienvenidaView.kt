@@ -11,13 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BienvenidaView(){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-        Text("Pantalla Bienvenida")
-    }
+
 }
 
 @Preview(showBackground = true)
