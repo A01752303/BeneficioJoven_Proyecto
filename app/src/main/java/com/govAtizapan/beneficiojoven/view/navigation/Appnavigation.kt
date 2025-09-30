@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.govAtizapan.beneficiojoven.view.BienvenidaView
+import com.govAtizapan.beneficiojoven.view.LoginView
 import com.govAtizapan.beneficiojoven.view.SplashScreen
 
 @Composable
@@ -19,6 +20,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
         composable(route = AppScreens.BienvenidaView.route){
             BienvenidaView(navController = navController)
+        }
+        composable(route= AppScreens.LoginView.route){
+            LoginView(navController = navController)
         }
     }
 }

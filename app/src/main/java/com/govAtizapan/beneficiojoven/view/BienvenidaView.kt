@@ -20,7 +20,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,9 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +50,7 @@ import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.OnboardingDataClass
+import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -71,7 +77,8 @@ val onboardingPages = listOf(
 fun BienvenidaView(navController: NavController){
 
     OnboardingScreen(pageItems = onboardingPages,
-        onFinish = {println("Listo")}
+        onFinish = {navController.popBackStack()
+            navController.navigate(AppScreens.LoginView.route)}
     )
 
 }
@@ -141,20 +148,28 @@ fun OnboardingScreen(
                 onClick = {
                     onFinish()
                 },
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(52.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = TealPrimary,
+                    contentColor = White
+                )
             ) {
                 // El texto del botón también cambia según la página
                 val buttonText = "¡COMENZAR!"
-                Text(buttonText)
+                Text(buttonText,
+                    fontSize = 20.sp,
+                    fontFamily = PoppinsFamily,
+                    fontWeight = FontWeight.SemiBold)
             }
             Spacer(modifier = Modifier.height(24.dp)) // Espacio entre el indicador y el botón
             Image(
                 painter = painterResource(id = R.drawable.logos_pie), // <-- CAMBIA ESTO
                 contentDescription = null, // Es decorativa, puede ser null
                 modifier = Modifier // ⬅️ La pega hasta abajo
-                    .fillMaxWidth()
-                    .padding(top = 30.dp)
-            )
+                    .fillMaxWidth())
         }
 
     }
@@ -164,12 +179,8 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(
-                bottom = 130.dp,
-                start = 30.dp,
-                top = 30.dp,
-                end = 30.dp
-            ),
+            .padding(horizontal = 30.dp)
+            .padding(bottom = 160.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -216,7 +227,7 @@ fun PagerIndicator(pageCount: Int, currentPageIndex: Int, modifier: Modifier = M
                     .padding(4.dp)
                     .clip(CircleShape)
                     .background(color)
-                    .size(14.dp)
+                    .size(10.dp)
             )
         }
     }
