@@ -73,9 +73,10 @@ val onboardingPages = listOf(
         imageRes = R.drawable.onboarding_00
     )
 )
+
+// Función principal
 @Composable
 fun BienvenidaView(navController: NavController){
-
     OnboardingScreen(pageItems = onboardingPages,
         onFinish = {navController.popBackStack()
             navController.navigate(AppScreens.LoginView.route)}
@@ -90,35 +91,21 @@ fun OnboardingScreen(
     onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Necesitamos un CoroutineScope para poder llamar a animateScrollToPage desde el botón
     val scope = rememberCoroutineScope()
-
     Box(modifier = modifier.fillMaxSize()) {
         val pagerState = rememberPagerState(pageCount = { pageItems.size })
 
-// --- INICIO DE LA CORRECCIÓN ---
-
-        // 1. Obtenemos el estado de arrastre del usuario
         val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
 
-        // 2. Usamos 'isDragged' como la clave (key) del LaunchedEffect.
-        //    - Cuando el usuario NO arrastra (isDragged = false), el efecto se activa.
-        //    - Cuando el usuario EMPIEZA a arrastrar (isDragged = true), el efecto se cancela.
-        //    - Cuando el usuario DEJA de arrastrar (isDragged = false), el efecto se reinicia.
         LaunchedEffect(isDragged) {
-            // Solo ejecutamos el bucle si el usuario no está arrastrando
             if (!isDragged) {
                 while (true) {
                     delay(3000L) // Esperamos 3 segundos
-                    // Calculamos la siguiente página de forma segura
                     val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
-                    // La animación ahora se completará sin interrupciones
                     pagerState.animateScrollToPage(nextPage)
                 }
             }
         }
-
-        // --- FIN DE LA CORRECCIÓN --
 
         HorizontalPager(
             state = pagerState,
@@ -127,9 +114,6 @@ fun OnboardingScreen(
             OnboardingPage(item = pageItems[pageIndex])
         }
 
-        // --- INICIO DE LOS CAMBIOS DE LAYOUT Y LÓGICA ---
-
-        // 1. Agrupamos el indicador y el botón en una Columna
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -157,21 +141,19 @@ fun OnboardingScreen(
                     contentColor = White
                 )
             ) {
-                // El texto del botón también cambia según la página
                 val buttonText = "¡COMENZAR!"
                 Text(buttonText,
                     fontSize = 20.sp,
                     fontFamily = PoppinsFamily,
                     fontWeight = FontWeight.SemiBold)
             }
-            Spacer(modifier = Modifier.height(24.dp)) // Espacio entre el indicador y el botón
+            Spacer(modifier = Modifier.height(24.dp))
             Image(
-                painter = painterResource(id = R.drawable.logos_pie), // <-- CAMBIA ESTO
-                contentDescription = null, // Es decorativa, puede ser null
-                modifier = Modifier // ⬅️ La pega hasta abajo
+                painter = painterResource(id = R.drawable.logos_pie),
+                contentDescription = null,
+                modifier = Modifier
                     .fillMaxWidth())
         }
-
     }
 }
 @Composable
@@ -209,15 +191,13 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
     }
 }
 
-// Tu PagerIndicator se puede mantener exactamente igual,
-// pero lo coloco aquí para que el ejemplo esté completo.
 @Composable
 fun PagerIndicator(pageCount: Int, currentPageIndex: Int, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .padding(bottom = 24.dp), // Un poco más de padding
+            .padding(bottom = 24.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         repeat(pageCount) { iteration ->
