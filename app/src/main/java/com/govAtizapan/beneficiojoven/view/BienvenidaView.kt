@@ -144,7 +144,7 @@ fun OnboardingScreen(
                 modifier = Modifier.fillMaxWidth(0.8f)
             ) {
                 // El texto del botón también cambia según la página
-                val buttonText = "¡COMENZAR!
+                val buttonText = "¡COMENZAR!"
                 Text(buttonText)
             }
             Spacer(modifier = Modifier.height(24.dp)) // Espacio entre el indicador y el botón
