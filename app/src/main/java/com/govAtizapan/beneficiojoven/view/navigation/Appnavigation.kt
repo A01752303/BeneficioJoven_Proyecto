@@ -22,7 +22,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             BienvenidaView(navController = navController)
         }
         composable(route= AppScreens.LoginView.route){
-            LoginView(navController = navController)
+            LoginView(navController = navController, onLoginClicked = { _, _ ->})
         }
     }
 }

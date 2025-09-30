@@ -1,6 +1,5 @@
 package com.govAtizapan.beneficiojoven.view
 
-import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,23 +21,18 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,10 +43,8 @@ import androidx.navigation.compose.rememberNavController
 import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
-import com.govAtizapan.beneficiojoven.view.OnboardingDataClass
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 val onboardingPages = listOf(
     OnboardingDataClass(
@@ -91,7 +83,6 @@ fun OnboardingScreen(
     onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
     Box(modifier = modifier.fillMaxSize()) {
         val pagerState = rememberPagerState(pageCount = { pageItems.size })
 
@@ -126,7 +117,7 @@ fun OnboardingScreen(
                 currentPageIndex = pagerState.currentPage,
             )
 
-            Spacer(modifier = Modifier.height(24.dp)) // Espacio entre el indicador y el botón
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
@@ -215,7 +206,7 @@ fun PagerIndicator(pageCount: Int, currentPageIndex: Int, modifier: Modifier = M
 
 @Preview(showBackground = true)
 @Composable
-fun BienvenidaPreview(modifier: Modifier = Modifier) {
+fun BienvenidaPreview() {
     BienvenidaView(navController = rememberNavController())
 }
 

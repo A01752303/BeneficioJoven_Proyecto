@@ -14,6 +14,8 @@ lottieCompose = "6.6.9"
 navigationCompose = "2.9.5"
 benchmarkTraceprocessor = "1.4.1"
 foundation = "1.9.2"
+uiGraphics = "1.9.2"
+animationCoreLint = "1.9.2"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -36,6 +38,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 androidx-benchmark-traceprocessor = { group = "androidx.benchmark", name = "benchmark-traceprocessor", version.ref = "benchmarkTraceprocessor" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
+androidx-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
