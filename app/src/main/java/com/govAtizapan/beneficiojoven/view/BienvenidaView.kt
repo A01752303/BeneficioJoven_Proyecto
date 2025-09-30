@@ -153,7 +153,7 @@ fun OnboardingScreen(
                 contentDescription = null, // Es decorativa, puede ser null
                 modifier = Modifier // ⬅️ La pega hasta abajo
                     .fillMaxWidth()
-                    .padding(top = 10.dp)
+                    .padding(top = 30.dp)
             )
         }
 
