@@ -18,7 +18,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             SplashScreen(navController = navController)
         }
         composable(route = AppScreens.BienvenidaView.route){
-            BienvenidaView(navController = rememberNavController())
+            BienvenidaView(navController = navController)
         }
     }
 }
