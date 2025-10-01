@@ -1,9 +1,11 @@
 package com.govAtizapan.beneficiojoven.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,16 +13,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -34,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -49,7 +57,6 @@ import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import androidx.compose.ui.text.TextStyle
-
 @Composable
 fun LoginView(modifier: Modifier = Modifier, navController: NavController, onLoginClicked: (String, String) -> Unit) {
     Column (
@@ -61,8 +68,6 @@ fun LoginView(modifier: Modifier = Modifier, navController: NavController, onLog
     ){
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-        // --- INICIO DE CAMBIOS ---
-        // Añadimos el estado para la visibilidad de la contraseña
         var isPasswordVisible by remember { mutableStateOf(false) }
 
 
@@ -131,10 +136,31 @@ fun LoginView(modifier: Modifier = Modifier, navController: NavController, onLog
         ) {
             val buttonText = "Iniciar Sesión"
             Text(buttonText,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 fontFamily = PoppinsFamily,
                 fontWeight = FontWeight.SemiBold)
         }
+        OrSeparator()
+        Spacer(modifier = Modifier.height(4.dp))
+        CustomOutlinedButton(modifier = Modifier.fillMaxWidth(), text = "Continuar con Google", onClick = {}, icon = painterResource(id = R.drawable.google_icon))
+        Spacer(modifier = Modifier.height(16.dp))
+        CustomOutlinedButton(modifier = Modifier.fillMaxWidth(), text = "Continuar con Facebook", onClick = {}, icon = painterResource(id = R.drawable.facebook_icon))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Spacer(modifier = Modifier.height(24.dp))
+            Image(
+                painter = painterResource(id = R.drawable.logos_pie),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
     }
 }
 
@@ -174,7 +200,6 @@ fun CustomTextField(
             placeholder = { Text(placeholderText) },
             shape = RoundedCornerShape(16.dp),
             singleLine = true,
-            // --- INICIO DE CAMBIOS ---
             visualTransformation = if (isPasswordField && !isPasswordVisible) {
                 PasswordVisualTransformation() // Oculta el texto si es campo de contraseña y no es visible
             } else {
@@ -187,19 +212,96 @@ fun CustomTextField(
             },
             trailingIcon = {
                 if (isPasswordField) { // Muestra el ícono solo si es un campo de contraseña
-                    val image = if (isPasswordVisible) Icons.Filled.Star else Icons.Filled.Star
+                    val image = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
                     IconButton(onClick = onVisibilityChange) {
-                        Icon(imageVector = image, contentDescription = "Toggle password visibility")
+                        Icon(imageVector = image,
+                            contentDescription = "Toggle password visibility",
+                            tint = TealPrimary)
                     }
                 }
             },
-            // --- FIN DE CAMBIOS ---
+
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = lightCyan,
                 focusedContainerColor = lightCyan,
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent
             )
+        )
+    }
+}
+
+@Composable
+fun OrSeparator() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth() // Ocupa todo el ancho
+            .padding(vertical = 16.dp), // Espacio vertical
+        verticalAlignment = Alignment.CenterVertically // Centra la línea y el texto verticalmente
+    ) {
+        Divider(
+            modifier = Modifier.weight(1f), // Ocupa el espacio disponible
+            color = Color.Gray,
+            thickness = 1.dp
+        )
+
+        Text(
+            text = "o",
+            modifier = Modifier.padding(horizontal = 8.dp), // Espacio a los lados del texto
+            fontSize = 16.sp,
+            fontFamily = PoppinsFamily,
+            fontWeight = FontWeight.Normal,
+            color = Color.DarkGray
+        )
+
+        Divider(
+            modifier = Modifier.weight(1f), // Ocupa el espacio disponible
+            color = Color.Gray,
+            thickness = 1.dp
+        )
+    }
+}
+
+@Composable
+fun CustomOutlinedButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit,
+    icon: Painter? = null // The icon is correctly defined as an optional Painter
+) {
+    OutlinedButton(
+        // 1. Simplified onClick assignment
+        onClick = onClick,
+        // 2. Correctly chain the passed modifier with local modifiers
+        modifier = modifier
+            .height(46.dp)
+            .fillMaxWidth(), // Use fillMaxWidth for more predictable behavior
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, Color.Gray),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = White,
+            contentColor = Color.Black
+        )
+    ) {
+        // 3. This is the most critical fix: Handle the nullable icon
+        // Without this check, your app would crash if 'icon' is null
+        icon?.let {
+            Icon(
+                painter = it,
+                contentDescription = null, // Should be descriptive if the icon isn't decorative
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+                tint = Color.Unspecified
+
+            )
+            // 5. Add a spacer for better visual separation
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+        }
+
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            fontFamily = PoppinsFamily,
+            fontWeight = FontWeight.Normal
         )
     }
 }

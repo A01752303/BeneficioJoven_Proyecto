@@ -63,4 +63,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.accompanist.pager)
-    implementation(libs.lottie.compose)}
+    implementation(libs.lottie.compose)
+    implementation(libs.androidx.material.icons.extended.android)
+}
