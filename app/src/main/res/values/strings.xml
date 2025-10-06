@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BeneficioJoven</string>
+    <string name="facebook_app_id">1164669449057855</string>
+    <string name="facebook_client_token">865a006b644bc1d638f5dce6f605e942</string>
+    <string name="fb_login_protocol_scheme">fb1164669449057855</string>
+
+    <string name="google_web_client_id">720357943357-1ctnlmei4btvdgtr30gkek1okmfgmklt.apps.googleusercontent.com</string>
 </resources>

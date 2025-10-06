@@ -11,6 +11,7 @@ import com.govAtizapan.beneficiojoven.view.SplashScreen
 import com.govAtizapan.beneficiojoven.view.LoadingScreen
 import com.govAtizapan.beneficiojoven.view.home.HomeView
 import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
+import com.govAtizapan.beneficiojoven.view.registro.NuevaCuentaVista
 
 
 @Composable
@@ -34,8 +35,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(route = AppScreens.HomeView.route){
             HomeView()
         }
-        composable(route= AppScreens.NombreRegistro.route){
-            NombreRegistro()
+        composable(route= AppScreens.NuevaCuentaVista.route){
+            NuevaCuentaVista()
         }
     }
 }

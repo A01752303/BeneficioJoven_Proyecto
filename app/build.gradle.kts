@@ -72,8 +72,13 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.androidx.material.icons.extended.android)
     implementation("com.airbnb.android:lottie-compose:6.6.10")
+    // Firebase BoM (Bill of Materials) - maneja las versiones por ti
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation("com.google.firebase:firebase-auth")
+    // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:21.4.0")
+    // Facebook Login
+    implementation("com.facebook.android:facebook-login:18.1.3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
 
 }

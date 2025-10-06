@@ -66,59 +66,80 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.govAtizapan.beneficiojoven.model.authGoogleM.TOKEN_WEB
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
-import com.govAtizapan.beneficiojoven.viewmodel.authGoogle.AuthGoogleVM
-import com.govAtizapan.beneficiojoven.viewmodel.authGoogle.LoginNavigationState
+import com.govAtizapan.beneficiojoven.viewmodel.auth.AuthEvent
+import com.govAtizapan.beneficiojoven.viewmodel.auth.AuthVM
+import com.govAtizapan.beneficiojoven.viewmodel.auth.LoginNavigationState
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+
+
 
 @Composable
 fun LoginView(
     navController: NavController,
-    authViewModel: AuthGoogleVM = viewModel() // 1. Inyecta el ViewModel
+    authViewModel: AuthVM = viewModel()
 ) {
-    // 2. Observa los estados del ViewModel de forma segura para el ciclo de vida
+    val authState by authViewModel.authState.collectAsStateWithLifecycle()
     val navigationState by authViewModel.navigationState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // 3. Mueve aquí el launcher para el resultado de Google Sign-In
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            try {
-                // El login con Google fue exitoso, ahora obtenemos la credencial para Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                // Llamamos a la función del ViewModel para que haga la magia
-                authViewModel.hacerLoginGoogle(credential)
-            } catch (e: ApiException) {
-                // Si algo falla, informamos al usuario
-                Toast.makeText(context, "Fallo en el inicio de sesión con Google.", Toast.LENGTH_SHORT).show()
+    // --- Google Sign-In Launcher ---
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)!!
+                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                    authViewModel.onEvent(AuthEvent.SignInWithGoogle(credential))
+                } catch (e: ApiException) {
+                    Toast.makeText(context, "Error de Google: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
-    }
-
-    // 4. Configura el cliente de Google. `remember` evita que se cree en cada recomposición
+    )
     val googleSignInClient = remember {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(TOKEN_WEB)
-            .requestEmail()
-            .build()
-        GoogleSignIn.getClient(context, gso)
+        GoogleSignIn.getClient(context,
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.google_web_client_id))
+                .requestEmail()
+                .build()
+        )
     }
 
+    // --- Facebook Login Launcher ---
+    val callbackManager = remember { CallbackManager.Factory.create() }
+    val facebookLauncher = rememberLauncherForActivityResult(
+        contract = LoginManager.getInstance().createLogInActivityResultContract(callbackManager),
+        onResult = { /* No es necesario hacer nada aquí, el callback se encarga */ }
+    )
+    LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+        override fun onSuccess(result: LoginResult) {
+            authViewModel.onEvent(AuthEvent.SignInWithFacebook(result.accessToken))
+        }
+        override fun onCancel() {
+            Toast.makeText(context, "Inicio con Facebook cancelado.", Toast.LENGTH_SHORT).show()
+        }
+        override fun onError(error: FacebookException) {
+            Toast.makeText(context, "Error de Facebook: ${error.message}", Toast.LENGTH_SHORT).show()
+        }
+    })
     // 5. `LaunchedEffect` reacciona a los cambios en el estado de navegación del ViewModel
     LaunchedEffect(key1 = navigationState) {
         when (navigationState) {
             is LoginNavigationState.NavigateToNewUserProfile -> {
-                navController.navigate(AppScreens.NombreRegistro.route) {
+                navController.navigate(AppScreens.NuevaCuentaVista.route) {
                     popUpTo(AppScreens.LoginView.route) { inclusive = true }
                 }
                 authViewModel.resetNavigationState() // Resetea el evento para no volver a navegar
             }
             is LoginNavigationState.NavigateToHome -> {
-                navController.navigate(AppScreens.HomeView.route) {
+                navController.navigate(AppScreens.LoadingScreen.route) {
                     popUpTo(AppScreens.LoginView.route) { inclusive = true }
                 }
                 authViewModel.resetNavigationState()
@@ -129,19 +150,24 @@ fun LoginView(
 
     // 6. Llama a tu Composable de UI, pasándole la función que debe ejecutar al hacer clic
     Login(
-        navController = navController,
-        onLoginClicked = { email, password ->
-            // Aquí iría la lógica para el login normal con email/contraseña
+        isLoading = authState.isLoading,
+        onLoginClicked = { email, pass ->
+            authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
         },
         onGoogleClick = {
-            // Cuando el usuario haga clic, lanza el flujo de Google
-            launcher.launch(googleSignInClient.signInIntent)
+            googleLauncher.launch(googleSignInClient.signInIntent)
+        },
+        onFacebookClick = {
+            facebookLauncher.launch(listOf("email", "public_profile"))
         }
     )
 }
 
 @Composable
-fun Login(modifier: Modifier = Modifier, navController: NavController, onLoginClicked: (String, String) -> Unit, onGoogleClick: () -> Unit ) {
+fun Login(isLoading: Boolean,
+          onLoginClicked: (String, String) -> Unit,
+          onGoogleClick: () -> Unit,
+          onFacebookClick: () -> Unit) {
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -228,9 +254,12 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, onLoginCl
         CustomOutlinedButton(modifier = Modifier
             .fillMaxWidth(),
             text = "Continuar con Google",
-            onClick = {onGoogleClick()}, icon = painterResource(id = R.drawable.google_icon))
+            onClick = onGoogleClick, icon = painterResource(id = R.drawable.google_icon))
         Spacer(modifier = Modifier.height(16.dp))
-        CustomOutlinedButton(modifier = Modifier.fillMaxWidth(), text = "Continuar con Facebook", onClick = {}, icon = painterResource(id = R.drawable.facebook_icon))
+        CustomOutlinedButton(modifier = Modifier.fillMaxWidth(),
+            text = "Continuar con Facebook",
+            onClick = onFacebookClick,
+            icon = painterResource(id = R.drawable.facebook_icon))
 
         Column(
             modifier = Modifier
@@ -246,7 +275,6 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, onLoginCl
                     .fillMaxWidth()
             )
         }
-
     }
 }
 

@@ -9,6 +9,7 @@ sealed class AppScreens(val route: String) {
     // Registo
     object EmailRegistro: AppScreens("email_registro")
     object EmailVerificacion: AppScreens("email_verificacion")
+    object NuevaCuentaVista: AppScreens("nueva_cuenta_vista")
     object NombreRegistro: AppScreens("nombre_registro")
     object GeneroRegistro: AppScreens("genero_registro")
     object FechaNacimientoRegistro: AppScreens("fecha_nacimiento_registro")
