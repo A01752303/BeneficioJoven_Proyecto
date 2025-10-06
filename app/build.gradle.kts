@@ -65,4 +65,5 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.lottie.compose)
     implementation(libs.androidx.material.icons.extended.android)
+    implementation("com.airbnb.android:lottie-compose:6.6.10")
 }

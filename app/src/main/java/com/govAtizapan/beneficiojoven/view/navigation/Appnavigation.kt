@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.govAtizapan.beneficiojoven.view.BienvenidaView
 import com.govAtizapan.beneficiojoven.view.LoginView
 import com.govAtizapan.beneficiojoven.view.SplashScreen
+import com.govAtizapan.beneficiojoven.view.LoadingScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -15,6 +16,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     NavHost(navController = navController,
         startDestination = AppScreens.SplashScreen.route)
     {
+        composable(route = AppScreens.LoadingScreen.route){
+            LoadingScreen()
+        }
         composable(route = AppScreens.SplashScreen.route){
             SplashScreen(navController = navController)
         }
