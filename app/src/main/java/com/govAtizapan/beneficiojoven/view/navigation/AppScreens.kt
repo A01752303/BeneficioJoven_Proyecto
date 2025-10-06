@@ -14,4 +14,7 @@ sealed class AppScreens(val route: String) {
     object FechaNacimientoRegistro: AppScreens("fecha_nacimiento_registro")
     object DireccionRegistro: AppScreens("direccion_registro")
 
+    // Páginas principales
+    object HomeView: AppScreens("home_view")
+
 }

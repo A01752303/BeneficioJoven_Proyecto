@@ -9,6 +9,9 @@ import com.govAtizapan.beneficiojoven.view.BienvenidaView
 import com.govAtizapan.beneficiojoven.view.LoginView
 import com.govAtizapan.beneficiojoven.view.SplashScreen
 import com.govAtizapan.beneficiojoven.view.LoadingScreen
+import com.govAtizapan.beneficiojoven.view.home.HomeView
+import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
+
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -26,7 +29,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             BienvenidaView(navController = navController)
         }
         composable(route= AppScreens.LoginView.route){
-            LoginView(navController = navController, onLoginClicked = { _, _ ->})
+            LoginView(navController = navController)
+        }
+        composable(route = AppScreens.HomeView.route){
+            HomeView()
+        }
+        composable(route= AppScreens.NombreRegistro.route){
+            NombreRegistro()
         }
     }
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -48,17 +47,101 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import androidx.compose.ui.text.TextStyle
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
+import com.govAtizapan.beneficiojoven.model.authGoogleM.TOKEN_WEB
+import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
+import com.govAtizapan.beneficiojoven.viewmodel.authGoogle.AuthGoogleVM
+import com.govAtizapan.beneficiojoven.viewmodel.authGoogle.LoginNavigationState
+
 @Composable
-fun LoginView(modifier: Modifier = Modifier, navController: NavController, onLoginClicked: (String, String) -> Unit) {
+fun LoginView(
+    navController: NavController,
+    authViewModel: AuthGoogleVM = viewModel() // 1. Inyecta el ViewModel
+) {
+    // 2. Observa los estados del ViewModel de forma segura para el ciclo de vida
+    val navigationState by authViewModel.navigationState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    // 3. Mueve aquí el launcher para el resultado de Google Sign-In
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                // El login con Google fue exitoso, ahora obtenemos la credencial para Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                // Llamamos a la función del ViewModel para que haga la magia
+                authViewModel.hacerLoginGoogle(credential)
+            } catch (e: ApiException) {
+                // Si algo falla, informamos al usuario
+                Toast.makeText(context, "Fallo en el inicio de sesión con Google.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // 4. Configura el cliente de Google. `remember` evita que se cree en cada recomposición
+    val googleSignInClient = remember {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(TOKEN_WEB)
+            .requestEmail()
+            .build()
+        GoogleSignIn.getClient(context, gso)
+    }
+
+    // 5. `LaunchedEffect` reacciona a los cambios en el estado de navegación del ViewModel
+    LaunchedEffect(key1 = navigationState) {
+        when (navigationState) {
+            is LoginNavigationState.NavigateToNewUserProfile -> {
+                navController.navigate(AppScreens.NombreRegistro.route) {
+                    popUpTo(AppScreens.LoginView.route) { inclusive = true }
+                }
+                authViewModel.resetNavigationState() // Resetea el evento para no volver a navegar
+            }
+            is LoginNavigationState.NavigateToHome -> {
+                navController.navigate(AppScreens.HomeView.route) {
+                    popUpTo(AppScreens.LoginView.route) { inclusive = true }
+                }
+                authViewModel.resetNavigationState()
+            }
+            is LoginNavigationState.Idle -> { /* No hacer nada */ }
+        }
+    }
+
+    // 6. Llama a tu Composable de UI, pasándole la función que debe ejecutar al hacer clic
+    Login(
+        navController = navController,
+        onLoginClicked = { email, password ->
+            // Aquí iría la lógica para el login normal con email/contraseña
+        },
+        onGoogleClick = {
+            // Cuando el usuario haga clic, lanza el flujo de Google
+            launcher.launch(googleSignInClient.signInIntent)
+        }
+    )
+}
+
+@Composable
+fun Login(modifier: Modifier = Modifier, navController: NavController, onLoginClicked: (String, String) -> Unit, onGoogleClick: () -> Unit ) {
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -72,8 +155,8 @@ fun LoginView(modifier: Modifier = Modifier, navController: NavController, onLog
 
 
         Image(
-            painter = painterResource(id = R.drawable.logo_sinnombre), // <-- CAMBIA ESTO por tu imagen
-            contentDescription = "Logo de la aplicación", // Descripción para accesibilidad
+            painter = painterResource(id = R.drawable.logo_sinnombre),
+            contentDescription = "Logo de la aplicación",
             modifier = Modifier
                 .size(100.dp)
         )
@@ -142,7 +225,10 @@ fun LoginView(modifier: Modifier = Modifier, navController: NavController, onLog
         }
         OrSeparator()
         Spacer(modifier = Modifier.height(4.dp))
-        CustomOutlinedButton(modifier = Modifier.fillMaxWidth(), text = "Continuar con Google", onClick = {}, icon = painterResource(id = R.drawable.google_icon))
+        CustomOutlinedButton(modifier = Modifier
+            .fillMaxWidth(),
+            text = "Continuar con Google",
+            onClick = {onGoogleClick()}, icon = painterResource(id = R.drawable.google_icon))
         Spacer(modifier = Modifier.height(16.dp))
         CustomOutlinedButton(modifier = Modifier.fillMaxWidth(), text = "Continuar con Facebook", onClick = {}, icon = painterResource(id = R.drawable.facebook_icon))
 
@@ -306,8 +392,3 @@ fun CustomOutlinedButton(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview(modifier: Modifier = Modifier) {
-    LoginView(navController = rememberNavController(), onLoginClicked = { _, _ -> })
-}

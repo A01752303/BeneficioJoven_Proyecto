@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "720357943357",
+    "project_id": "loginbeneficiojoven-1eac8",
+    "storage_bucket": "loginbeneficiojoven-1eac8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:720357943357:android:aed45a112c974d2be6a254",
+        "android_client_info": {
+          "package_name": "com.govAtizapan.beneficiojoven"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "720357943357-1d0bso5uf1fqitt6810q0b2lqt0m2t7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.govAtizapan.beneficiojoven",
+            "certificate_hash": "cc6133308cb4cd409ce1a69c71563741c2114e27"
+          }
+        },
+        {
+          "client_id": "720357943357-1ctnlmei4btvdgtr30gkek1okmfgmklt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGanQGZR6cOsnpCST9tC3z-djvSw0Ut3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "720357943357-1ctnlmei4btvdgtr30gkek1okmfgmklt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

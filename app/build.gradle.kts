@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -55,6 +56,11 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.ui.graphics)
     implementation(libs.androidx.animation.core.lint)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,4 +72,8 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.androidx.material.icons.extended.android)
     implementation("com.airbnb.android:lottie-compose:6.6.10")
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation("com.google.android.gms:play-services-auth:21.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
+
 }
