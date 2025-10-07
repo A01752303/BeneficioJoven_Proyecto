@@ -10,7 +10,6 @@ import com.govAtizapan.beneficiojoven.view.LoginView
 import com.govAtizapan.beneficiojoven.view.SplashScreen
 import com.govAtizapan.beneficiojoven.view.LoadingScreen
 import com.govAtizapan.beneficiojoven.view.home.HomeView
-import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
 import com.govAtizapan.beneficiojoven.view.registro.NuevaCuentaVista
 
 
