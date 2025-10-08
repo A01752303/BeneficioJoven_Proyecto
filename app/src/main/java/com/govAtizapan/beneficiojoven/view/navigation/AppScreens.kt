@@ -18,4 +18,8 @@ sealed class AppScreens(val route: String) {
     // Páginas principales
     object HomeView: AppScreens("home_view")
 
+    // Negocio
+    object InicioSesionComercio: AppScreens("inicio_sesion_comercio")
+
+
 }

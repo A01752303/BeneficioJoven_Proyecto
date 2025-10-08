@@ -58,8 +58,14 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -75,8 +81,6 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-
-
 
 @Composable
 fun LoginView(
@@ -159,6 +163,12 @@ fun LoginView(
         },
         onFacebookClick = {
             facebookLauncher.launch(listOf("email", "public_profile"))
+        },
+        onRegisterClick = {
+            navController.navigate(AppScreens.EmailRegistro.route)
+        },
+        onBusinessLoginClick = {
+            navController.navigate(AppScreens.InicioSesionComercio.route)
         }
     )
 }
@@ -167,7 +177,9 @@ fun LoginView(
 fun Login(isLoading: Boolean,
           onLoginClicked: (String, String) -> Unit,
           onGoogleClick: () -> Unit,
-          onFacebookClick: () -> Unit) {
+          onFacebookClick: () -> Unit,
+          onRegisterClick: () -> Unit = {},
+          onBusinessLoginClick: () -> Unit = {}) {
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -260,6 +272,62 @@ fun Login(isLoading: Boolean,
             text = "Continuar con Facebook",
             onClick = onFacebookClick,
             icon = painterResource(id = R.drawable.facebook_icon))
+
+        // Un Spacer para dar algo de aire entre los botones y el nuevo texto
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Texto para registrarse
+        val registerAnnotatedString = buildAnnotatedString {
+            append("¿No tienes una cuenta? ")
+            pushStringAnnotation(tag = "REGISTER", annotation = "REGISTER")
+            withStyle(style = SpanStyle(
+                color = TealPrimary,
+                fontFamily = PoppinsFamily,
+                fontWeight = FontWeight.Bold
+            )
+            ) {
+                append("Regístrate aquí")
+            }
+            pop()
+        }
+
+        ClickableText(
+            text = registerAnnotatedString,
+            onClick = { offset ->
+                registerAnnotatedString.getStringAnnotations(tag = "REGISTER", start = offset, end = offset)
+                    .firstOrNull()?.let {
+                        // Llama a la función de navegación que pasaste como parámetro
+                        onRegisterClick()
+                    }
+            }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Texto para el inicio de sesión de comercios
+        val businessAnnotatedString = buildAnnotatedString {
+            append("¿Eres comercio? ")
+            pushStringAnnotation(tag = "BUSINESS", annotation = "BUSINESS")
+            withStyle(style = SpanStyle(
+                color = TealPrimary,
+                fontFamily = PoppinsFamily,
+                fontWeight = FontWeight.Bold)
+            ) {
+                append("Inicia sesión aquí")
+            }
+            pop()
+        }
+
+        ClickableText(
+            text = businessAnnotatedString,
+            onClick = { offset ->
+                businessAnnotatedString.getStringAnnotations(tag = "BUSINESS", start = offset, end = offset)
+                    .firstOrNull()?.let {
+                        // Llama a la función de navegación que pasaste como parámetro
+                        onBusinessLoginClick()
+                    }
+            }
+        )
 
         Column(
             modifier = Modifier
@@ -418,5 +486,11 @@ fun CustomOutlinedButton(
             fontWeight = FontWeight.Normal
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginViewPreview(modifier: Modifier = Modifier) {
+    Login(isLoading = false,onLoginClicked = { _, _ -> }, onGoogleClick = {}, onFacebookClick = {})
 }
 
