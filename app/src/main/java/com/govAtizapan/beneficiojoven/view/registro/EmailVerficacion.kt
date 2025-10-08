@@ -117,17 +117,6 @@ fun EmailVerificacionView(
             color = Gray,
             fontSize = 14.sp
         )
-        Spacer(modifier = Modifier.height(32.dp))
-
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.loading_animation) // Usa el nombre de tu archivo
-        )
-        // 2. Muestra la animación
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever, // Para que se repita infinitamente
-            modifier = Modifier.size(800.dp) // Ajusta el tamaño como quieras
-        )
     }
 }
 
