@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.material3)
+    implementation(libs.play.services.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,15 +73,16 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.lottie.compose)
     implementation(libs.androidx.material.icons.extended.android)
-    implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("com.airbnb.android:lottie-compose:6.6.10")
+    implementation(libs.coil.compose)
+    implementation(libs.lottie.compose.v6610)
     // Firebase BoM (Bill of Materials) - maneja las versiones por ti
-    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.bom)
+    implementation(libs.google.firebase.auth)
     // Google Sign-In
-    implementation("com.google.android.gms:play-services-auth:21.4.0")
+    implementation(libs.play.services.identity.v1810)
     // Facebook Login
-    implementation("com.facebook.android:facebook-login:18.1.3")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
+    implementation(libs.facebook.login)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
 }
+

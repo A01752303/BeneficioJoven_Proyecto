@@ -59,12 +59,12 @@ val onboardingPages = listOf(
         description = "1. Explora las ofertas cerca de ti. \n" +
                 "2. Guarda los cupones que más te gusten. \n" +
                 "3. Muestra el código en el negocio y ¡listo!",
-        imageRes = R.drawable.onboarding_00
+        imageRes = R.drawable.ilustracioncupones_02_01
     ),
     OnboardingDataClass(
         title = "¡Hecha para la banda de Atizapán!",
         description = "¿Tienes entre 12 y 29? Esta app es para ti. Encuentra promos para tus planes, invitar a tu crush o para darte un gusto.",
-        imageRes = R.drawable.onboarding_00
+        imageRes = R.drawable.ilustracioncupones_03_01
     )
 )
 
@@ -184,7 +184,7 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
             model = item.imageRes,
             contentDescription = item.title,
             modifier = Modifier.size(200.dp),
-            contentScale = ContentScale.Crop // <-- Añade esto
+            contentScale = ContentScale.Fit
         )
     }
 }

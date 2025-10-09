@@ -93,7 +93,6 @@ fun LoginView(
     val navigationState by authViewModel.navigationState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // --- Google Sign-In Launcher ---
     val googleLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -316,7 +315,8 @@ fun Login(onLoginClicked: (String, String) -> Unit,
                 withStyle(style = SpanStyle(
                     color = TealPrimary,
                     fontFamily = PoppinsFamily,
-                    fontWeight = FontWeight.Bold)
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.None)
                 ) {
                     append("Inicia sesión aquí")
                 }
