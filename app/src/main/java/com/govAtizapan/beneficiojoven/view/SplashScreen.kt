@@ -1,7 +1,6 @@
 package com.govAtizapan.beneficiojoven.view
 
 import com.govAtizapan.beneficiojoven.R
-import android.window.SplashScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,13 +19,11 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier, navController: NavHostController) {
-
     LaunchedEffect(key1 = true) {
-        delay(5000)
+        delay(3000)
         navController.popBackStack()
         navController.navigate(AppScreens.BienvenidaView.route)
     }
-
     Splash()
 }
 

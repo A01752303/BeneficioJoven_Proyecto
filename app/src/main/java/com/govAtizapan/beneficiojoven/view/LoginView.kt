@@ -3,7 +3,6 @@ package com.govAtizapan.beneficiojoven.view
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -60,15 +58,16 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -91,7 +90,6 @@ fun LoginView(
     navController: NavController,
     authViewModel: AuthVM = viewModel()
 ) {
-    val authState by authViewModel.authState.collectAsStateWithLifecycle()
     val navigationState by authViewModel.navigationState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -158,7 +156,6 @@ fun LoginView(
 
     // 6. Llama a tu Composable de UI, pasándole la función que debe ejecutar al hacer clic
     Login(
-        isLoading = authState.isLoading,
         onLoginClicked = { email, pass ->
             authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
         },
@@ -178,8 +175,7 @@ fun LoginView(
 }
 
 @Composable
-fun Login(isLoading: Boolean,
-          onLoginClicked: (String, String) -> Unit,
+fun Login(onLoginClicked: (String, String) -> Unit,
           onGoogleClick: () -> Unit,
           onFacebookClick: () -> Unit,
           onRegisterClick: () -> Unit = {},
@@ -285,54 +281,50 @@ fun Login(isLoading: Boolean,
         // Texto para registrarse
         val registerAnnotatedString = buildAnnotatedString {
             append("¿No tienes una cuenta? ")
-            pushStringAnnotation(tag = "REGISTER", annotation = "REGISTER")
-            withStyle(style = SpanStyle(
-                color = TealPrimary,
-                fontFamily = PoppinsFamily,
-                fontWeight = FontWeight.Bold)
+            // 1. Usa withLink en lugar de pushStringAnnotation
+            withLink(
+                link = LinkAnnotation.Url(
+                    url = "REGISTER", // Usamos la URL como un identificador único, igual que el tag
+                    linkInteractionListener = { onRegisterClick() } // La acción onClick va aquí directamente
+                )
             ) {
-                append("Regístrate aquí")
+                withStyle(style = SpanStyle(
+                    color = TealPrimary,
+                    fontFamily = PoppinsFamily,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.None)
+                ) {
+                    append("Regístrate aquí")
+                }
             }
-            pop()
         }
 
-        ClickableText(
-            text = registerAnnotatedString,
-            onClick = { offset ->
-                registerAnnotatedString.getStringAnnotations(tag = "REGISTER", start = offset, end = offset)
-                    .firstOrNull()?.let {
-                        // Llama a la función de navegación que pasaste como parámetro
-                        onRegisterClick()
-                    }
-            }
-        )
+        // 2. Usa un Text normal en lugar de ClickableText
+        Text(text = registerAnnotatedString)
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // Texto para el inicio de sesión de comercios
         val businessAnnotatedString = buildAnnotatedString {
             append("¿Eres comercio? ")
-            pushStringAnnotation(tag = "BUSINESS", annotation = "BUSINESS")
-            withStyle(style = SpanStyle(
-                color = TealPrimary,
-                fontFamily = PoppinsFamily,
-                fontWeight = FontWeight.Bold)
+            withLink(
+                link = LinkAnnotation.Url(
+                    url = "BUSINESS_LOGIN", // Identificador único
+                    linkInteractionListener = { onBusinessLoginClick() } // La acción va aquí
+                )
             ) {
-                append("Inicia sesión aquí")
+                withStyle(style = SpanStyle(
+                    color = TealPrimary,
+                    fontFamily = PoppinsFamily,
+                    fontWeight = FontWeight.Bold)
+                ) {
+                    append("Inicia sesión aquí")
+                }
             }
-            pop()
         }
 
-        ClickableText(
-            text = businessAnnotatedString,
-            onClick = { offset ->
-                businessAnnotatedString.getStringAnnotations(tag = "BUSINESS", start = offset, end = offset)
-                    .firstOrNull()?.let {
-                        // Llama a la función de navegación que pasaste como parámetro
-                        onBusinessLoginClick()
-                    }
-            }
-        )
+// Usa un Text normal
+        Text(text = businessAnnotatedString)
 
         Column(
             modifier = Modifier
@@ -426,7 +418,7 @@ fun OrSeparator() {
             .padding(vertical = 16.dp), // Espacio vertical
         verticalAlignment = Alignment.CenterVertically // Centra la línea y el texto verticalmente
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.weight(1f), // Ocupa el espacio disponible
             color = Color.Gray,
             thickness = 1.dp
@@ -441,7 +433,7 @@ fun OrSeparator() {
             color = Color.DarkGray
         )
 
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.weight(1f), // Ocupa el espacio disponible
             color = Color.Gray,
             thickness = 1.dp
@@ -493,9 +485,4 @@ fun CustomOutlinedButton(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginViewPreview(modifier: Modifier = Modifier) {
-    Login(isLoading = false,onLoginClicked = { _, _ -> }, onGoogleClick = {}, onFacebookClick = {})
-}
 
