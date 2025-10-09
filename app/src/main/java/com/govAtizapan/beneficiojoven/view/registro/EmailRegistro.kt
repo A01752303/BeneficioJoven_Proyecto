@@ -1,13 +1,10 @@
 package com.govAtizapan.beneficiojoven.view.registro
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,17 +48,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -180,6 +174,7 @@ fun EmailRegistroScreen(
                     onVisibilityChange = { isPasswordVisible = !isPasswordVisible }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f)) // Empuja el botón hacia abajo
                 Button(
                     onClick = {
                         viewModel.registerUserAndSendVerification(email, password)
@@ -194,7 +189,10 @@ fun EmailRegistroScreen(
                         contentColor = White
                     )
                 ) {
-                    Text("Siguiente", fontSize = 18.sp)
+                    Text("Siguiente",
+                        fontFamily = PoppinsFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp)
                 }
             }
 
@@ -298,7 +296,8 @@ fun SimpleTopAppBar(
             IconButton(onClick = onBackClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver atrás"
+                    contentDescription = "Volver atrás",
+                    modifier = Modifier.size(35.dp),
                 )
             }
         },

@@ -100,11 +100,16 @@ class EmailVerificationVM : ViewModel() {
         verificationCheckJob?.cancel()
     }
 
-    fun updateName(_nombre: String) {
+    fun updateNombreCompleto(_nombre: String, _apellidoP: String, _apellidoM: String) {
         // Asegúrate que tu data class RegistrationData tenga un campo 'name'
         _registrationData.update { it.copy(nombre = _nombre) }
+        _registrationData.update { it.copy(apellidoP = _apellidoP) }
+        _registrationData.update { it.copy(apellidoM = _apellidoM) }
     }
 
+    fun updateGenero(_genero: String) {
+        _registrationData.update { it.copy(genero = _genero) }
+    }
     /**
      * Función final que llamarías para enviar todos los datos a tu BD SQL.
      */
@@ -112,6 +117,10 @@ class EmailVerificationVM : ViewModel() {
         _uiState.value = RegistrationUiState.Loading
         val finalData = _registrationData.value
         println("Enviando a SQL los siguientes datos: $finalData")
+    }
+
+    fun updateFechaNacimiento(_fechaNacimiento: String) {
+        _registrationData.update { it.copy(fechaNacimiento = _fechaNacimiento) }
     }
 
     fun resetUiState() {

@@ -1,12 +1,8 @@
 package com.govAtizapan.beneficiojoven.view.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,6 +19,8 @@ import com.govAtizapan.beneficiojoven.view.comercioVistas.InicioSesionComercio
 import com.govAtizapan.beneficiojoven.view.registro.EmailRegistro
 import com.govAtizapan.beneficiojoven.view.registro.EmailVerificacion
 import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
+import com.govAtizapan.beneficiojoven.view.registro.GeneroRegistro
+import com.govAtizapan.beneficiojoven.view.registro.FechaNacimientoRegistro
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 
 
@@ -92,6 +90,27 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             composable(route = AppScreens.NombreRegistro.route) {
                 NombreRegistro(
+                    navController = navController,
+                    viewModel = registrationViewModel
+                )
+            }
+
+            composable(route = AppScreens.GeneroRegistro.route) {
+                GeneroRegistro(
+                    navController = navController,
+                    viewModel = registrationViewModel
+                )
+            }
+
+            composable(route = AppScreens.FechaNacimientoRegistro.route) {
+                FechaNacimientoRegistro(
+                    navController = navController,
+                    viewModel = registrationViewModel
+                )
+            }
+
+            composable(route = AppScreens.DireccionRegistro.route) {
+                DireccionRegistro(
                     navController = navController,
                     viewModel = registrationViewModel
                 )
