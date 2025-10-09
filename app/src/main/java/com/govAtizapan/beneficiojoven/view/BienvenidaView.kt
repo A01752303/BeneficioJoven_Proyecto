@@ -176,7 +176,7 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = TealPrimary,
-            fontSize = 24.sp
+            fontSize = 20.sp
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -184,7 +184,7 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             fontFamily = PoppinsFamily,
-            fontSize = 14.sp
+            fontSize = 12.sp
         )
         AsyncImage(
             model = item.imageRes,
