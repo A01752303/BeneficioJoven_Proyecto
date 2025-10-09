@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -32,7 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +46,8 @@ import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.delay
+import coil.compose.AsyncImage
+
 
 val onboardingPages = listOf(
     OnboardingDataClass(
@@ -83,7 +86,8 @@ fun OnboardingScreen(
     onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()
+        .safeDrawingPadding()) {
         val pagerState = rememberPagerState(pageCount = { pageItems.size })
 
         val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
@@ -139,11 +143,13 @@ fun OnboardingScreen(
                     fontWeight = FontWeight.SemiBold)
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Image(
-                painter = painterResource(id = R.drawable.logos_pie),
-                contentDescription = null,
+            AsyncImage(
+                model = R.drawable.logos_pie,
+                contentDescription = "Logos de patrocinadores", // Es bueno añadir una descripción
                 modifier = Modifier
-                    .fillMaxWidth())
+                    .height(50.dp),
+                contentScale = ContentScale.Fit // <-- Añade esto
+            )
         }
     }
 }
@@ -153,7 +159,8 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 30.dp)
-            .padding(bottom = 160.dp),
+            .padding(bottom = 160.dp)
+            .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -174,10 +181,11 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
             fontFamily = PoppinsFamily,
             fontSize = 14.sp
         )
-        Image(
-            painter = painterResource(id = item.imageRes),
+        AsyncImage(
+            model = item.imageRes,
             contentDescription = item.title,
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(200.dp),
+            contentScale = ContentScale.Crop // <-- Añade esto
         )
     }
 }
@@ -188,7 +196,8 @@ fun PagerIndicator(pageCount: Int, currentPageIndex: Int, modifier: Modifier = M
         modifier = modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .padding(bottom = 24.dp),
+            .padding(bottom = 24.dp)
+            .safeDrawingPadding(),
         horizontalArrangement = Arrangement.Center
     ) {
         repeat(pageCount) { iteration ->

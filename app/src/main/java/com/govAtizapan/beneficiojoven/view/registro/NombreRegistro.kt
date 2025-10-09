@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
@@ -55,29 +58,33 @@ import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
+import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 
 @Composable
-fun NombreRegistro(navController: NavController) {
-    NombreRegistroView(onNextClicked = { _, _, _ -> })
+fun NombreRegistro(navController: NavController, viewModel: EmailVerificationVM) {
+    NombreRegistroView(onNextClicked = { _, _, _ -> }, navController = navController, viewModel = viewModel)
 }
 
 @Composable
 fun NombreRegistroView(
-    onNextClicked: (String, String, String) -> Unit) {
-
+    onNextClicked: (String, String, String) -> Unit,
+    navController: NavController,
+    viewModel: EmailVerificationVM) {
     Scaffold(
         // 1. Se asigna la barra superior personalizada al slot 'topBar'.
         topBar = {
             simpleTopAppBarN()
         },
         // 2. Se define el color de fondo para el área de contenido.
-        containerColor = Color.White
-    ) { innerPadding ->
-    Column(
+        containerColor = Color.White) { innerPadding ->
+        val scrollState = rememberScrollState()
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 24.dp)
+                .safeDrawingPadding()
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
@@ -168,11 +175,6 @@ fun NombreRegistroView(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun NombreRegistroPreview() {
-    NombreRegistroView(onNextClicked = { _, _, _ -> })
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

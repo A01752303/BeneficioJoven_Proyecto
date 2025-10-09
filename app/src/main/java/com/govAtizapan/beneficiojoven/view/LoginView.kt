@@ -58,7 +58,10 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -81,6 +84,7 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
+import com.govAtizapan.beneficiojoven.view.navigation.REGISTRATION_GRAPH_ROUTE
 
 @Composable
 fun LoginView(
@@ -165,7 +169,7 @@ fun LoginView(
             facebookLauncher.launch(listOf("email", "public_profile"))
         },
         onRegisterClick = {
-            navController.navigate(AppScreens.EmailRegistro.route)
+            navController.navigate(REGISTRATION_GRAPH_ROUTE)
         },
         onBusinessLoginClick = {
             navController.navigate(AppScreens.InicioSesionComercio.route)
@@ -180,25 +184,27 @@ fun Login(isLoading: Boolean,
           onFacebookClick: () -> Unit,
           onRegisterClick: () -> Unit = {},
           onBusinessLoginClick: () -> Unit = {}) {
+    val scrollState = rememberScrollState()
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 24.dp)
+            .safeDrawingPadding()
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ){
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var isPasswordVisible by remember { mutableStateOf(false) }
 
+        Spacer(modifier = Modifier.height(48.dp))
 
         Image(
             painter = painterResource(id = R.drawable.logo_sinnombre),
             contentDescription = "Logo de la aplicación",
             modifier = Modifier
-                .size(100.dp)
+                .size(90.dp)
         )
-        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "¡BIENVENID@!",
             style = MaterialTheme.typography.headlineMedium,
@@ -236,18 +242,18 @@ fun Login(isLoading: Boolean,
         )
         TextButton(
             onClick = { /* Lógica para recuperar contraseña */ },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.align(Alignment.End).height(36.dp)
         ) {
-            Text("Olvidé mi contraseña")
+            Text("Olvidé mi contraseña",
+                fontSize = 10.sp)
         }
-        Spacer(modifier = Modifier.height(4.dp))
         Button(
             onClick = {
                 onLoginClicked(email, password)
             },
             enabled = email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
-                .height(46.dp)
+                .height(36.dp)
                 .fillMaxSize(),
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
@@ -257,7 +263,7 @@ fun Login(isLoading: Boolean,
         ) {
             val buttonText = "Iniciar Sesión"
             Text(buttonText,
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 fontFamily = PoppinsFamily,
                 fontWeight = FontWeight.SemiBold)
         }
@@ -283,8 +289,7 @@ fun Login(isLoading: Boolean,
             withStyle(style = SpanStyle(
                 color = TealPrimary,
                 fontFamily = PoppinsFamily,
-                fontWeight = FontWeight.Bold
-            )
+                fontWeight = FontWeight.Bold)
             ) {
                 append("Regístrate aquí")
             }
@@ -377,7 +382,7 @@ fun CustomTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(width = 1.dp, color = borderCyan, shape = RoundedCornerShape(16.dp))
-                .defaultMinSize(minHeight = 48.dp),
+                .defaultMinSize(minHeight = 36.dp),
             textStyle = textStyle,
             placeholder = { Text(placeholderText) },
             shape = RoundedCornerShape(16.dp),
@@ -456,7 +461,7 @@ fun CustomOutlinedButton(
         onClick = onClick,
         // 2. Correctly chain the passed modifier with local modifiers
         modifier = modifier
-            .height(46.dp)
+            .height(38.dp)
             .fillMaxWidth(), // Use fillMaxWidth for more predictable behavior
         shape = RoundedCornerShape(14.dp),
         border = BorderStroke(1.dp, Color.Gray),
@@ -481,7 +486,7 @@ fun CustomOutlinedButton(
 
         Text(
             text = text,
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             fontFamily = PoppinsFamily,
             fontWeight = FontWeight.Normal
         )

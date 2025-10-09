@@ -1,5 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.registro
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,21 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,10 +26,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
@@ -42,11 +34,13 @@ import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificat
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.RegistrationUiState
 
 @Composable
-fun EmailVerificacion(navController: NavController) {
+fun EmailVerificacion(navController: NavController, viewModel: EmailVerificationVM, email: String) {
     EmailVerificacionView(onUserVerified = {
         navController.popBackStack()
         navController.navigate(AppScreens.NombreRegistro.route)},
-        modifier = Modifier)
+        modifier = Modifier,
+        viewModel = viewModel,
+        email = email)
 }
 
 @Composable
@@ -54,13 +48,11 @@ fun EmailVerificacionView(
     // 1. Cambios en la firma: añadimos el evento de navegación y el ViewModel
     onUserVerified: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: EmailVerificationVM = viewModel()
+    viewModel: EmailVerificationVM,
+    email: String
 ) {
     // 2. Obtenemos los estados del ViewModel
-    // uiState nos dirá cuándo navegar
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // registrationData nos da el email del usuario para mostrarlo
-    val registrationData by viewModel.registrationData.collectAsStateWithLifecycle()
 
     // 3. Efectos para controlar la lógica de verificación
     // Este se encarga de la navegación cuando el estado cambia a UserVerified
@@ -109,7 +101,18 @@ fun EmailVerificacionView(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             // 4. Mostramos el email real del usuario
-            text = "Te enviamos un enlace de verificación a ${registrationData.email} para continuar.",
+            text = "Te enviamos un enlace de verificación a $email para continuar.",
+            style = MaterialTheme.typography.bodySmall,
+            fontFamily = PoppinsFamily,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            color = Gray,
+            fontSize = 14.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            // 4. Mostramos el email real del usuario
+            text = "No olvides revisar tu spam",
             style = MaterialTheme.typography.bodySmall,
             fontFamily = PoppinsFamily,
             fontWeight = FontWeight.Normal,
@@ -118,10 +121,4 @@ fun EmailVerificacionView(
             fontSize = 14.sp
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EmailVerificacionPreview() {
-    EmailVerificacionView(onUserVerified = {})
 }

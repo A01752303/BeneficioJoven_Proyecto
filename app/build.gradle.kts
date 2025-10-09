@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.lottie.compose)
     implementation(libs.androidx.material.icons.extended.android)
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.airbnb.android:lottie-compose:6.6.10")
     // Firebase BoM (Bill of Materials) - maneja las versiones por ti
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))

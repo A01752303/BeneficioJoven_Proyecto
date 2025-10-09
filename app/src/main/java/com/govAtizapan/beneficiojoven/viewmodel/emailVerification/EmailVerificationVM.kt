@@ -1,5 +1,6 @@
 package com.govAtizapan.beneficiojoven.viewmodel.emailVerification
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
@@ -12,9 +13,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 
 class EmailVerificationVM : ViewModel() {
+    private val instanceId = UUID.randomUUID().toString()
+    init {
+        // Este espía nos dice cuándo se crea una nueva instancia
+        Log.d("ViewModelDebug", "PASO 1: ViewModel CREADO con ID: $instanceId")
+    }
 
     private val auth = Firebase.auth
     private var verificationCheckJob: Job? = null
@@ -31,9 +38,11 @@ class EmailVerificationVM : ViewModel() {
      * Inicia el proceso de registro usando Coroutines y await() para un código más limpio.
      */
     fun registerUserAndSendVerification(email: String, password: String) {
+        Log.d("ViewModelDebug", "Updating email in StateFlow to: '$email'")
+        _registrationData.update { it.copy(email = email) }
+        _uiState.value = RegistrationUiState.Loading
+
         viewModelScope.launch {
-            _uiState.value = RegistrationUiState.Loading
-            _registrationData.update { it.copy(email = email) }
 
             try {
                 // 1. Crea el usuario y espera el resultado
@@ -57,7 +66,6 @@ class EmailVerificationVM : ViewModel() {
 
                 // 4. Si todo fue exitoso, actualiza el estado
                 _uiState.value = RegistrationUiState.VerificationEmailSent
-
             } catch (e: Exception) {
                 // Si algo falla (creación o envío), se captura aquí
                 _uiState.value = RegistrationUiState.Error(e.message ?: "Error desconocido")
@@ -92,9 +100,6 @@ class EmailVerificationVM : ViewModel() {
         verificationCheckJob?.cancel()
     }
 
-    /**
-     * Actualiza el nombre en nuestro estado temporal.
-     */
     fun updateName(_nombre: String) {
         // Asegúrate que tu data class RegistrationData tenga un campo 'name'
         _registrationData.update { it.copy(nombre = _nombre) }
