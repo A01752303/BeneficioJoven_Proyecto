@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -85,71 +84,79 @@ fun OnboardingScreen(
     onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()
-        .safeDrawingPadding()) {
+    // 1. Se cambió el Box principal por un Column.
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .safeDrawingPadding(), // Padding para la barra de navegación
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         val pagerState = rememberPagerState(pageCount = { pageItems.size })
-
         val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
 
+        // El LaunchedEffect para el auto-scroll sigue igual y funciona perfecto.
         LaunchedEffect(isDragged) {
             if (!isDragged) {
                 while (true) {
-                    delay(3000L) // Esperamos 3 segundos
+                    delay(3000L)
                     val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
                     pagerState.animateScrollToPage(nextPage)
                 }
             }
         }
 
+        // 2. Se añadió Modifier.weight(1f) al Pager.
+        // Esto hace que ocupe todo el espacio vertical restante.
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.weight(1f)
         ) { pageIndex ->
             OnboardingPage(item = pageItems[pageIndex])
         }
 
-        Column(
+        // 3. Los elementos de control ahora están directamente en la Column principal.
+        // Ya no necesitan un `align` porque la Column los posiciona secuencialmente.
+        Spacer(modifier = Modifier.height(8.dp))
+
+        PagerIndicator(
+            pageCount = pageItems.size,
+            currentPageIndex = pagerState.currentPage,
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onFinish,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
-                .navigationBarsPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            PagerIndicator(
-                pageCount = pageItems.size,
-                currentPageIndex = pagerState.currentPage,
+                .fillMaxWidth(0.8f)
+                .height(52.dp),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = TealPrimary,
+                contentColor = White
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    onFinish()
-                },
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = TealPrimary,
-                    contentColor = White
-                )
-            ) {
-                val buttonText = "¡COMENZAR!"
-                Text(buttonText,
-                    fontSize = 20.sp,
-                    fontFamily = PoppinsFamily,
-                    fontWeight = FontWeight.SemiBold)
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            AsyncImage(
-                model = R.drawable.logos_pie,
-                contentDescription = "Logos de patrocinadores", // Es bueno añadir una descripción
-                modifier = Modifier
-                    .height(50.dp),
-                contentScale = ContentScale.Fit // <-- Añade esto
+        ) {
+            val buttonText = "¡COMENZAR!"
+            Text(
+                buttonText,
+                fontSize = 20.sp,
+                fontFamily = PoppinsFamily,
+                fontWeight = FontWeight.SemiBold
             )
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        AsyncImage(
+            model = R.drawable.logos_pie,
+            contentDescription = "Logos de patrocinadores",
+            modifier = Modifier.height(50.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        // Un pequeño espacio en la parte inferior para que no quede pegado al borde.
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 @Composable
@@ -158,7 +165,6 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 30.dp)
-            .padding(bottom = 160.dp)
             .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -183,7 +189,7 @@ fun OnboardingPage(item: OnboardingDataClass, modifier: Modifier = Modifier) {
         AsyncImage(
             model = item.imageRes,
             contentDescription = item.title,
-            modifier = Modifier.size(200.dp),
+            modifier = Modifier.size(250.dp),
             contentScale = ContentScale.Fit
         )
     }

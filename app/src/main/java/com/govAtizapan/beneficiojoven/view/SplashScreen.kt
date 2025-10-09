@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.delay
 
@@ -34,9 +35,9 @@ fun Splash(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-       Image(painter = painterResource(id = R.drawable.logo),
-           "Beneficio Joven",
-           Modifier.size(180.dp, 180.dp))
+        AsyncImage(model = R.drawable.logo,
+            "Beneficio Joven",
+            Modifier.size(200.dp))
     }
 }
 

@@ -299,9 +299,10 @@ fun Login(onLoginClicked: (String, String) -> Unit,
         }
 
         // 2. Usa un Text normal en lugar de ClickableText
-        Text(text = registerAnnotatedString)
-
-        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = registerAnnotatedString,
+            fontSize = 12.sp,
+            fontFamily = PoppinsFamily,
+            fontWeight = FontWeight.Light)
 
         // Texto para el inicio de sesión de comercios
         val businessAnnotatedString = buildAnnotatedString {
@@ -323,8 +324,11 @@ fun Login(onLoginClicked: (String, String) -> Unit,
             }
         }
 
-// Usa un Text normal
-        Text(text = businessAnnotatedString)
+        // Usa un Text normal
+        Text(text = businessAnnotatedString,
+            fontSize = 12.sp,
+            fontFamily = PoppinsFamily,
+            fontWeight = FontWeight.Light)
 
         Column(
             modifier = Modifier
