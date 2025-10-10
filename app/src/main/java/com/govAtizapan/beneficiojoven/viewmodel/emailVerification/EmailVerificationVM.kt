@@ -123,6 +123,8 @@ class EmailVerificationVM : ViewModel() {
         _registrationData.update { it.copy(fechaNacimiento = _fechaNacimiento) }
     }
 
+    fun updateDireccion(_) {
+
     fun resetUiState() {
         _uiState.value = RegistrationUiState.Idle
     }

@@ -21,6 +21,7 @@ import com.govAtizapan.beneficiojoven.view.registro.EmailVerificacion
 import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
 import com.govAtizapan.beneficiojoven.view.registro.GeneroRegistro
 import com.govAtizapan.beneficiojoven.view.registro.FechaNacimientoRegistro
+import com.govAtizapan.beneficiojoven.view.registro.DireccionRegistro
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 
 
