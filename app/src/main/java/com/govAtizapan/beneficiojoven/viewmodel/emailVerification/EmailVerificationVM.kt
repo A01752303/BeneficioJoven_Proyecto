@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
-
 class EmailVerificationVM : ViewModel() {
     private val instanceId = UUID.randomUUID().toString()
     init {
@@ -110,20 +109,23 @@ class EmailVerificationVM : ViewModel() {
     fun updateGenero(_genero: String) {
         _registrationData.update { it.copy(genero = _genero) }
     }
-    /**
-     * Función final que llamarías para enviar todos los datos a tu BD SQL.
-     */
+
     fun completeRegistrationAndSaveToSql() {
         _uiState.value = RegistrationUiState.Loading
         val finalData = _registrationData.value
-        println("Enviando a SQL los siguientes datos: $finalData")
+        Log.d("SQL", "Enviando a SQL los siguientes datos: $finalData")
     }
 
     fun updateFechaNacimiento(_fechaNacimiento: String) {
         _registrationData.update { it.copy(fechaNacimiento = _fechaNacimiento) }
     }
 
-    fun updateDireccion(_) {
+    fun updateDireccion(_calle: String, _numero: String, _colonia: String, _codigoPostal: String) {
+        _registrationData.update { it.copy(calle = _calle) }
+        _registrationData.update { it.copy(numero = _numero) }
+        _registrationData.update { it.copy(colonia = _colonia) }
+        _registrationData.update { it.copy(codigoPostal = _codigoPostal) }
+    }
 
     fun resetUiState() {
         _uiState.value = RegistrationUiState.Idle

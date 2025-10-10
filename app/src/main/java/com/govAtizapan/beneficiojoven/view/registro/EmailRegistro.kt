@@ -70,8 +70,11 @@ import com.govAtizapan.beneficiojoven.R
 
 @Composable
 fun EmailRegistro(navController: NavController, viewModel: EmailVerificationVM) {
+
+    val registrationData by viewModel.registrationData.collectAsStateWithLifecycle()
+
     // 1. El estado ahora vive aquí, en el composable padre.
-    var email by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf(registrationData.email) }
     var password by remember { mutableStateOf("") }
 
     EmailRegistroScreen(

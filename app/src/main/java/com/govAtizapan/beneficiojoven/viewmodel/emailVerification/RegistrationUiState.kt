@@ -6,4 +6,6 @@ sealed interface RegistrationUiState {
     data class Error(val message: String) : RegistrationUiState // Ocurrió un error
     object VerificationEmailSent : RegistrationUiState // Correo enviado, navega a "Revisa tu bandeja"
     object UserVerified : RegistrationUiState // Usuario verificado, navega a la pantalla de "Nombre"
+
+    object RegistrationComplete : RegistrationUiState
 }

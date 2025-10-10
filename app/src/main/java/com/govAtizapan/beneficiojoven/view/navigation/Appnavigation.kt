@@ -21,7 +21,8 @@ import com.govAtizapan.beneficiojoven.view.registro.EmailVerificacion
 import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
 import com.govAtizapan.beneficiojoven.view.registro.GeneroRegistro
 import com.govAtizapan.beneficiojoven.view.registro.FechaNacimientoRegistro
-import com.govAtizapan.beneficiojoven.view.registro.DireccionRegistro
+import com.govAtizapan.beneficiojoven.view.registro.DireccionRegistroView
+import com.govAtizapan.beneficiojoven.view.registro.DireccionRegistroView
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 
 
@@ -111,11 +112,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             }
 
             composable(route = AppScreens.DireccionRegistro.route) {
-                DireccionRegistro(
+                DireccionRegistroView(
                     navController = navController,
                     viewModel = registrationViewModel
                 )
             }
+
         } // --- 👆 TERMINA EL GRAFO DE NAVEGACIÓN ---
     }
 }

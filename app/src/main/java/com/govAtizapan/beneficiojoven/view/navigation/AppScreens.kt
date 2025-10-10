@@ -22,4 +22,5 @@ sealed class AppScreens(val route: String) {
     object InicioSesionComercio: AppScreens("inicio_sesion_comercio")
 
 
+
 }

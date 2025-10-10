@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.ui.theme.*
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
@@ -35,6 +37,7 @@ fun FechaNacimientoRegistro(
     navController: NavController,
     viewModel: EmailVerificationVM
 ) {
+
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDateText by remember { mutableStateOf<String?>(null) }
     var dateError by remember { mutableStateOf<String?>(null) }

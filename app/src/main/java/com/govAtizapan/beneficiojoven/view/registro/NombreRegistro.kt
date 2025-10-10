@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
@@ -67,9 +68,11 @@ fun NombreRegistroView(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            var nombre by remember { mutableStateOf("") }
-            var apellidoP by remember { mutableStateOf("") }
-            var apellidoM by remember { mutableStateOf("") }
+            val registrationData by viewModel.registrationData.collectAsStateWithLifecycle()
+
+            var nombre by remember { mutableStateOf(registrationData.nombre) }
+            var apellidoP by remember { mutableStateOf(registrationData.apellidoP) }
+            var apellidoM by remember { mutableStateOf(registrationData.apellidoM) }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -156,8 +159,6 @@ fun NombreRegistroView(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
-
         }
     }
 }
