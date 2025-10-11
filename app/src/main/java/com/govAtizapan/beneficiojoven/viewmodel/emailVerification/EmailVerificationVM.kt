@@ -39,6 +39,7 @@ class EmailVerificationVM : ViewModel() {
     fun registerUserAndSendVerification(email: String, password: String) {
         Log.d("ViewModelDebug", "Updating email in StateFlow to: '$email'")
         _registrationData.update { it.copy(email = email) }
+        _registrationData.update { it.copy(contraseña = password) }
         _uiState.value = RegistrationUiState.Loading
 
         viewModelScope.launch {
