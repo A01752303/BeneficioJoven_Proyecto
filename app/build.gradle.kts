@@ -83,6 +83,14 @@ dependencies {
     // Facebook Login
     implementation(libs.facebook.login)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    //Tadeo
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson.core)
 
 }
 

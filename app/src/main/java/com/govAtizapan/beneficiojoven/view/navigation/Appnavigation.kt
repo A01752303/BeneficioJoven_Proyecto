@@ -13,6 +13,7 @@ import com.govAtizapan.beneficiojoven.view.BienvenidaView
 import com.govAtizapan.beneficiojoven.view.LoginView
 import com.govAtizapan.beneficiojoven.view.SplashScreen
 import com.govAtizapan.beneficiojoven.view.LoadingScreen
+import com.govAtizapan.beneficiojoven.view.comercioVistas.CreatePromotionScreen
 import com.govAtizapan.beneficiojoven.view.home.HomeView
 import com.govAtizapan.beneficiojoven.view.registro.NuevaCuentaVista
 import com.govAtizapan.beneficiojoven.view.comercioVistas.InicioSesionComercio
@@ -59,6 +60,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
         composable(route = AppScreens.InicioSesionComercio.route) {
             InicioSesionComercio()
+        }
+        composable(route = AppScreens.CreatePromotionScreen.route) {
+            CreatePromotionScreen()
         }
 
         // --- INICIA EL GRAFO DE NAVEGACIÓN PARA EL REGISTRO ---
