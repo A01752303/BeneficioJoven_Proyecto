@@ -40,6 +40,7 @@ import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.CustomTextField
 
 @Composable
 fun NombreRegistro(navController: NavController, viewModel: EmailVerificationVM) {

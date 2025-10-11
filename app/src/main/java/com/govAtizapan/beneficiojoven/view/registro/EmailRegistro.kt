@@ -1,42 +1,26 @@
 package com.govAtizapan.beneficiojoven.view.registro
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,14 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -67,6 +47,9 @@ import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.RegistrationUiState
 import com.govAtizapan.beneficiojoven.R
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.CustomTextField
+
 
 @Composable
 fun EmailRegistro(navController: NavController, viewModel: EmailVerificationVM) {
@@ -220,96 +203,5 @@ fun EmailRegistroScreen(
         }
     }
 }
-@Composable
-fun CustomTextField(
-    modifier: Modifier = Modifier,
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholderText: String = "",
-    isPasswordField: Boolean = false,
-    isPasswordVisible: Boolean = false,
-    onVisibilityChange: () -> Unit = {},
-    textStyle: TextStyle = LocalTextStyle.current
-) {
-    val lightCyan = Color(0xFFE0F7FA)
-    val borderCyan = Color(0xFFB2EBF2)
 
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            modifier = Modifier.padding(bottom = 8.dp),
-            fontSize = 16.sp,
-            fontFamily = PoppinsFamily,
-            fontWeight = FontWeight.Light,
-            color = Color.Black
-        )
-
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(width = 1.dp, color = borderCyan, shape = RoundedCornerShape(16.dp))
-                .defaultMinSize(minHeight = 48.dp),
-            textStyle = textStyle,
-            placeholder = { Text(placeholderText) },
-            shape = RoundedCornerShape(16.dp),
-            singleLine = true,
-            visualTransformation = if (isPasswordField && !isPasswordVisible) {
-                PasswordVisualTransformation() // Oculta el texto si es campo de contraseña y no es visible
-            } else {
-                VisualTransformation.None // Muestra el texto en cualquier otro caso
-            },
-            keyboardOptions = if (isPasswordField) {
-                KeyboardOptions(keyboardType = KeyboardType.Password) // Teclado de contraseña
-            } else {
-                KeyboardOptions.Default // Teclado normal
-            },
-            trailingIcon = {
-                if (isPasswordField) { // Muestra el ícono solo si es un campo de contraseña
-                    val image = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
-                    IconButton(onClick = onVisibilityChange) {
-                        Icon(imageVector = image,
-                            contentDescription = "Toggle password visibility",
-                            tint = TealPrimary)
-                    }
-                }
-            },
-
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = lightCyan,
-                focusedContainerColor = lightCyan,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            )
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SimpleTopAppBar(
-    // Pasamos una función lambda para manejar el evento de clic en la flecha
-    onBackClick: () -> Unit
-) {
-    TopAppBar(
-        title = { /* El título está vacío, como en tu diseño */ },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Volver atrás",
-                    modifier = Modifier.size(35.dp),
-                )
-            }
-        },
-        // Configuramos los colores para que coincidan con tu diseño
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = White, // Fondo de la barra
-            navigationIconContentColor = TealPrimary// Color de la flecha
-        ),
-        modifier = Modifier.statusBarsPadding()
-    )
-}
 

@@ -1,21 +1,14 @@
-package com.govAtizapan.beneficiojoven.viewmodel
+package com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.govAtizapan.beneficiojoven.model.PromotionRequest
-import com.govAtizapan.beneficiojoven.model.PromotionResponse
 import com.govAtizapan.beneficiojoven.model.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
-
-data class CreatePromotionUiState(
-    val isLoading: Boolean = false,
-    val success: PromotionResponse? = null,
-    val error: String? = null
-)
 
 class CreatePromotionViewModel : ViewModel() {
     private val _ui = MutableStateFlow(CreatePromotionUiState())

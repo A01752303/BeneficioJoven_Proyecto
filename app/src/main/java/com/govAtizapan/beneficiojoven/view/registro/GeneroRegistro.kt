@@ -15,20 +15,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.govAtizapan.beneficiojoven.ui.theme.*
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
 
 @Composable
 fun GeneroRegistro(
     navController: NavController,
     viewModel: EmailVerificationVM
 ) {
-    val registrationData by viewModel.registrationData.collectAsStateWithLifecycle()
     // Opciones predefinidas para la selección
     val genderOptions = listOf("Masculino", "Femenino", "No binario", "Prefiero no decirlo")
     // Estado para guardar la opción seleccionada por el usuario

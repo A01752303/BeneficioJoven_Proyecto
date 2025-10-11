@@ -29,6 +29,8 @@ import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.view.navigation.REGISTRATION_GRAPH_ROUTE
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.RegistrationUiState
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.CustomTextField
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
 
 @Composable
 fun DireccionRegistroView(

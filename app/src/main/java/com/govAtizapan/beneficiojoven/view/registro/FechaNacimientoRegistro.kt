@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.ui.theme.*
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
@@ -30,6 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

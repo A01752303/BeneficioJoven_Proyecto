@@ -21,7 +21,7 @@ sealed class AppScreens(val route: String) {
     // Negocio
     object InicioSesionComercio: AppScreens("inicio_sesion_comercio")
 
+    // Vista Crear cupones
     object CreatePromotionScreen: AppScreens("create_promotion_screen")
-
 
 }
