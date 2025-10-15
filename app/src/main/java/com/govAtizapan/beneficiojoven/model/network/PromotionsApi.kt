@@ -11,7 +11,7 @@ import retrofit2.http.GET
 interface PromotionsApi {
 
     // 👇 Endpoint relativo. Retrofit completa con BASE_URL
-    @POST("promociones/") // = http://...:8000/promociones/
+    @POST("functionality/promociones/create/")
     suspend fun crearPromocion(
         @Body body: PromotionRequest
     ): Response<PromotionResponse>
