@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.material3)
     implementation(libs.play.services.auth)
+    implementation(libs.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,6 +87,8 @@ dependencies {
     //Tadeo
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation("androidx.compose.material3:material3:1.2.1") // o 1.3.x estable
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

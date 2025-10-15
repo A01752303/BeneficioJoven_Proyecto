@@ -35,6 +35,7 @@ playServicesAuth = "21.4.0"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
 gson = "2.11.0"
+foundationVersion = "1.9.3"
 
 
 [libraries]
@@ -80,6 +81,7 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 gson-core = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
