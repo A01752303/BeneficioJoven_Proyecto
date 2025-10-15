@@ -36,7 +36,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.CreatePromotionScreen.route //modififcar para ver el inicoo de la screen
+        startDestination = AppScreens.SplashScreen.route //modififcar para ver el inicoo de la screen
     ) {
         // --- Pantallas que no son parte del flujo de registro ---
         composable(route = AppScreens.LoadingScreen.route) {
