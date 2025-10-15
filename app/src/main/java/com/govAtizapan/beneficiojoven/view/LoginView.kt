@@ -144,7 +144,7 @@ fun LoginView(
                 authViewModel.resetNavigationState() // Resetea el evento para no volver a navegar
             }
             is LoginNavigationState.NavigateToHome -> {
-                navController.navigate(AppScreens.LoadingScreen.route) {
+                navController.navigate(AppScreens.HomeView.route) {
                     popUpTo(AppScreens.LoginView.route) { inclusive = true }
                 }
                 authViewModel.resetNavigationState()

@@ -1,4 +1,4 @@
-package com.govAtizapan.beneficiojoven.model.network
+package com.govAtizapan.beneficiojoven.model.promotionpost
 
 import com.google.gson.annotations.SerializedName
 

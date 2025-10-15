@@ -2,7 +2,7 @@ package com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.govAtizapan.beneficiojoven.model.network.PromotionRequest
+import com.govAtizapan.beneficiojoven.model.promotionpost.PromotionRequest
 import com.govAtizapan.beneficiojoven.model.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
