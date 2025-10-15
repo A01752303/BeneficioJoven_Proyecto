@@ -25,9 +25,11 @@ data class PromotionRequest(
     @SerializedName("id_negocio") val idNegocio: Int,
     @SerializedName("nombre") val nombre: String,
     @SerializedName("descripcion") val descripcion: String,
-    @SerializedName("fecha_inicio") val fechaInicio: String, // "YYYY-MM-DD"
-    @SerializedName("fecha_fin") val fechaFin: String,       // "YYYY-MM-DD"
-    @SerializedName("porcentaje") val porcentaje: Int,       // usa 0 si no aplica
-    @SerializedName("precio") val precio: Int,               // usa 0 si no aplica
-    @SerializedName("activo") val activo: Boolean
+    @SerializedName("fecha_inicio") val fechaInicio: String,     // "YYYY-MM-DD"
+    @SerializedName("fecha_fin") val fechaFin: String,           // "YYYY-MM-DD"
+    @SerializedName("porcentaje") val porcentaje: Int,           // 0 si no aplica
+    @SerializedName("precio") val precio: Int,                   // 0 si no aplica
+    @SerializedName("activo") val activo: Boolean,
+    @SerializedName("limite_total") val limiteTotal: Int,        // 0 = sin límite
+    @SerializedName("limite_por_usuario") val limitePorUsuario: Int // 0 = sin límite
 )

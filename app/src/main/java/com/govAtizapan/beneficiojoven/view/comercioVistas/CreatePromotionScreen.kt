@@ -10,7 +10,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,48 +28,54 @@ fun CreatePromotionScreen(vm: CreatePromotionViewModel = viewModel()) {
     val ui = vm.ui.collectAsState()
     val focus = LocalFocusManager.current
 
-    // ---------- Estados de formulario ----------
+    // ---------- Estados ----------
     var idNegocio by rememberSaveable { mutableStateOf("") }
-    var titulo by rememberSaveable { mutableStateOf("") }          // mapea a "nombre"
+    var titulo by rememberSaveable { mutableStateOf("") }             // mapea a "nombre"
     var descripcion by rememberSaveable { mutableStateOf("") }
 
-    val tipos = listOf("PERCENT", "FIXED_AMOUNT")
-    var discountTypeExpanded by remember { mutableStateOf(false) }
-    var discountType by rememberSaveable { mutableStateOf(tipos.first()) }
+    // Tipos de promoción
+    val tiposPromo = listOf("Descuento (%)", "Precio fijo (MXN)", "2x1", "Trae un amigo", "Otra")
+    var tipoExpanded by remember { mutableStateOf(false) }
+    var tipoSeleccionado by rememberSaveable { mutableStateOf(tiposPromo.first()) }
+    val esDescuento = tipoSeleccionado == "Descuento (%)"
+    val esPrecioFijo = tipoSeleccionado == "Precio fijo (MXN)"
 
-    var discountValue by rememberSaveable { mutableStateOf("") }   // valor numérico (porcentaje o precio)
+    // Valores numéricos según tipo
+    var porcentajeTxt by rememberSaveable { mutableStateOf("") }      // 1..100 cuando es descuento
+    var precioTxt by rememberSaveable { mutableStateOf("") }          // >0 cuando es precio fijo
 
-    // Fechas ISO (YYYY-MM-DD) del DateRangePicker
-    var startDate by rememberSaveable { mutableStateOf("") }       // fecha_inicio
-    var endDate by rememberSaveable { mutableStateOf("") }         // fecha_fin
+    // Límites (opcionales; 0 = sin límite)
+    var limiteTotalTxt by rememberSaveable { mutableStateOf("") }
+    var limitePorUsuarioTxt by rememberSaveable { mutableStateOf("") }
 
-    // Activo (siempre true por defecto)
-    var activo by rememberSaveable { mutableStateOf(true) }
+    // Fechas ISO (YYYY-MM-DD)
+    var startDate by rememberSaveable { mutableStateOf("") }
+    var endDate by rememberSaveable { mutableStateOf("") }
 
     // ---------- Validaciones ----------
     val idNegocioInt = idNegocio.toIntOrNull()
-    val discountValueInt = discountValue.toIntOrNull()
+    val porcentajeInt = porcentajeTxt.toIntOrNull()
+    val precioInt = precioTxt.toIntOrNull()
+    val limiteTotalInt = limiteTotalTxt.toIntOrNull() ?: 0
+    val limitePorUsuarioInt = limitePorUsuarioTxt.toIntOrNull() ?: 0
+
     val fechaRegex = Regex("""\d{4}-\d{2}-\d{2}""")
+
+    val porcentajeOk = if (esDescuento) (porcentajeInt != null && porcentajeInt in 1..100) else true
+    val precioOk = if (esPrecioFijo) (precioInt != null && precioInt > 0) else true
+    val limiteTotalOk = limiteTotalTxt.isBlank() || (limiteTotalInt >= 0)
+    val limiteUsuarioOk = limitePorUsuarioTxt.isBlank() || (limitePorUsuarioInt >= 0)
 
     val esValido =
         idNegocioInt != null &&
                 titulo.isNotBlank() &&
                 descripcion.isNotBlank() &&
-                discountValueInt != null && discountValueInt > 0 &&
+                porcentajeOk &&
+                precioOk &&
+                limiteTotalOk &&
+                limiteUsuarioOk &&
                 startDate.matches(fechaRegex) &&
                 endDate.matches(fechaRegex)
-
-    // Colores/shape pill para el dropdown, a juego con AppTextField
-    val pillColors = OutlinedTextFieldDefaults.colors(
-        focusedContainerColor = Color(0xFFDDF7F7),
-        unfocusedContainerColor = Color(0xFFDDF7F7),
-        disabledContainerColor = Color(0xFFE6E6E6),
-        focusedBorderColor = Color(0x33000000),
-        unfocusedBorderColor = Color(0x33000000),
-        disabledBorderColor = Color(0x33000000),
-        cursorColor = MaterialTheme.colorScheme.primary
-    )
-    val pillShape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
 
     Column(
         Modifier
@@ -103,44 +108,37 @@ fun CreatePromotionScreen(vm: CreatePromotionViewModel = viewModel()) {
 
         Spacer(Modifier.height(10.dp))
 
-        AppTextField(
-            value = descripcion,
-            onValueChange = { descripcion = it },
-            label = "Descripción",
-            singleLine = false
-        )
-
-        Spacer(Modifier.height(10.dp))
-
-        // --------- Dropdown: tipo de descuento ----------
+        // --------- Selector: Tipo de promoción ----------
         ExposedDropdownMenuBox(
-            expanded = discountTypeExpanded,
-            onExpandedChange = { discountTypeExpanded = !discountTypeExpanded }
+            expanded = tipoExpanded,
+            onExpandedChange = { tipoExpanded = !tipoExpanded }
         ) {
             OutlinedTextField(
-                value = discountType,
+                value = tipoSeleccionado,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Tipo de descuento") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = discountTypeExpanded) },
-                colors = pillColors,
-                shape = pillShape,
+                label = { Text("Tipo de promoción") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tipoExpanded) },
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth()
                     .heightIn(min = 56.dp)
             )
-
             ExposedDropdownMenu(
-                expanded = discountTypeExpanded,
-                onDismissRequest = { discountTypeExpanded = false }
+                expanded = tipoExpanded,
+                onDismissRequest = { tipoExpanded = false }
             ) {
-                tipos.forEach { option ->
+                tiposPromo.forEach { option ->
                     DropdownMenuItem(
                         text = { Text(option) },
                         onClick = {
-                            discountType = option
-                            discountTypeExpanded = false
+                            tipoSeleccionado = option
+                            tipoExpanded = false
+                            when (option) {
+                                "Descuento (%)" -> { precioTxt = "" }
+                                "Precio fijo (MXN)" -> { porcentajeTxt = "" }
+                                else -> { porcentajeTxt = ""; precioTxt = "" }
+                            }
                         }
                     )
                 }
@@ -149,44 +147,93 @@ fun CreatePromotionScreen(vm: CreatePromotionViewModel = viewModel()) {
 
         Spacer(Modifier.height(10.dp))
 
+        // Campos condicionales (según tipo)
+        if (esDescuento) {
+            AppTextField(
+                value = porcentajeTxt,
+                onValueChange = { porcentajeTxt = it.filter(Char::isDigit) },
+                label = "Porcentaje (%)",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                isError = porcentajeTxt.isNotBlank() && !(porcentajeInt?.let { it in 1..100 } == true),
+                supportingText = "1 a 100. Se enviará porcentaje=<valor> y precio=0"
+            )
+            Spacer(Modifier.height(10.dp))
+        } else if (esPrecioFijo) {
+            AppTextField(
+                value = precioTxt,
+                onValueChange = { precioTxt = it.filter(Char::isDigit) },
+                label = "Precio fijo (MXN)",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                isError = precioTxt.isNotBlank() && !(precioInt?.let { it > 0 } == true),
+                supportingText = "Monto en MXN. Se enviará precio=<valor> y porcentaje=0"
+            )
+            Spacer(Modifier.height(10.dp))
+        }
+
         AppTextField(
-            value = discountValue,
-            onValueChange = { discountValue = it.filter(Char::isDigit) },
-            label = if (discountType == "PERCENT") "Valor (%)" else "Valor (MXN)",
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            isError = discountValue.isNotBlank() && (discountValueInt == null || discountValueInt <= 0),
-            supportingText = if (discountType == "PERCENT")
-                "Ej: 50 = 50% (se enviará porcentaje=50, precio=0)"
-            else
-                "Ej: 100 = $100 MXN (se enviará precio=100, porcentaje=0)"
+            value = descripcion,
+            onValueChange = { descripcion = it },
+            label = when {
+                esDescuento -> "Descripción"
+                esPrecioFijo -> "Descripción"
+                else -> "Descripción / Mecánica (2x1, trae un amigo, etc.)"
+            },
+            singleLine = false
         )
 
         Spacer(Modifier.height(10.dp))
 
-        // --------- Selector de rango de fechas (calendario) ----------
+        // Límites (opcionales; 0 = sin límite)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(Modifier.weight(1f)) {
+                AppTextField(
+                    value = limiteTotalTxt,
+                    onValueChange = { limiteTotalTxt = it.filter(Char::isDigit) },
+                    label = "Límite total (opcional)",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    isError = limiteTotalTxt.isNotBlank() && limiteTotalInt < 0,
+                    supportingText = "0 o vacío = sin límite"
+                )
+            }
+            Column(Modifier.weight(1f)) {
+                AppTextField(
+                    value = limitePorUsuarioTxt,
+                    onValueChange = { limitePorUsuarioTxt = it.filter(Char::isDigit) },
+                    label = "Límite por usuario (opcional)",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    isError = limitePorUsuarioTxt.isNotBlank() && limitePorUsuarioInt < 0,
+                    supportingText = "0 o vacío = sin límite"
+                )
+            }
+        }
+
+        Spacer(Modifier.height(10.dp))
+
+        // --------- Rango de fechas ----------
         AppDateRangeField(
             onChange = { startIso, endIso ->
                 startDate = startIso
                 endDate = endIso
             },
             modifier = Modifier.fillMaxWidth(),
-            label = "Seleccionar fecha"
+            label = "Rango de fechas (YYYY-MM-DD)"
         )
 
         if (startDate.isNotBlank() || endDate.isNotBlank()) {
             Spacer(Modifier.height(6.dp))
             Text("Inicio: $startDate   •   Fin: $endDate", style = MaterialTheme.typography.bodySmall)
-        }
-
-        Spacer(Modifier.height(10.dp))
-
-        // --------- Switch "Activo" ----------
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Activa")
-            Switch(checked = activo, onCheckedChange = { activo = it })
         }
 
         Spacer(Modifier.height(16.dp))
@@ -197,19 +244,37 @@ fun CreatePromotionScreen(vm: CreatePromotionViewModel = viewModel()) {
             onClick = {
                 focus.clearFocus()
 
-                // Convertimos a porcentaje/precio según el tipo seleccionado
-                val porcentaje = if (discountType == "PERCENT") (discountValueInt ?: 0) else 0
-                val precio = if (discountType == "FIXED_AMOUNT") (discountValueInt ?: 0) else 0
+                // Valores según tipo:
+                // - Descuento: porcentaje = valor, precio = 0
+                // - Precio fijo: precio = valor, porcentaje = 0
+                // - Otros: ambos 0
+                val porcentaje = when {
+                    esDescuento -> (porcentajeInt ?: 0)
+                    else -> 0
+                }
+                val precio = when {
+                    esPrecioFijo -> (precioInt ?: 0)
+                    else -> 0
+                }
+
+                // Prefijo para mecánicas que no son % ni precio fijo (2x1, trae un amigo, etc.)
+                val descripcionConTipo =
+                    if (!esDescuento && !esPrecioFijo && descripcion.isNotBlank())
+                        "${tipoSeleccionado}: ${descripcion.trim()}"
+                    else
+                        descripcion.trim()
 
                 val payload = PromotionRequest(
                     idNegocio = idNegocioInt!!,
                     nombre = titulo.trim(),
-                    descripcion = descripcion.trim(),
-                    fechaInicio = startDate.trim(),   // "YYYY-MM-DD"
-                    fechaFin = endDate.trim(),        // "YYYY-MM-DD"
-                    porcentaje = porcentaje,          // 0 si no aplica
-                    precio = precio,                  // 0 si no aplica
-                    activo = activo
+                    descripcion = descripcionConTipo,
+                    fechaInicio = startDate.trim(),      // "YYYY-MM-DD"
+                    fechaFin = endDate.trim(),           // "YYYY-MM-DD"
+                    porcentaje = porcentaje,             // 0 cuando no aplique
+                    precio = precio,                     // 0 cuando no aplique
+                    activo = true,                       // siempre true
+                    limiteTotal = limiteTotalInt,        // 0 = sin límite
+                    limitePorUsuario = limitePorUsuarioInt // 0 = sin límite
                 )
 
                 vm.createPromotion(payload)
@@ -226,16 +291,10 @@ fun CreatePromotionScreen(vm: CreatePromotionViewModel = viewModel()) {
         val successAny = ui.value.success
         if (successAny != null) {
             Text("✔ Enviado correctamente.", color = MaterialTheme.colorScheme.primary)
-            // Muestra lo que sea que tengas en success (String, objeto, etc.)
             Text("Respuesta del servidor: $successAny")
         }
-
         ui.value.error?.let { err ->
             Text("✖ Error: $err", color = MaterialTheme.colorScheme.error)
-        }
-
-        ui.value.error?.let {
-            Text("✖ Error: $it", color = MaterialTheme.colorScheme.error)
         }
 
         if (!esValido) {
@@ -244,9 +303,11 @@ fun CreatePromotionScreen(vm: CreatePromotionViewModel = viewModel()) {
                 idOk = idNegocioInt != null,
                 titleOk = titulo.isNotBlank(),
                 descOk = descripcion.isNotBlank(),
-                valueOk = discountValueInt != null && discountValueInt > 0,
+                tipoOk = porcentajeOk && precioOk,
                 startOk = startDate.matches(fechaRegex),
-                endOk = endDate.matches(fechaRegex)
+                endOk = endDate.matches(fechaRegex),
+                limTotalOk = limiteTotalOk,
+                limUserOk = limiteUsuarioOk
             )
         }
     }
@@ -257,17 +318,21 @@ private fun AssistiveValidationHint(
     idOk: Boolean,
     titleOk: Boolean,
     descOk: Boolean,
-    valueOk: Boolean,
+    tipoOk: Boolean,
     startOk: Boolean,
-    endOk: Boolean
+    endOk: Boolean,
+    limTotalOk: Boolean,
+    limUserOk: Boolean
 ) {
     val pendientes = buildList {
         if (!idOk) add("• ID del negocio (número)")
         if (!titleOk) add("• Título (nombre)")
-        if (!descOk) add("• Descripción")
-        if (!valueOk) add("• Valor del descuento (> 0)")
+        if (!descOk) add("• Descripción / Mecánica")
+        if (!tipoOk) add("• Completa el valor del tipo elegido (porcentaje 1..100 o precio > 0)")
         if (!startOk) add("• Fecha inicio con formato YYYY-MM-DD")
         if (!endOk) add("• Fecha fin con formato YYYY-MM-DD")
+        if (!limTotalOk) add("• Límite total debe ser ≥ 0")
+        if (!limUserOk) add("• Límite por usuario debe ser ≥ 0")
     }
     if (pendientes.isNotEmpty()) {
         Text(
