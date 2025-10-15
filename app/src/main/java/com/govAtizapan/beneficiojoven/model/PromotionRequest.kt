@@ -1,16 +1,15 @@
-package com.govAtizapan.beneficiojoven.model
+package com.govAtizapan.beneficiojoven.model.network
 
 import com.google.gson.annotations.SerializedName
 
+// Match EXACTO con tu JSON (snake_case)
 data class PromotionRequest(
     @SerializedName("id_negocio") val idNegocio: Int,
-    @SerializedName("titulo") val titulo: String,
+    @SerializedName("nombre") val nombre: String,
     @SerializedName("descripcion") val descripcion: String,
-    @SerializedName("discount_type") val discountType: String, // "PERCENT"
-    @SerializedName("discount_value") val discountValue: Int,  // 50
-    @SerializedName("start_date") val startDate: String,       // "yyyy-MM-dd"
-    @SerializedName("end_date") val endDate: String,           // "yyyy-MM-dd"
-    @SerializedName("online_only") val onlineOnly: Boolean,
-    @SerializedName("is_stackable") val isStackable: Boolean,
-    @SerializedName("terms") val terms: String
+    @SerializedName("fecha_inicio") val fechaInicio: String, // ISO 8601
+    @SerializedName("fecha_fin") val fechaFin: String,       // ISO 8601
+    @SerializedName("porcentaje") val porcentaje: Int,
+    @SerializedName("precio") val precio: Int,
+    @SerializedName("activo") val activo: Boolean
 )

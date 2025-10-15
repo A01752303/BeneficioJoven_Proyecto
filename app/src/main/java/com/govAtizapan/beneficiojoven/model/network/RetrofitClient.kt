@@ -4,26 +4,29 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    // Reemplaza por tu base URL (debe terminar con '/')
-    private const val BASE_URL = "http://107.22.168.136:8000/promociones/"
 
-    private val logging by lazy {
-        HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+    // ⛳️ TU URL BASE AQUÍ (con / al final)
+    private const val BASE_URL = "http://107.22.168.136:8000/"
+
+    private val logging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    private val httpClient by lazy {
-        OkHttpClient.Builder()
-            .addInterceptor(logging) // quítalo en release si no quieres logs
-            .build()
-    }
+    private val httpClient = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
-    private val retrofit by lazy {
+    private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(httpClient)
+            .baseUrl(BASE_URL)                // 👈 aquí se usa la URL
             .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
             .build()
     }
 

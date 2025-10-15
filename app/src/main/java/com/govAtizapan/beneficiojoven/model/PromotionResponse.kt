@@ -1,7 +1,7 @@
-package com.govAtizapan.beneficiojoven.model
+package com.govAtizapan.beneficiojoven.model.network
 
 data class PromotionResponse(
-    val id: Long? = null,
-    val status: String? = null,
-    val message: String? = null
+    val id: Int? = null,
+    val message: String? = null,
+    val status: String? = null
 )
