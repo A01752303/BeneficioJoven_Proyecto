@@ -95,5 +95,17 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.gson.core)
 
+    //Shaiel
+// Dependencias para Google Maps y Places
+    implementation(libs.google.maps.android.compose) // Para MarkerState y ComposeMap
+    implementation(libs.play.services.maps) // Para CameraPosition
+    implementation(libs.play.services.location) // Para LocationServices
+
+    // Accompanist Permissions para manejar permisos
+    implementation(libs.accompanist.permissions) // Reemplazado por este estilo
+    implementation(libs.google.maps.android.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
 }
 
