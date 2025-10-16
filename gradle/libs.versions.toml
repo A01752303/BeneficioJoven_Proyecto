@@ -36,10 +36,6 @@ retrofit = "2.11.0"
 okhttp = "4.12.0"
 gson = "2.11.0"
 foundationVersion = "1.9.3"
-maps-compose = "6.1.1"
-play-services-maps = "18.2.0"
-play-services-location = "21.3.0"
-accompanist-permissions = "0.34.0"
 
 
 [libraries]
@@ -86,10 +82,6 @@ converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ve
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 gson-core = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
-google-maps-android-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
-play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps" }
-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

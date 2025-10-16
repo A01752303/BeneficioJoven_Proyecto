@@ -1,4 +1,4 @@
-package com.govAtizapan.beneficiojoven.view
+package com.govAtizapan.beneficiojoven.view.bienvenidaView
 
 import androidx.annotation.DrawableRes
 

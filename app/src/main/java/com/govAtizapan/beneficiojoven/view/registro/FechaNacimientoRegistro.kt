@@ -24,18 +24,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.ui.theme.*
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
-import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
+import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FechaNacimientoRegistro(
     navController: NavController,
-    viewModel: EmailVerificationVM
+    viewModel2: RegisterUserVM
 ) {
 
     var showDatePicker by remember { mutableStateOf(false) }
@@ -95,12 +95,12 @@ fun FechaNacimientoRegistro(
             Button(
                 onClick = {
                     selectedDateText?.let {
-                        viewModel.updateFechaNacimiento(it)
-                        Log.d("RegistroDebug", "Datos actuales: ${viewModel.registrationData.value}")
+                        viewModel2.updateBirthdayUser(it)
+                        Log.d("RegistroDebug", "Datos actuales: ${viewModel2.registerUserData.value}")
                         navController.navigate(AppScreens.DireccionRegistro.route)
                     }
                 },
-                enabled = isDateValid, // El botón se activa solo si la fecha es válida
+                enabled = isDateValid,
                 modifier = Modifier
                     .height(46.dp)
                     .fillMaxSize(),
@@ -204,6 +204,6 @@ private fun validateAge(birthDateMillis: Long): String? {
  */
 private fun Long.toFormattedDateString(): String {
     val date = Date(this)
-    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return format.format(date)
 }

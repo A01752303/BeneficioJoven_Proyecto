@@ -14,12 +14,15 @@ sealed class AppScreens(val route: String) {
     object GeneroRegistro: AppScreens("genero_registro")
     object FechaNacimientoRegistro: AppScreens("fecha_nacimiento_registro")
     object DireccionRegistro: AppScreens("direccion_registro")
+    object FinalizarRegistro: AppScreens("finalizar_registro")
 
     // Páginas principales
     object HomeView: AppScreens("home_view")
 
     // Negocio
     object InicioSesionComercio: AppScreens("inicio_sesion_comercio")
+    object ComercioHome: AppScreens("comercio_home")
+
 
     // Vista Crear cupones
     object CreatePromotionScreen: AppScreens("create_promotion_screen")

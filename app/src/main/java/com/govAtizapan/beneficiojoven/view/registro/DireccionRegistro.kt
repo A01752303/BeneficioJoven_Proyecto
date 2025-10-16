@@ -1,5 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.registro
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,14 +32,16 @@ import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificat
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.RegistrationUiState
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.CustomTextField
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
+import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 
 @Composable
 fun DireccionRegistroView(
     navController: NavController,
-    viewModel: EmailVerificationVM
+    viewModel: EmailVerificationVM,
+    viewModel2: RegisterUserVM
 ) {
-    // Observa el estado de la UI para la navegación y el estado de carga
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val ui by viewModel2.ui.collectAsState()
 
     // Estado local para los campos de texto de la dirección
     var calle by remember { mutableStateOf("") }
@@ -108,10 +111,11 @@ fun DireccionRegistroView(
 
                 Button(
                     onClick = {
-                        // 1. Actualiza los datos finales de la dirección en el ViewModel
-                        viewModel.updateDireccion(calle.trim(), numero.trim(), colonia.trim(), codigoPostal.trim())
+                        viewModel2.updateAddressUser(calle, numero, colonia, codigoPostal)
+                        val body = viewModel2.registerUserData.value
+                        Log.d("RegistroDebug", "Datos actuales: ${viewModel2.registerUserData.value}")
                         // 2. Llama a la función final para "guardar en SQL"
-                        viewModel.completeRegistrationAndSaveToSql()
+                        viewModel2.createBusinessUser(body, navController)
                     },
                     // El botón se habilita solo si todos los campos están llenos y no está cargando
                     enabled = calle.isNotBlank() && numero.isNotBlank() && colonia.isNotBlank() && codigoPostal.length == 5 && uiState !is RegistrationUiState.Loading,
@@ -127,7 +131,7 @@ fun DireccionRegistroView(
             }
 
             // Muestra un indicador de carga mientras se guardan los datos finales
-            if (uiState is RegistrationUiState.Loading) {
+            if (ui.isLoading) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

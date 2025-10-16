@@ -1,5 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.registro
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -49,10 +50,11 @@ import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.RegistrationUi
 import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.CustomTextField
+import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 
 
 @Composable
-fun EmailRegistro(navController: NavController, viewModel: EmailVerificationVM) {
+fun EmailRegistro(navController: NavController, viewModel: EmailVerificationVM, viewModel2: RegisterUserVM) {
 
     val registrationData by viewModel.registrationData.collectAsStateWithLifecycle()
 
@@ -73,7 +75,8 @@ fun EmailRegistro(navController: NavController, viewModel: EmailVerificationVM) 
         backClick = {
             navController.popBackStack()
         },
-        viewModel = viewModel
+        viewModel = viewModel,
+        viewModel2 = viewModel2
     )
 }
 
@@ -86,7 +89,8 @@ fun EmailRegistroScreen(
     onPasswordChange: (String) -> Unit,
     onVerificationSent: () -> Unit,
     backClick: () -> Unit,
-    viewModel: EmailVerificationVM
+    viewModel: EmailVerificationVM,
+    viewModel2: RegisterUserVM
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -164,6 +168,8 @@ fun EmailRegistroScreen(
                 Button(
                     onClick = {
                         viewModel.registerUserAndSendVerification(email, password)
+                        viewModel2.updateUserEmailData(email, password)
+                        Log.d("RegistroDebug", "Datos actuales: ${viewModel2.registerUserData.value}")
                     },
                     enabled = email.isNotBlank() && password.isNotBlank() && uiState !is RegistrationUiState.Loading,
                     modifier = Modifier

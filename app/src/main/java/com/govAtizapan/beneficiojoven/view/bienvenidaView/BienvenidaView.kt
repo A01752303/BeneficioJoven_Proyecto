@@ -1,4 +1,4 @@
-package com.govAtizapan.beneficiojoven.view
+package com.govAtizapan.beneficiojoven.view.bienvenidaView
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

@@ -12,6 +12,5 @@ data class RegistrationData(
     val numero: String = "",
     val colonia: String = "",
     val codigoPostal: String = ""
-    // Aquí agregarás más campos como fecha de nacimiento, dirección, etc.
 )
 

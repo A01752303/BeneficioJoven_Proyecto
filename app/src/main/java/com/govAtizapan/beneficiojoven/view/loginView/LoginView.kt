@@ -1,4 +1,4 @@
-package com.govAtizapan.beneficiojoven.view
+package com.govAtizapan.beneficiojoven.view.loginView
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -78,11 +78,6 @@ import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.auth.AuthEvent
 import com.govAtizapan.beneficiojoven.viewmodel.auth.AuthVM
 import com.govAtizapan.beneficiojoven.viewmodel.auth.LoginNavigationState
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 import com.govAtizapan.beneficiojoven.view.navigation.REGISTRATION_GRAPH_ROUTE
 
 @Composable
@@ -117,23 +112,6 @@ fun LoginView(
         )
     }
 
-    // --- Facebook Login Launcher ---
-    val callbackManager = remember { CallbackManager.Factory.create() }
-    val facebookLauncher = rememberLauncherForActivityResult(
-        contract = LoginManager.getInstance().createLogInActivityResultContract(callbackManager),
-        onResult = { /* No es necesario hacer nada aquí, el callback se encarga */ }
-    )
-    LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-        override fun onSuccess(result: LoginResult) {
-            authViewModel.onEvent(AuthEvent.SignInWithFacebook(result.accessToken))
-        }
-        override fun onCancel() {
-            Toast.makeText(context, "Inicio con Facebook cancelado.", Toast.LENGTH_SHORT).show()
-        }
-        override fun onError(error: FacebookException) {
-            Toast.makeText(context, "Error de Facebook: ${error.message}", Toast.LENGTH_SHORT).show()
-        }
-    })
     // 5. `LaunchedEffect` reacciona a los cambios en el estado de navegación del ViewModel
     LaunchedEffect(key1 = navigationState) {
         when (navigationState) {
@@ -161,9 +139,6 @@ fun LoginView(
         onGoogleClick = {
             googleLauncher.launch(googleSignInClient.signInIntent)
         },
-        onFacebookClick = {
-            facebookLauncher.launch(listOf("email", "public_profile"))
-        },
         onRegisterClick = {
             navController.navigate(REGISTRATION_GRAPH_ROUTE)
         },
@@ -176,7 +151,6 @@ fun LoginView(
 @Composable
 fun Login(onLoginClicked: (String, String) -> Unit,
           onGoogleClick: () -> Unit,
-          onFacebookClick: () -> Unit,
           onRegisterClick: () -> Unit = {},
           onBusinessLoginClick: () -> Unit = {}) {
     val scrollState = rememberScrollState()
@@ -262,21 +236,8 @@ fun Login(onLoginClicked: (String, String) -> Unit,
                 fontFamily = PoppinsFamily,
                 fontWeight = FontWeight.SemiBold)
         }
-        OrSeparator()
-        Spacer(modifier = Modifier.height(4.dp))
-        CustomOutlinedButton(modifier = Modifier
-            .fillMaxWidth(),
-            text = "Continuar con Google",
-            onClick = onGoogleClick, icon = painterResource(id = R.drawable.google_icon))
-        Spacer(modifier = Modifier.height(16.dp))
-        CustomOutlinedButton(modifier = Modifier.fillMaxWidth(),
-            text = "Continuar con Facebook",
-            onClick = onFacebookClick,
-            icon = painterResource(id = R.drawable.facebook_icon))
 
-        // Un Spacer para dar algo de aire entre los botones y el nuevo texto
-        Spacer(modifier = Modifier.height(32.dp))
-
+        Spacer(modifier = Modifier.height(8.dp))
         // Texto para registrarse
         val registerAnnotatedString = buildAnnotatedString {
             append("¿No tienes una cuenta? ")
@@ -323,13 +284,17 @@ fun Login(onLoginClicked: (String, String) -> Unit,
                 }
             }
         }
-
-        // Usa un Text normal
         Text(text = businessAnnotatedString,
             fontSize = 12.sp,
             fontFamily = PoppinsFamily,
             fontWeight = FontWeight.Light)
-
+        OrSeparator()
+        Spacer(modifier = Modifier.height(4.dp))
+        CustomOutlinedButton(modifier = Modifier
+            .fillMaxWidth(),
+            text = "Continuar con Google",
+            onClick = onGoogleClick, icon = painterResource(id = R.drawable.google_icon))
+        Spacer(modifier = Modifier.height(16.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()

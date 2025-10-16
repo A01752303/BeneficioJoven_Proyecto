@@ -25,7 +25,7 @@ object RetrofitClient {
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)                // 👈 aquí se usa la URL
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
             .build()
@@ -33,5 +33,13 @@ object RetrofitClient {
 
     val promotionsApi: PromotionsApi by lazy {
         retrofit.create(PromotionsApi::class.java)
+    }
+
+    val userRegisterApi: UserRegisterApi by lazy {
+        retrofit.create(UserRegisterApi::class.java)
+    }
+
+    val userLoginApi: UserLoginApi by lazy {
+        retrofit.create(UserLoginApi::class.java)
     }
 }

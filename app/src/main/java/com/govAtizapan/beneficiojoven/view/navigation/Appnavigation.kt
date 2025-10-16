@@ -1,7 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -9,10 +8,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.govAtizapan.beneficiojoven.view.BienvenidaView
-import com.govAtizapan.beneficiojoven.view.LoginView
-import com.govAtizapan.beneficiojoven.view.SplashScreen
-import com.govAtizapan.beneficiojoven.view.LoadingScreen
+import com.govAtizapan.beneficiojoven.view.bienvenidaView.BienvenidaView
+import com.govAtizapan.beneficiojoven.view.comercioVistas.ComercioHome
+import com.govAtizapan.beneficiojoven.view.loginView.LoginView
+import com.govAtizapan.beneficiojoven.view.splashScreen.SplashScreen
+import com.govAtizapan.beneficiojoven.view.loadingScreen.LoadingScreen
 import com.govAtizapan.beneficiojoven.view.comercioVistas.CreatePromotionScreen
 import com.govAtizapan.beneficiojoven.view.home.HomeView
 import com.govAtizapan.beneficiojoven.view.registro.NuevaCuentaVista
@@ -23,22 +23,24 @@ import com.govAtizapan.beneficiojoven.view.registro.NombreRegistro
 import com.govAtizapan.beneficiojoven.view.registro.GeneroRegistro
 import com.govAtizapan.beneficiojoven.view.registro.FechaNacimientoRegistro
 import com.govAtizapan.beneficiojoven.view.registro.DireccionRegistroView
+import com.govAtizapan.beneficiojoven.view.registro.FinalizaRegistro
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
+import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 
 
 // Es una buena práctica definir las rutas como constantes
 const val REGISTRATION_GRAPH_ROUTE = "registration_graph"
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
+fun AppNavigation() {
     val navController = rememberNavController()
     val registrationViewModel: EmailVerificationVM = viewModel()
+    val registerUserVM: RegisterUserVM = viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.CreatePromotionScreen.route //modififcar para ver el inicoo de la screen
+        startDestination = AppScreens.SplashScreen.route
     ) {
-        // --- Pantallas que no son parte del flujo de registro ---
         composable(route = AppScreens.LoadingScreen.route) {
             LoadingScreen()
         }
@@ -63,25 +65,25 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(route = AppScreens.CreatePromotionScreen.route) {
             CreatePromotionScreen()
         }
+        composable(route = AppScreens.ComercioHome.route) {
+            ComercioHome()
+        }
 
-        // --- INICIA EL GRAFO DE NAVEGACIÓN PARA EL REGISTRO ---
         navigation(
             startDestination = AppScreens.EmailRegistro.route,
             route = REGISTRATION_GRAPH_ROUTE
         ) {
-            // Cada composable ahora recibe la misma instancia 'registrationViewModel'
             composable(route = AppScreens.EmailRegistro.route) {
                 EmailRegistro(
                     navController = navController,
-                    viewModel = registrationViewModel)
+                    viewModel = registrationViewModel,
+                    viewModel2 = registerUserVM)
             }
 
             composable(
-                // 1. La ruta ahora usa '?' para hacer el argumento opcional.
                 route = AppScreens.EmailVerificacion.route + "?email={email}",
                 arguments = listOf(navArgument("email") {
                     type = NavType.StringType
-                    // 2. Se marca explícitamente como que puede ser nulo.
                     nullable = true
                 })
             ) { navBackStackEntry ->
@@ -96,31 +98,35 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             composable(route = AppScreens.NombreRegistro.route) {
                 NombreRegistro(
                     navController = navController,
-                    viewModel = registrationViewModel
+                    viewModel = registrationViewModel,
+                    viewModel2 = registerUserVM
                 )
             }
 
             composable(route = AppScreens.GeneroRegistro.route) {
                 GeneroRegistro(
                     navController = navController,
-                    viewModel = registrationViewModel
+                    viewModel2 = registerUserVM
                 )
             }
 
             composable(route = AppScreens.FechaNacimientoRegistro.route) {
                 FechaNacimientoRegistro(
                     navController = navController,
-                    viewModel = registrationViewModel
+                    viewModel2 = registerUserVM
                 )
             }
 
             composable(route = AppScreens.DireccionRegistro.route) {
                 DireccionRegistroView(
                     navController = navController,
+                    viewModel2 = registerUserVM,
                     viewModel = registrationViewModel
                 )
             }
-
-        } // --- 👆 TERMINA EL GRAFO DE NAVEGACIÓN ---
+            composable(route = AppScreens.FinalizarRegistro.route) {
+                FinalizaRegistro(navController = navController)
+            }
+        }
     }
 }

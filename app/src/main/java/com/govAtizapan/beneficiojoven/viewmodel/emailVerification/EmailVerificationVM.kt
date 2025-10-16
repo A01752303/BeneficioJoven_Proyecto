@@ -93,39 +93,8 @@ class EmailVerificationVM : ViewModel() {
         }
     }
 
-    /**
-     * Detiene la verificación periódica.
-     */
     fun stopVerificationCheck() {
         verificationCheckJob?.cancel()
-    }
-
-    fun updateNombreCompleto(_nombre: String, _apellidoP: String, _apellidoM: String) {
-        // Asegúrate que tu data class RegistrationData tenga un campo 'name'
-        _registrationData.update { it.copy(nombre = _nombre) }
-        _registrationData.update { it.copy(apellidoP = _apellidoP) }
-        _registrationData.update { it.copy(apellidoM = _apellidoM) }
-    }
-
-    fun updateGenero(_genero: String) {
-        _registrationData.update { it.copy(genero = _genero) }
-    }
-
-    fun completeRegistrationAndSaveToSql() {
-        _uiState.value = RegistrationUiState.Loading
-        val finalData = _registrationData.value
-        Log.d("SQL", "Enviando a SQL los siguientes datos: $finalData")
-    }
-
-    fun updateFechaNacimiento(_fechaNacimiento: String) {
-        _registrationData.update { it.copy(fechaNacimiento = _fechaNacimiento) }
-    }
-
-    fun updateDireccion(_calle: String, _numero: String, _colonia: String, _codigoPostal: String) {
-        _registrationData.update { it.copy(calle = _calle) }
-        _registrationData.update { it.copy(numero = _numero) }
-        _registrationData.update { it.copy(colonia = _colonia) }
-        _registrationData.update { it.copy(codigoPostal = _codigoPostal) }
     }
 
     fun resetUiState() {

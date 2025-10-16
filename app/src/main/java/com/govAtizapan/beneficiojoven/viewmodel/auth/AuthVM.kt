@@ -2,11 +2,9 @@ package com.govAtizapan.beneficiojoven.viewmodel.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.facebook.AccessToken
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +26,6 @@ class AuthVM : ViewModel() {
         when (event) {
             is AuthEvent.SignInWithEmail -> signInWithEmail(event.email, event.pass)
             is AuthEvent.SignInWithGoogle -> signInWithCredential(event.credential)
-            is AuthEvent.SignInWithFacebook -> signInWithFacebook(event.accessToken)
             is AuthEvent.ClearError -> _authState.value = _authState.value.copy(error = null)
         }
     }
@@ -44,20 +41,6 @@ class AuthVM : ViewModel() {
             }
         }
     }
-
-    private fun signInWithFacebook(token: AccessToken) {
-        viewModelScope.launch {
-            _authState.value = AuthState(isLoading = true)
-            try {
-                val credential = FacebookAuthProvider.getCredential(token.token)
-                val result = auth.signInWithCredential(credential).await()
-                processAuthResult(result)
-            } catch (e: Exception) {
-                _authState.value = AuthState(error = "Error al iniciar con Facebook.")
-            }
-        }
-    }
-
     private fun signInWithCredential(credential: AuthCredential) {
         viewModelScope.launch {
             _authState.value = AuthState(isLoading = true)

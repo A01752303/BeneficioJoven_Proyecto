@@ -12,25 +12,20 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.govAtizapan.beneficiojoven.ui.theme.*
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
-import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.SimpleTopAppBar
+import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 
 @Composable
 fun GeneroRegistro(
     navController: NavController,
-    viewModel: EmailVerificationVM
+    viewModel2: RegisterUserVM
 ) {
-    // Opciones predefinidas para la selección
     val genderOptions = listOf("Masculino", "Femenino", "No binario", "Prefiero no decirlo")
-    // Estado para guardar la opción seleccionada por el usuario
     var selectedGender by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -99,9 +94,9 @@ fun GeneroRegistro(
                 onClick = {
                     selectedGender?.let {
                         // 1. Actualiza el dato en el ViewModel
-                        viewModel.updateGenero(it)
+                        viewModel2.updateGenderUser(it)
                         // 2. Imprime el estado actual para depurar
-                        Log.d("RegistroDebug", "Datos actuales: ${viewModel.registrationData.value}")
+                        Log.d("RegistroDebug", "Datos actuales: ${viewModel2.registerUserData.value}")
                         // 3. Navega al siguiente paso
                         navController.navigate(AppScreens.FechaNacimientoRegistro.route)
                     }
@@ -126,10 +121,4 @@ fun GeneroRegistro(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GeneroRegistroPreview() {
-    GeneroRegistro(navController = rememberNavController(), viewModel = viewModel())
 }

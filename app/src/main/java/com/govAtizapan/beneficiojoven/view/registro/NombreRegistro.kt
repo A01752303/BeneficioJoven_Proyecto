@@ -41,16 +41,18 @@ import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificationVM
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.CustomTextField
+import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 
 @Composable
-fun NombreRegistro(navController: NavController, viewModel: EmailVerificationVM) {
-    NombreRegistroView(navController = navController, viewModel = viewModel)
+fun NombreRegistro(navController: NavController, viewModel: EmailVerificationVM, viewModel2: RegisterUserVM) {
+    NombreRegistroView(navController = navController, viewModel = viewModel, viewModel2 = viewModel2)
 }
 
 @Composable
 fun NombreRegistroView(
     navController: NavController,
-    viewModel: EmailVerificationVM) {
+    viewModel: EmailVerificationVM,
+    viewModel2: RegisterUserVM) {
     Scaffold(
         // 1. Se asigna la barra superior personalizada al slot 'topBar'.
         topBar = {
@@ -131,14 +133,8 @@ fun NombreRegistroView(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    // --- 👇 CAMBIO IMPORTANTE AQUÍ 👇 ---
-                    // 1. Llama a la nueva función del ViewModel pasando los datos por separado.
-                    viewModel.updateNombreCompleto(
-                        _nombre = nombre.trim(),
-                        _apellidoP = apellidoP.trim(),
-                        _apellidoM = apellidoM.trim()
-                    )
-                    Log.d("RegistroDebug", "Datos actuales: ${viewModel.registrationData.value}")
+                    viewModel2.updateNameUser(nombre, apellidoP, apellidoM)
+                    Log.d("RegistroDebug", "Datos actuales: ${viewModel2.registerUserData.value}")
 
                     // 2. Navega a la siguiente pantalla del flujo.
                     navController.navigate(AppScreens.GeneroRegistro.route)                },

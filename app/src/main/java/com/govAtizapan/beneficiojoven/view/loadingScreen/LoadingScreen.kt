@@ -1,4 +1,4 @@
-package com.govAtizapan.beneficiojoven.view
+package com.govAtizapan.beneficiojoven.view.loadingScreen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
