@@ -121,8 +121,7 @@ fun DireccionRegistroView(
                     enabled = calle.isNotBlank() && numero.isNotBlank() && colonia.isNotBlank() && codigoPostal.length == 5 && uiState !is RegistrationUiState.Loading,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(46.dp)
-                        .padding(bottom = 24.dp),
+                        .height(46.dp) ,
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
                 ) {

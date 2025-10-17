@@ -95,6 +95,7 @@ fun AppNavigation() {
                 )
             }
 
+
             composable(route = AppScreens.NombreRegistro.route) {
                 NombreRegistro(
                     navController = navController,
