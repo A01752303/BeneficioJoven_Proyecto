@@ -37,6 +37,7 @@ fun AppNavigation() {
     val registrationViewModel: EmailVerificationVM = viewModel()
     val registerUserVM: RegisterUserVM = viewModel()
 
+
     NavHost(
         navController = navController,
         startDestination = AppScreens.SplashScreen.route
