@@ -1,92 +1,127 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-
 package com.govAtizapan.beneficiojoven.ui.theme.uiComponents
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePicker
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.DateRangePicker
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 /**
- * Selector de rango de fechas con calendario (Material3) que devuelve ISO "YYYY-MM-DD".
- * 100% Kotlin con kotlinx-datetime (no usa java.time ni desugaring).
+ * Selector de rango con Material3 que evita usar DateRangePickerDialog
+ * (algunas versiones no lo traen o cambia la firma).
  *
- * Uso:
- * AppDateRangeField(
- *   onChange = { startIso, endIso -> ... },
- *   label = "Rango de fechas (YYYY-MM-DD)"
- * )
+ * Muestra un botón con el label y, al abrir, un BasicAlertDialog con un DateRangePicker.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppDateRangeField(
-    onChange: (startIso: String, endIso: String) -> Unit,   // requerido primero
-    modifier: Modifier = Modifier,                          // primer opcional
-    label: String = "Rango de fechas (YYYY-MM-DD)"          // resto de opcionales
+    onChange: (startIso: String, endIso: String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier
 ) {
     var open by remember { mutableStateOf(false) }
-    val state = rememberDateRangePickerState() // Material3 1.2.x+
 
-    Column(modifier = modifier) {
+    // Puedes configurar valores iniciales si quieres:
+    val state = rememberDateRangePickerState(
+        // initialSelectedStartDateMillis = null,
+        // initialSelectedEndDateMillis = null
+    )
+
+    Column(modifier) {
+        // Botón que abre el selector
         OutlinedButton(
             onClick = { open = true },
             modifier = Modifier.fillMaxWidth()
         ) {
-            val startText = state.selectedStartDateMillis?.let { millisToIsoKtx(it) } ?: "—"
-            val endText = state.selectedEndDateMillis?.let { millisToIsoKtx(it) } ?: "—"
-            Text("$label:  $startText  →  $endText")
+            val s = state.selectedStartDateMillis?.let { millisToIso(it) } ?: "—"
+            val e = state.selectedEndDateMillis?.let { millisToIso(it) } ?: "—"
+            Text("$label:  $s  –  $e")
         }
 
         if (open) {
-            // ✅ En Material3 el diálogo es DatePickerDialog (sirve para single o range)
-            DatePickerDialog(
-                onDismissRequest = { open = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            val s = state.selectedStartDateMillis
-                            val e = state.selectedEndDateMillis
-                            if (s != null && e != null) {
-                                onChange(millisToIsoKtx(s), millisToIsoKtx(e))
-                            }
-                            open = false
-                        }
-                    ) { Text("Confirmar") }
-                },
-                dismissButton = {
-                    TextButton(onClick = { open = false }) { Text("Cancelar") }
-                }
+            BasicAlertDialog(
+                onDismissRequest = { open = false }
             ) {
-                DateRangePicker(
-                    state = state,
-                    title = { Text("Selecciona el rango") },
-                    headline = {
-                        val s = state.selectedStartDateMillis?.let { millisToIsoKtx(it) } ?: "—"
-                        val e = state.selectedEndDateMillis?.let { millisToIsoKtx(it) } ?: "—"
-                        Text("$s  →  $e")
+                // Contenido del diálogo (tarjeta)
+                androidx.compose.material3.Surface(
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 6.dp
+                ) {
+                    Column(
+                        Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Selecciona el rango de fechas",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(8.dp))
+
+                        DateRangePicker(
+                            state = state,
+                            title = null,         // ya ponemos nuestro título arriba
+                            headline = {
+                                val s = state.selectedStartDateMillis?.let { millisToIso(it) } ?: "—"
+                                val e = state.selectedEndDateMillis?.let { millisToIso(it) } ?: "—"
+                                Text("$s  –  $e", style = MaterialTheme.typography.bodyMedium)
+                            },
+                            showModeToggle = false
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Row(Modifier.fillMaxWidth()) {
+                            TextButton(
+                                onClick = { open = false }
+                            ) { Text("Cancelar") }
+
+                            Spacer(Modifier.weight(1f))
+
+                            val enabled = state.selectedStartDateMillis != null &&
+                                    state.selectedEndDateMillis != null
+
+                            ElevatedButton(
+                                onClick = {
+                                    val start = state.selectedStartDateMillis
+                                    val end = state.selectedEndDateMillis
+                                    if (start != null && end != null) {
+                                        onChange(millisToIso(start), millisToIso(end))
+                                    }
+                                    open = false
+                                },
+                                enabled = enabled,
+                                colors = ButtonDefaults.elevatedButtonColors()
+                            ) { Text("Confirmar") }
+                        }
                     }
-                )
+                }
             }
         }
     }
 }
 
-/** 100% Kotlin: convierte millis a "YYYY-MM-DD" */
-private fun millisToIsoKtx(millis: Long): String {
+/** Convierte millis a "YYYY-MM-DD" con kotlinx-datetime (sin java.time). */
+private fun millisToIso(millis: Long): String {
     val date = Instant.fromEpochMilliseconds(millis)
         .toLocalDateTime(TimeZone.currentSystemDefault())
         .date
-    return date.toString() // ISO "yyyy-MM-dd"
+    return date.toString() // ISO yyyy-MM-dd
 }
