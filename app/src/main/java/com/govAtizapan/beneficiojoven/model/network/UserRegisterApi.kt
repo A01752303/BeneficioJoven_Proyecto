@@ -9,7 +9,7 @@ import retrofit2.http.POST
 interface UserRegisterApi{
 
     // 👇 Endpoint relativo. Retrofit completa con BASE_URL
-    @POST("/login/register/")
+    @POST("login/register/")
     suspend fun createUser(
         @Body body: RegisterUserRequest
     ): Response<RegisterUserResponse>
