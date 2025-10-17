@@ -21,14 +21,13 @@ class CreatePromotionViewModel : ViewModel() {
                 update { copy(titulo = ev.value) }
             is CreatePromotionEvent.DescripcionChanged ->
                 update { copy(descripcion = ev.value) }
-            is CreatePromotionEvent.TipoChanged ->
-                update {
-                    when (ev.value) {
-                        PromotionType.DESCUENTO   -> copy(tipo = ev.value, precioTxt = "")
-                        PromotionType.PRECIO_FIJO -> copy(tipo = ev.value, porcentajeTxt = "")
-                        else -> copy(tipo = ev.value, porcentajeTxt = "", precioTxt = "")
-                    }
+            is CreatePromotionEvent.TipoChanged -> update {
+                when (ev.value) {
+                    PromotionType.DESCUENTO   -> copy(tipo = ev.value, precioTxt = "")
+                    PromotionType.PRECIO_FIJO -> copy(tipo = ev.value, porcentajeTxt = "")
+                    else -> copy(tipo = ev.value, porcentajeTxt = "", precioTxt = "")
                 }
+            }
             is CreatePromotionEvent.PorcentajeChanged ->
                 update { copy(porcentajeTxt = ev.value.filter(Char::isDigit)) }
             is CreatePromotionEvent.PrecioChanged ->
@@ -128,7 +127,6 @@ class CreatePromotionViewModel : ViewModel() {
         viewModelScope.launch {
             update { copy(isLoading = true, errorMessage = null, successMessage = null) }
             try {
-                // Ajusta el método según tu API real:
                 val resp = RetrofitClient.promotionsApi.crearPromocion(body)
                 if (resp.isSuccessful) {
                     update { copy(isLoading = false, successMessage = "Promoción creada.") }
