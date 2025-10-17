@@ -19,6 +19,9 @@ sealed class AppScreens(val route: String) {
     // Páginas principales
     object HomeView: AppScreens("home_view")
 
+    object CuponDetalle : AppScreens("detalleCupon/{id}")
+    object GenerarQR : AppScreens("generarQR/{id}")
+
     // Negocio
     object InicioSesionComercio: AppScreens("inicio_sesion_comercio")
     object ComercioHome: AppScreens("comercio_home")
