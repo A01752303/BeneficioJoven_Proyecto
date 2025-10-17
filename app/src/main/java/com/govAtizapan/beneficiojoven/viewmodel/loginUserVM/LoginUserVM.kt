@@ -46,7 +46,7 @@ class LoginUserVM : ViewModel() {
                             Log.d("Imprimir Response", "El response es: $resp")
 
                             when (expectedRole) {
-                                UserRole.Usuario -> navController.navigate(AppScreens.LoadingScreen.route)
+                                UserRole.Usuario -> navController.navigate(AppScreens.HomeView.route)
                                 UserRole.Colaborador -> navController.navigate(AppScreens.ComercioHome.route)
                             }
 
