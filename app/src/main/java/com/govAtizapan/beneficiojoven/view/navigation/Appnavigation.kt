@@ -110,7 +110,6 @@ fun AppNavigation() {
                     viewModel2 = registerUserVM
                 )
             }
-
             composable(route = AppScreens.FechaNacimientoRegistro.route) {
                 FechaNacimientoRegistro(
                     navController = navController,
