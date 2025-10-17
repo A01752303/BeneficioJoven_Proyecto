@@ -16,7 +16,6 @@ import com.govAtizapan.beneficiojoven.view.bienvenidaView.BienvenidaView
 import com.govAtizapan.beneficiojoven.view.loginView.LoginView
 import com.govAtizapan.beneficiojoven.view.splashScreen.SplashScreen
 import com.govAtizapan.beneficiojoven.view.loadingScreen.LoadingScreen
-import com.govAtizapan.beneficiojoven.view.comercioVistas.CreatePromotionScreen
 import com.govAtizapan.beneficiojoven.view.home.HomeView
 import com.govAtizapan.beneficiojoven.view.registro.NuevaCuentaVista
 import com.govAtizapan.beneficiojoven.view.comercioVistas.InicioSesionComercio
@@ -30,6 +29,8 @@ import com.govAtizapan.beneficiojoven.viewmodel.emailVerification.EmailVerificat
 import com.govAtizapan.beneficiojoven.viewmodel.registerUserVM.RegisterUserVM
 import androidx.compose.runtime.collectAsState
 import com.govAtizapan.beneficiojoven.view.comercioVistas.ComercioHome
+import com.govAtizapan.beneficiojoven.view.comercioVistas.PROMO_GRAPH_ROUTE
+import com.govAtizapan.beneficiojoven.view.comercioVistas.addPromoGraph
 import com.govAtizapan.beneficiojoven.view.registro.FinalizaRegistro
 
 
@@ -45,7 +46,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.HomeView.route
+        startDestination = AppScreens.SplashScreen.route
     ) {
         composable(route = AppScreens.LoadingScreen.route) {
             LoadingScreen()
@@ -68,11 +69,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(route = AppScreens.InicioSesionComercio.route) {
             InicioSesionComercio()
         }
-        composable(route = AppScreens.CreatePromotionScreen.route) {
-            CreatePromotionScreen()
-        }
+        //Promociones
+        addPromoGraph(navController)
         composable(route = AppScreens.ComercioHome.route) {
-            ComercioHome()
+            ComercioHome(
+                onCrearPromo = { navController.navigate(PROMO_GRAPH_ROUTE) }
+            )
         }
         composable(
             route = AppScreens.CuponDetalle.route,
