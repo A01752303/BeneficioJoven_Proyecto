@@ -32,6 +32,7 @@ import com.govAtizapan.beneficiojoven.view.comercioVistas.ComercioHome
 import com.govAtizapan.beneficiojoven.view.comercioVistas.PROMO_GRAPH_ROUTE
 import com.govAtizapan.beneficiojoven.view.comercioVistas.addPromoGraph
 import com.govAtizapan.beneficiojoven.view.registro.FinalizaRegistro
+import com.govAtizapan.beneficiojoven.viewmodel.loginUserVM.LoginUserVM
 
 
 // Es una buena práctica definir las rutas como constantes
@@ -42,6 +43,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val registrationViewModel: EmailVerificationVM = viewModel()
     val registerUserVM: RegisterUserVM = viewModel()
+    val loginUserVM: LoginUserVM = viewModel()
     val homeViewModel: HomeVM = viewModel()
 
 
@@ -59,7 +61,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             BienvenidaView(navController = navController)
         }
         composable(route = AppScreens.LoginView.route) {
-            LoginView(navController = navController)
+            LoginView(navController = navController, loginViewModel = loginUserVM)
         }
         composable(AppScreens.HomeView.route) {
             HomeView(navController = navController, viewModel = homeViewModel)
@@ -68,7 +70,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             NuevaCuentaVista()
         }
         composable(route = AppScreens.InicioSesionComercio.route) {
-            InicioSesionComercio()
+            InicioSesionComercio(navController = navController, loginViewModel = loginUserVM)
         }
         //Promociones
         addPromoGraph(navController)

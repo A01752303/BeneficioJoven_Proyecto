@@ -73,10 +73,10 @@ fun CustomTextField(
             keyboardOptions = if (isPasswordField) {
                 KeyboardOptions(keyboardType = KeyboardType.Password) // Teclado de contraseña
             } else {
-                KeyboardOptions.Default // Teclado normal
+                KeyboardOptions.Default
             },
             trailingIcon = {
-                if (isPasswordField) { // Muestra el ícono solo si es un campo de contraseña
+                if (isPasswordField) {
                     val image = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
                     IconButton(onClick = onVisibilityChange) {
                         Icon(imageVector = image,

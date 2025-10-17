@@ -74,16 +74,20 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.govAtizapan.beneficiojoven.model.userLogin.LoginUserRequest
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.auth.AuthEvent
 import com.govAtizapan.beneficiojoven.viewmodel.auth.AuthVM
 import com.govAtizapan.beneficiojoven.viewmodel.auth.LoginNavigationState
 import com.govAtizapan.beneficiojoven.view.navigation.REGISTRATION_GRAPH_ROUTE
+import com.govAtizapan.beneficiojoven.viewmodel.loginUserVM.LoginUserVM
+import com.govAtizapan.beneficiojoven.viewmodel.loginUserVM.UserRole
 
 @Composable
 fun LoginView(
     navController: NavController,
-    authViewModel: AuthVM = viewModel()
+    authViewModel: AuthVM = viewModel(),
+    loginViewModel: LoginUserVM
 ) {
     val navigationState by authViewModel.navigationState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -134,7 +138,13 @@ fun LoginView(
     // 6. Llama a tu Composable de UI, pasándole la función que debe ejecutar al hacer clic
     Login(
         onLoginClicked = { email, pass ->
-            authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
+            val requestBody = LoginUserRequest(email = email, contrasena = pass)
+            // Llamamos a la función del ViewModel que se encarga del login en tu backend.
+            loginViewModel.attemptLogin(
+                body = requestBody,
+                expectedRole = UserRole.Usuario, // Asumimos que esta vista es para el rol "Usuario".
+                navController = navController)
+            // authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
         },
         onGoogleClick = {
             googleLauncher.launch(googleSignInClient.signInIntent)

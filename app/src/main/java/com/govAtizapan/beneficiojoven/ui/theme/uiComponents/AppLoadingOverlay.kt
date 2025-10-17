@@ -3,9 +3,9 @@ package com.govAtizapan.beneficiojoven.ui.theme.uiComponents
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.dp
 import com.govAtizapan.beneficiojoven.view.loadingScreen.LoadingScreen // <-- importa tu pantalla
@@ -23,7 +23,7 @@ fun AppLoadingOverlay(
         modifier = Modifier
             .fillMaxSize()
             .zIndex(10f) // por encima de la UI
-            .background(Color.Black.copy(alpha = 0.25f)), // velo
+            .background(White.copy(alpha = 0.5f)),
         contentAlignment = Alignment.Center
     ) {
         // Si tu LoadingScreen ya dibuja fondo, puedes quitar el .background de arriba

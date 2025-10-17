@@ -18,11 +18,10 @@ import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleTopAppBar(
-    // Pasamos una función lambda para manejar el evento de clic en la flecha
     onBackClick: () -> Unit
 ) {
     TopAppBar(
-        title = { /* El título está vacío, como en tu diseño */ },
+        title = {},
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(
@@ -32,10 +31,9 @@ fun SimpleTopAppBar(
                 )
             }
         },
-        // Configuramos los colores para que coincidan con tu diseño
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = White, // Fondo de la barra
-            navigationIconContentColor = TealPrimary// Color de la flecha
+            containerColor = White,
+            navigationIconContentColor = TealPrimary
         ),
         modifier = Modifier.statusBarsPadding()
     )
