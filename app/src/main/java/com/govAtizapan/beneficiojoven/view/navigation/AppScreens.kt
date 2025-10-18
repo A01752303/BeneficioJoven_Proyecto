@@ -30,4 +30,8 @@ sealed class AppScreens(val route: String) {
     // Vista Crear cupones
     object CreatePromotionScreen: AppScreens("create_promotion_screen")
 
+    //Vista Locales Cercanos
+
+    object ComerciosCercanosScreen: AppScreens("comercios_cercanos")
+
 }

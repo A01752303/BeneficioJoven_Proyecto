@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import com.govAtizapan.beneficiojoven.view.comercioVistas.ComercioHome
 import com.govAtizapan.beneficiojoven.view.comercioVistas.PROMO_GRAPH_ROUTE
 import com.govAtizapan.beneficiojoven.view.comercioVistas.addPromoGraph
+import com.govAtizapan.beneficiojoven.view.mapa.ComerciosCercanosScreen
 import com.govAtizapan.beneficiojoven.view.registro.FinalizaRegistro
 import com.govAtizapan.beneficiojoven.viewmodel.loginUserVM.LoginUserVM
 
@@ -97,6 +98,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         ) { backStackEntry ->
             val idCanje = backStackEntry.arguments?.getInt("idCanje")
             GenerarQRView(navController = navController, idCanje = idCanje)
+        }
+
+        // Ruta para Pantalla Google Maps - Comercios Cercanos
+        composable(route = AppScreens.ComerciosCercanosScreen.route) {
+            ComerciosCercanosScreen(navController = navController)
         }
 
 
