@@ -1,17 +1,15 @@
 package com.govAtizapan.beneficiojoven.view.home
 
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Store
-import androidx.compose.material.icons.filled.QrCode2
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,16 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.model.promotionget.PromotionResponseGET
-
 import com.govAtizapan.beneficiojoven.model.qrpost.QrRequest
 import com.govAtizapan.beneficiojoven.model.network.RetrofitClient
-
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 import android.util.Log
 
+// 🎨 Colores principales
 val PrimaryColor = Color(0xFF0096A6)
 val LightColor = Color(0xFF4DB8C4)
 val DarkColor = Color(0xFF007A87)
@@ -45,7 +39,11 @@ fun CuponDetalleView(
     navController: NavController,
     promo: PromotionResponseGET
 ) {
-    val idUsuario = 9
+    val idUsuario = 1
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    var isLoading by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -71,6 +69,7 @@ fun CuponDetalleView(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = BackgroundLight
     ) { innerPadding ->
         Column(
@@ -94,7 +93,6 @@ fun CuponDetalleView(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // Badge circular con el descuento
                     if (promo.porcentaje.isNotEmpty()) {
                         Box(
                             modifier = Modifier
@@ -103,9 +101,7 @@ fun CuponDetalleView(
                                 .background(Color.White),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = promo.porcentaje,
                                     fontSize = 56.sp,
@@ -121,11 +117,9 @@ fun CuponDetalleView(
                                 )
                             }
                         }
-
                         Spacer(modifier = Modifier.height(24.dp))
                     }
 
-                    // Descripción grande y atractiva
                     Text(
                         text = promo.descripcion,
                         fontSize = 28.sp,
@@ -148,7 +142,7 @@ fun CuponDetalleView(
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = "$${ promo.precio}",
+                                text = "$${promo.precio}",
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Black,
                                 color = Color.White
@@ -164,19 +158,13 @@ fun CuponDetalleView(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                // Card con información del negocio
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    ),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-                        // Nombre del negocio
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
@@ -205,15 +193,10 @@ fun CuponDetalleView(
                         }
 
                         Spacer(modifier = Modifier.height(20.dp))
-
                         Divider(color = Color(0xFFE0E0E0))
-
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Vigencia
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.CalendarToday,
                                 contentDescription = null,
@@ -245,27 +228,46 @@ fun CuponDetalleView(
                 // 🎟️ BOTÓN DE GENERAR QR
                 Button(
                     onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            try {
-                                val response = RetrofitClient.qrApi.generarQr(
-                                    QrRequest(
-                                        idUsuario = idUsuario,
-                                        idPromocion = promo.id
+                        if (!isLoading) {
+                            isLoading = true
+                            scope.launch {
+                                try {
+                                    val response = RetrofitClient.qrApi.generarQr(
+                                        QrRequest(
+                                            idUsuario = idUsuario,
+                                            idPromocion = promo.id
+                                        )
                                     )
-                                )
 
-                                if (response.isSuccessful) {
-                                    val idCanje = response.body()?.idCanje
-                                    if (idCanje != null) {
-                                        navController.navigate("generarQR/$idCanje")
+                                    if (response.isSuccessful) {
+                                        val idCanje = response.body()?.idCanje
+                                        if (idCanje != null) {
+                                            snackbarHostState.showSnackbar(
+                                                message = "✅ Cupón generado con éxito.",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            navController.navigate("generarQR/$idCanje")
+                                        } else {
+                                            snackbarHostState.showSnackbar(
+                                                message = "No se recibió idCanje del servidor.",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                        }
                                     } else {
-                                        Log.e("CuponDetalle", "No se recibió idCanje en la respuesta")
+                                        snackbarHostState.showSnackbar(
+                                            message = "Error del servidor al generar QR.",
+                                            duration = SnackbarDuration.Short
+                                        )
                                     }
-                                } else {
-                                    Log.e("CuponDetalle", "Error en la respuesta del servidor: ${response.errorBody()?.string()}")
+                                } catch (e: Exception) {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Error al generar QR: ${e.message}",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                    Log.e("CuponDetalle", "Error al generar QR: ${e.message}")
+                                } finally {
+                                    isLoading = false
                                 }
-                            } catch (e: Exception) {
-                                Log.e("CuponDetalle", "Error al generar QR: ${e.message}")
                             }
                         }
                     },
@@ -273,25 +275,32 @@ fun CuponDetalleView(
                         .fillMaxWidth()
                         .height(60.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryColor
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
                     elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 4.dp,
                         pressedElevation = 8.dp
                     )
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.QrCode2,
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        "Generar código QR",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("Generando QR...")
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.QrCode2,
+                            contentDescription = null,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            "Generar código QR",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

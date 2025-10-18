@@ -49,7 +49,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.HomeView.route
+        startDestination = AppScreens.SplashScreen.route
     ) {
         composable(route = AppScreens.LoadingScreen.route) {
             LoadingScreen()
