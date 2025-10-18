@@ -1,94 +1,202 @@
 package com.govAtizapan.beneficiojoven.view.home
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Percent
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 import com.govAtizapan.beneficiojoven.viewmodel.home.HomeVM
 
+val TealPrimary = Color(0xFF0096A6)
+val TealLight = Color(0xFF4DB8C4)
+val BackgroundGray = Color(0xFFF5F5F5)
+val CardBackground = Color(0xFFFFFFFF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(
-    navController: NavController,   // 👈 necesario para navegar al detalle
+    navController: NavController,
     viewModel: HomeVM = viewModel()
 ) {
     val promociones by viewModel.promociones.collectAsState()
 
-    // Cargar promociones una sola vez
     LaunchedEffect(Unit) {
         viewModel.cargarPromociones()
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Promociones disponibles") }) }
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Cupones disponibles",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = TealPrimary
+                )
+            )
+        },
+        containerColor = BackgroundGray
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             if (promociones.isEmpty()) {
-                // Mostrar loader mientras carga o si no hay datos
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = TealPrimary)
                 }
             } else {
-                // Lista de promociones
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(promociones) { promo ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp)
                                 .clickable {
                                     navController.navigate("detalleCupon/${promo.id}")
                                 },
-                            elevation = CardDefaults.cardElevation(4.dp)
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(3.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = CardBackground
+                            )
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-
-                                // 🟢 Nombre
-                                Text(
-                                    text = promo.nombre,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                // 🟢 Descripción
-                                Text(text = promo.descripcion)
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                // 🟢 Porcentaje (manejado como String)
-                                if (promo.porcentaje.isNotEmpty()) {
-                                    Text(text = "Descuento: ${promo.porcentaje}%")
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                // Sección izquierda: Descuento/Badge
+                                Box(
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            Brush.verticalGradient(
+                                                colors = listOf(TealPrimary, TealLight)
+                                            )
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (promo.porcentaje.isNotEmpty()) {
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = promo.porcentaje,
+                                                fontSize = 28.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = Color.White
+                                            )
+                                            Text(
+                                                text = "%",
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White.copy(alpha = 0.9f)
+                                            )
+                                        }
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Store,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                    }
                                 }
 
-                                // 🟢 Precio (manejado como String)
-                                if (promo.precio.isNotEmpty()) {
-                                    Text(text = "Precio: $${promo.precio}")
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                // Sección derecha: Información
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .align(Alignment.CenterVertically)
+                                ) {
+                                    // Nombre del negocio
+                                    Text(
+                                        text = promo.nombre,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF212121),
+                                        lineHeight = 22.sp
+                                    )
+
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    // Descripción
+                                    Text(
+                                        text = promo.descripcion,
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF666666),
+                                        lineHeight = 18.sp
+                                    )
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    // Precio (si existe)
+                                    if (promo.precio.isNotEmpty()) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = "$",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = TealPrimary
+                                            )
+                                            Text(
+                                                text = promo.precio,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = TealPrimary
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+
+                                    // Fechas
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Default.CalendarToday,
+                                            contentDescription = null,
+                                            tint = Color(0xFF999999),
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "Hasta ${promo.fecha_fin.take(10)}",
+                                            fontSize = 12.sp,
+                                            color = Color(0xFF999999)
+                                        )
+                                    }
                                 }
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                // 🟢 Fechas formateadas (solo yyyy-MM-dd)
-                                Text(
-                                    text = "Válido del ${promo.fecha_inicio.take(10)} al ${promo.fecha_fin.take(10)}"
-                                )
                             }
                         }
                     }

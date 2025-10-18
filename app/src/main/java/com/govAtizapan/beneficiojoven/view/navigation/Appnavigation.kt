@@ -49,7 +49,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.SplashScreen.route
+        startDestination = AppScreens.HomeView.route
     ) {
         composable(route = AppScreens.LoadingScreen.route) {
             LoadingScreen()
@@ -93,10 +93,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         // 🟩 NUEVO → pantalla para generar QR
         composable(
             route = AppScreens.GenerarQR.route,
-            arguments = listOf(navArgument("id") { type = NavType.IntType })
+            arguments = listOf(navArgument("idCanje") { type = NavType.IntType })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("id")
-            GenerarQRView(navController = navController, promoId = id)
+            val idCanje = backStackEntry.arguments?.getInt("idCanje")
+            GenerarQRView(navController = navController, idCanje = idCanje)
         }
 
 

@@ -15,6 +15,6 @@ interface PromotionsApi {
     suspend fun crearPromocion(
         @Body body: PromotionRequest
     ): Response<PromotionResponse>
-    @GET("/functionality/list/promociones")
+    @GET("/functionality/usuario/list/promociones/")
     suspend fun obtenerPromociones(): Response<List<PromotionResponseGET>>
 }
