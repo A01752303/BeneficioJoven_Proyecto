@@ -9,11 +9,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.govAtizapan.beneficiojoven.model.sessionManager.SessionManager
 
 object RetrofitClient {
 
     private const val BASE_URL = "http://54.227.48.118:8000/"
-    private const val AUTH_TOKEN = "RB36chhL0J2astNCWSfNqSyIlV5tSX"
+
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.HEADERS // Cambiado para ver headers
@@ -22,11 +23,21 @@ object RetrofitClient {
     // 🟢 Interceptor SIN "Connection: close"
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
+
+        // 🔄 Toma el token actual del SessionManager
+        val AUTH_TOKEN = SessionManager.accessToken
+
         val request = original.newBuilder()
-            .header("Authorization", "Bearer $AUTH_TOKEN")
+            // Solo agrega el header si hay token guardado
+            .apply {
+                if (AUTH_TOKEN != null) {
+                    header("Authorization", "Bearer $AUTH_TOKEN")
+                }
+            }
             .header("Accept", "application/json") // 🔑 Especifica que esperas JSON
             .method(original.method, original.body)
             .build()
+
         chain.proceed(request)
     }
     private val httpClient = OkHttpClient.Builder()
