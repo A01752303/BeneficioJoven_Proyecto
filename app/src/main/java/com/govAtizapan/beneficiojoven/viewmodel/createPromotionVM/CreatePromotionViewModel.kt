@@ -1,7 +1,6 @@
 package com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM
 
 import android.content.ContentResolver
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.govAtizapan.beneficiojoven.model.network.RetrofitClient

@@ -38,7 +38,7 @@ fun PromoFechasView(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {},
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White
                 )
             )
