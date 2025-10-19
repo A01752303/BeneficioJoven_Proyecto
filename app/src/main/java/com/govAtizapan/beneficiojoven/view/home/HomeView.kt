@@ -1,6 +1,5 @@
 package com.govAtizapan.beneficiojoven.view.home
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,8 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material.icons.outlined.Store
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-
+import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.home.HomeVM
 
 val TealPrimary = Color(0xFF0096A6)
@@ -58,6 +60,27 @@ fun HomeView(
                     containerColor = TealPrimary
                 )
             )
+        },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color.White,
+                tonalElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    IconButton(onClick = { /* Ya en home */ }) {
+                        Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
+                    }
+                    IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
+                        Icon(Icons.Default.LocationOn, contentDescription = "Mapa")
+                    }
+                    IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
+                    }
+                }
+            }
         },
         containerColor = BackgroundGray
     ) { innerPadding ->
