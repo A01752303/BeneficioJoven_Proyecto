@@ -69,14 +69,14 @@ fun PromoNombreView(
             Spacer(Modifier.height(20.dp))
 
             // ID del negocio (opcional mostrar en este primer paso, si lo prefieres muévelo a Resumen)
-            AppStandardTextField(
-                value = ui.idNegocio,
-                onValueChange = { vm.onEvent(CreatePromotionEvent.IdNegocioChanged(it)) },
-                label = "ID del negocio",
-                keyboardOptions = KeyboardOptions.Default,
-                isError = ui.idNegocio.isNotBlank() && ui.idNegocio.toIntOrNull() == null
-            )
-            Spacer(Modifier.height(16.dp))
+//            AppStandardTextField(
+//                value = ui.idNegocio,
+//                onValueChange = { vm.onEvent(CreatePromotionEvent.IdNegocioChanged(it)) },
+//                label = "ID del negocio",
+//                keyboardOptions = KeyboardOptions.Default,
+//                isError = ui.idNegocio.isNotBlank() && ui.idNegocio.toIntOrNull() == null
+//            )
+//            Spacer(Modifier.height(16.dp))
 
             // Título
             AppStandardTextField(
@@ -97,7 +97,7 @@ fun PromoNombreView(
 
             Button(
                 onClick = onNext,
-                enabled = ui.titulo.isNotBlank() && ui.idNegocio.toIntOrNull() != null,
+                enabled = ui.titulo.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(46.dp),

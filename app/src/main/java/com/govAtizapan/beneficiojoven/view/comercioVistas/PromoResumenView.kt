@@ -120,7 +120,6 @@ fun PromoResumenView(
 
             Spacer(Modifier.height(20.dp))
 
-            InfoRow("ID negocio", ui.idNegocio.ifBlank { "—" })
             InfoRow("Título", ui.titulo.ifBlank { "—" })
             InfoRow("Tipo", tipoLabel)
 

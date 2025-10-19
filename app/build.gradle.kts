@@ -90,6 +90,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.1") // o 1.3.x estable
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
+
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp.logging)
