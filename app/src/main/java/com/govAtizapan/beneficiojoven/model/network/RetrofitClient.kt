@@ -77,4 +77,7 @@ object RetrofitClient {
     val qrApi: QrApi by lazy {
         retrofit.create(QrApi::class.java)
     }
+    val ValidarQrApi: ValidarQrApi by lazy {
+        retrofit.create(ValidarQrApi::class.java)
+    }
 }
