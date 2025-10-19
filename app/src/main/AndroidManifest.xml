@@ -17,6 +17,10 @@
         android:theme="@style/Theme.BeneficioJoven"
         android:usesCleartextTraffic="true">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBip5hzRg22vBXTV78rJ2u9oVi_cD_I4B8" />
+
         <activity
             android:name=".view.MainActivity"
             android:exported="true"

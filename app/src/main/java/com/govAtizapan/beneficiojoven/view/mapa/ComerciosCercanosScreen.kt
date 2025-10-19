@@ -17,13 +17,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.*
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ComerciosCercanosScreen(navController: NavController) {
+    // Propiedades del mapa
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(19.4326, -99.1332), 10f) // Por defecto: Ciudad de México
+    }
+
     Scaffold(
         bottomBar = {
             BottomAppBar(
@@ -35,7 +41,7 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     IconButton(onClick = { navController.navigate(AppScreens.HomeView.route) }) {
-                        Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
+                        Icon(Icons.Default.Home, contentDescription = "Inicio", tint = TealPrimary)
                     }
                     IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
                         Icon(Icons.Default.LocationOn, contentDescription = "Mapa", tint = TealPrimary)
@@ -47,7 +53,11 @@ fun ComerciosCercanosScreen(navController: NavController) {
             }
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             Text(
                 text = "Mapa de Ubicación",
                 modifier = Modifier.padding(16.dp),
@@ -57,19 +67,10 @@ fun ComerciosCercanosScreen(navController: NavController) {
             )
 
             Box(modifier = Modifier.weight(1f)) {
-                // Placeholder instead of GoogleMap to avoid map-related crashes
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Mapa Placeholder",
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                }
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState
+                )
             }
 
             Box(
@@ -92,86 +93,6 @@ fun ComerciosCercanosScreen(navController: NavController) {
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
-                }
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ComerciosCercanosScreenPreview() {
-    val navController = rememberNavController()
-
-    com.govAtizapan.beneficiojoven.ui.theme.BeneficioJovenTheme {
-        Scaffold(
-            bottomBar = {
-                BottomAppBar(
-                    containerColor = Color.White,
-                    tonalElevation = 8.dp
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        IconButton(onClick = { navController.navigate("home") }) {
-                            Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
-                        }
-                        IconButton(onClick = { navController.navigate("comercios_cercanos") }) {
-                            Icon(Icons.Default.LocationOn, contentDescription = "Mapa", tint = TealPrimary)
-                        }
-                        IconButton(onClick = { navController.navigate("bienvenida") }) {
-                            Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión", tint = TealPrimary)
-                        }
-                    }
-                }
-            }
-        ) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                Text(
-                    text = "Mapa de Ubicación",
-                    modifier = Modifier.padding(16.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TealPrimary
-                )
-
-                Box(modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.LightGray),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Mapa Placeholder",
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                        .background(Color.White)
-                ) {
-                    Column {
-                        Text(
-                            text = "Información",
-                            modifier = Modifier.padding(16.dp),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "Ubicación actual mostrada en el mapa.",
-                            modifier = Modifier.padding(16.dp),
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    }
                 }
             }
         }
