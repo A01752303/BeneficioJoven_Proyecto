@@ -4,10 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,16 +35,13 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     IconButton(onClick = { navController.navigate(AppScreens.HomeView.route) }) {
-                        Icon(Icons.Default.Home, contentDescription = "Home")
+                        Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
                     }
-                    IconButton(onClick = { /* Ya en mapa */ }) {
+                    IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
                         Icon(Icons.Default.LocationOn, contentDescription = "Mapa", tint = TealPrimary)
                     }
-                    IconButton(onClick = { /* Buscar */ }) {
-                        Icon(Icons.Default.Search, contentDescription = "Buscar")
-                    }
-                    IconButton(onClick = { navController.navigate(AppScreens.CreatePromotionScreen.route) }) {
-                        Icon(Icons.Default.ConfirmationNumber, contentDescription = "Cupones")
+                    IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión", tint = TealPrimary)
                     }
                 }
             }
@@ -119,16 +115,13 @@ fun ComerciosCercanosScreenPreview() {
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         IconButton(onClick = { navController.navigate("home") }) {
-                            Icon(Icons.Default.Home, contentDescription = "Home")
+                            Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
                         }
-                        IconButton(onClick = { /* Ya en mapa */ }) {
+                        IconButton(onClick = { navController.navigate("comercios_cercanos") }) {
                             Icon(Icons.Default.LocationOn, contentDescription = "Mapa", tint = TealPrimary)
                         }
-                        IconButton(onClick = { /* Buscar */ }) {
-                            Icon(Icons.Default.Search, contentDescription = "Buscar")
-                        }
-                        IconButton(onClick = { navController.navigate("create_promotion") }) {
-                            Icon(Icons.Default.ConfirmationNumber, contentDescription = "Cupones")
+                        IconButton(onClick = { navController.navigate("bienvenida") }) {
+                            Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión", tint = TealPrimary)
                         }
                     }
                 }
