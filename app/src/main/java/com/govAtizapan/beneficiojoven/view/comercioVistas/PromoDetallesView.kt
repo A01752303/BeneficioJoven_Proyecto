@@ -41,6 +41,8 @@ fun PromoDetallesView(
         else                      -> descValid
     }
 
+
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.AppDateRangeField
-import com.govAtizapan.beneficiojoven.ui.theme.uiComponents.AppLoadingOverlay
+import com.govAtizapan.beneficiojoven.view.comercioVistas.components.PromoImagenSection
 import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotionEvent
 import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotionViewModel
 
@@ -22,6 +22,7 @@ import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotio
 fun PromoFechasView(
     onBack: () -> Unit,
     onNext: () -> Unit,
+    // IMPORTANTE: este VM debe venir inyectado desde el sub-grafo (NO crear uno nuevo aquí)
     vm: CreatePromotionViewModel
 ) {
     val ui by vm.ui.collectAsState()
@@ -37,7 +38,7 @@ fun PromoFechasView(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {},
-                colors = TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.White
                 )
             )
@@ -52,7 +53,7 @@ fun PromoFechasView(
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Fechas de la promoción",
+                text = "Fechas e imagen",
                 style = MaterialTheme.typography.headlineMedium,
                 fontFamily = PoppinsFamily,
                 fontWeight = FontWeight.Bold,
@@ -60,7 +61,7 @@ fun PromoFechasView(
                 fontSize = 18.sp
             )
             Text(
-                text = "Selecciona el rango de vigencia (inicio y fin).",
+                text = "Selecciona el rango de vigencia y, si deseas, agrega una imagen promocional.",
                 style = MaterialTheme.typography.bodySmall,
                 fontFamily = PoppinsFamily,
                 color = Color.Gray,
@@ -69,11 +70,9 @@ fun PromoFechasView(
 
             Spacer(Modifier.height(20.dp))
 
-            // Selector de rango
+            // --------- Selector de rango de fechas ----------
             AppDateRangeField(
-                onChange = { start, end ->
-                    vm.onEvent(CreatePromotionEvent.StartEndChanged(start, end))
-                },
+                onChange = { start, end -> vm.onEvent(CreatePromotionEvent.StartEndChanged(start, end)) },
                 label = "Rango de fecha (YYYY-MM-DD)",
                 modifier = Modifier.fillMaxWidth()
             )
@@ -83,7 +82,8 @@ fun PromoFechasView(
                 Text(
                     text = "Inicio: ${ui.startDate.ifBlank { "—" }}   •   Fin: ${ui.endDate.ifBlank { "—" }}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Black
+                    color = Color.Black,
+                    fontFamily = PoppinsFamily
                 )
             }
 
@@ -92,12 +92,22 @@ fun PromoFechasView(
                 Text(
                     text = "La fecha de inicio no puede ser posterior a la fecha de fin.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    fontFamily = PoppinsFamily
                 )
             }
 
+            Spacer(Modifier.height(24.dp))
+
+            // --------- Imagen promocional (opcional) ----------
+            PromoImagenSection(
+                vm = vm,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Spacer(Modifier.weight(1f))
 
+            // --------- Navegación ----------
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(
                     onClick = {
@@ -144,5 +154,4 @@ fun PromoFechasView(
             Spacer(Modifier.height(16.dp))
         }
     }
-    AppLoadingOverlay(visible = ui.isLoading)
 }

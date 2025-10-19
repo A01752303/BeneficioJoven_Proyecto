@@ -136,6 +136,7 @@ private fun TipoPromocionSelector(
     val borderCyan = Color(0xFFB2EBF2)
     val shape = RoundedCornerShape(16.dp)
 
+
     Text(
         text = "Tipo de promoción",
         modifier = Modifier.padding(bottom = 8.dp),

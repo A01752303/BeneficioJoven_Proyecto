@@ -38,6 +38,7 @@ fun PromoLimitesView(
     val relacionOk = !((total > 0) && (porUsuario > 0) && (porUsuario > total))
     val canContinue = relacionOk // en este paso no exigimos llenarlos
 
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
