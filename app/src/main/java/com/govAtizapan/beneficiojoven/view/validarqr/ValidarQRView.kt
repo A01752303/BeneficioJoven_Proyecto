@@ -19,14 +19,12 @@ import com.govAtizapan.beneficiojoven.model.qrvalidacion.QrValidateRequest
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.launch
-import com.govAtizapan.beneficiojoven.view.validarqr.CaptureActivityPortrait
+import android.util.Log
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ValidarQRView() {
-    // 🔹 ID de establecimiento temporal (para pruebas)
-    val idEstablecimientoLogueado = 1
-
+    // ✅ Ya no necesitamos el idEstablecimiento de prueba: el token hace.
     val permissions = rememberMultiplePermissionsState(listOf(Manifest.permission.CAMERA))
     val scope = rememberCoroutineScope()
 
@@ -36,24 +34,23 @@ fun ValidarQRView() {
     val scanLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
         val contenido = result.contents ?: ""
         if (contenido.isNotEmpty()) {
-            // 🧠 Muestra en consola el texto del QR
-            android.util.Log.d("ValidarQRView", "QR escaneado: $contenido")
+            // 🧠 Mostrar en consola qué QR se escaneó
+            Log.d("ValidarQRView", "QR escaneado: $contenido")
+
             scope.launch {
                 try {
-                    val response = RetrofitClient.ValidarQrApi.validarQr(
-                        QrValidateRequest(
-                            codigo = contenido,
-                            idEstablecimiento = idEstablecimientoLogueado
-                        )
+                    // ✅ Solo enviamos el código, el token va en el header automáticamente
+                    val response = RetrofitClient.validarQrApi.validarQr(
+                        QrValidateRequest(codigo = contenido)
                     )
 
                     if (response.isSuccessful) {
                         val body = response.body()
                         if (body?.success == true) {
-                            mensaje = "✅ Canje válido: ${body.message}"
+                            mensaje = "✅ Canje válido: ${body.message ?: "Cupón aplicado correctamente."}"
                             colorMensaje = Color(0xFF009688)
                         } else {
-                            mensaje = "🚫 ${body?.message ?: "Canje inválido"}"
+                            mensaje = "🚫 ${body?.message ?: "Canje inválido o pertenece a otro establecimiento."}"
                             colorMensaje = Color.Red
                         }
                     } else {
@@ -102,6 +99,7 @@ fun ValidarQRView() {
                     val options = ScanOptions()
                     options.setBeepEnabled(true)
                     options.setOrientationLocked(true)
+                    options.setCaptureActivity(CaptureActivityPortrait::class.java)
                     scanLauncher.launch(options)
                 },
                 modifier = Modifier

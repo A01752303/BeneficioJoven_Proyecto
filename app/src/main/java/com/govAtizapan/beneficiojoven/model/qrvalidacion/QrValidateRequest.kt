@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName
  */
 data class QrValidateRequest(
     @SerializedName("codigo") val codigo: String,                // Ejemplo: "CANJE-103"
-    @SerializedName("id_establecimiento") val idEstablecimiento: Int // ID del comercio que valida
+    // ID del comercio que valida
 )

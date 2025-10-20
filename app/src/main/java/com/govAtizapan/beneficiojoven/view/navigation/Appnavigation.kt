@@ -34,6 +34,7 @@ import com.govAtizapan.beneficiojoven.view.comercioVistas.addPromoGraph
 import com.govAtizapan.beneficiojoven.view.mapa.ComerciosCercanosScreen
 import com.govAtizapan.beneficiojoven.view.registro.FinalizaRegistro
 import com.govAtizapan.beneficiojoven.viewmodel.loginUserVM.LoginUserVM
+import com.govAtizapan.beneficiojoven.view.validarqr.ValidarQRView
 
 
 // Es una buena práctica definir las rutas como constantes
@@ -77,7 +78,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         addPromoGraph(navController)
         composable(route = AppScreens.ComercioHome.route) {
             ComercioHome(
-                onCrearPromo = { navController.navigate(PROMO_GRAPH_ROUTE) }
+                onCrearPromo = { navController.navigate(PROMO_GRAPH_ROUTE) },
+                onValidarQR = { navController.navigate(AppScreens.ValidarQRView.route) }
             )
         }
         composable(
@@ -162,8 +164,17 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     viewModel = registrationViewModel
                 )
             }
+            composable(AppScreens.ValidarQRView.route) {
+                ValidarQRView()
+            }
             composable(route = AppScreens.FinalizarRegistro.route) {
                 FinalizaRegistro(navController = navController)
+            }
+            composable(AppScreens.ComercioHome.route) {
+                ComercioHome(
+                    onCrearPromo = { /* Aquí podrías abrir otra pantalla si quieres */ },
+                    onValidarQR = { navController.navigate(AppScreens.ValidarQRView.route) }
+                )
             }
         }
     }

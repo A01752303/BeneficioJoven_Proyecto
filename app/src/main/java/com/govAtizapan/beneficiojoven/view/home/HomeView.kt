@@ -27,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.home.HomeVM
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 val TealPrimary = Color(0xFF0096A6)
 val TealLight = Color(0xFF4DB8C4)
@@ -117,54 +119,30 @@ fun HomeView(
                                     .fillMaxWidth()
                                     .padding(16.dp)
                             ) {
-                                // Sección izquierda: Descuento/Badge
+                                // 🖼️ Imagen del cupón
                                 Box(
                                     modifier = Modifier
-                                        .size(80.dp)
+                                        .size(90.dp)
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(
-                                            Brush.verticalGradient(
-                                                colors = listOf(TealPrimary, TealLight)
-                                            )
-                                        ),
-                                    contentAlignment = Alignment.Center
                                 ) {
-                                    if (promo.porcentaje.isNotEmpty()) {
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Text(
-                                                text = promo.porcentaje,
-                                                fontSize = 28.sp,
-                                                fontWeight = FontWeight.ExtraBold,
-                                                color = Color.White
-                                            )
-                                            Text(
-                                                text = "%",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.White.copy(alpha = 0.9f)
-                                            )
-                                        }
-                                    } else {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Store,
-                                            contentDescription = null,
-                                            tint = Color.White,
-                                            modifier = Modifier.size(40.dp)
-                                        )
-                                    }
+                                    AsyncImage(
+                                        model = promo.imagen,
+                                        contentDescription = "Imagen del cupón",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(RoundedCornerShape(12.dp))
+                                    )
                                 }
 
                                 Spacer(modifier = Modifier.width(16.dp))
 
-                                // Sección derecha: Información
+                                // 📋 Información del cupón
                                 Column(
                                     modifier = Modifier
                                         .weight(1f)
                                         .align(Alignment.CenterVertically)
                                 ) {
-                                    // Nombre del negocio
                                     Text(
                                         text = promo.nombre,
                                         fontSize = 18.sp,
@@ -175,27 +153,20 @@ fun HomeView(
 
                                     Spacer(modifier = Modifier.height(6.dp))
 
-                                    // Descripción
                                     Text(
                                         text = promo.descripcion,
                                         fontSize = 14.sp,
                                         color = Color(0xFF666666),
-                                        lineHeight = 18.sp
+                                        lineHeight = 18.sp,
+                                        maxLines = 2
                                     )
 
                                     Spacer(modifier = Modifier.height(10.dp))
 
-                                    // Precio (si existe)
                                     if (promo.precio.isNotEmpty()) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(
-                                                text = "$",
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = TealPrimary
-                                            )
-                                            Text(
-                                                text = promo.precio,
+                                                text = "$${promo.precio}",
                                                 fontSize = 16.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = TealPrimary
@@ -204,7 +175,6 @@ fun HomeView(
                                         Spacer(modifier = Modifier.height(8.dp))
                                     }
 
-                                    // Fechas
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
                                             imageVector = Icons.Default.CalendarToday,

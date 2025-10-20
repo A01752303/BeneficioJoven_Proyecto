@@ -11,7 +11,7 @@ import com.govAtizapan.beneficiojoven.model.qrvalidacion.QrValidateResponse
  * POST /functionality/usuario/validar-qr/
  */
 interface ValidarQrApi {
-    @POST("/functionality/usuario/validar-qr/")
+    @POST("/functionality/cajero/validar-qr/")
     suspend fun validarQr(
         @Body body: QrValidateRequest
     ): Response<QrValidateResponse>
