@@ -1,7 +1,14 @@
 package com.govAtizapan.beneficiojoven.model.promotionget
 
+// Objeto para la categoría interna
+data class Categoria(
+    val titulo: String
+)
+
+// Data class actualizada
 data class PromotionResponseGET(
     val id: Int,
+    val categorias: List<Categoria>, // Campo añadido
     val nombre: String,
     val descripcion: String,
     val limite_por_usuario: Int,
@@ -10,7 +17,7 @@ data class PromotionResponseGET(
     val fecha_fin: String,
     val imagen: String,
     val numero_canjeados: Int,
-    val tipo: String?,
+    val tipo: String,
     val porcentaje: String,
     val precio: String,
     val activo: Boolean,

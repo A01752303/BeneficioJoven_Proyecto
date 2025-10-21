@@ -1,6 +1,5 @@
 package com.govAtizapan.beneficiojoven.model.network
 
-import android.util.Log
 import okhttp3.ConnectionPool
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -70,7 +69,6 @@ object RetrofitClient {
         retrofit.create(UserLoginApi::class.java)
     }
 
-    // 🔑 AGREGA ESTO - Tu compañero olvidó esta parte
     val userRegisterApi: UserRegisterApi by lazy {
         retrofit.create(UserRegisterApi::class.java)
     }
@@ -80,4 +78,9 @@ object RetrofitClient {
     val validarQrApi: ValidarQrApi by lazy {
         retrofit.create(ValidarQrApi::class.java)
     }
+
+    val categoryApi: CategoryApi by lazy {
+        retrofit.create(CategoryApi::class.java)
+    }
+
 }
