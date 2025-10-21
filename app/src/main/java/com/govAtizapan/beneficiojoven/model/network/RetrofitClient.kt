@@ -19,7 +19,6 @@ object RetrofitClient {
         level = HttpLoggingInterceptor.Level.HEADERS // Cambiado para ver headers
     }
 
-    // 🟢 Interceptor SIN "Connection: close"
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
 

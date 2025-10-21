@@ -1,12 +1,12 @@
 package com.govAtizapan.beneficiojoven.view.home
 
-
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.border // Sigue aquí por si lo usas en otro lado, aunque no en la cabecera
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape // Sigue aquí por si lo usas en otro lado
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,10 +26,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.govAtizapan.beneficiojoven.model.promotionget.PromotionResponseGET
+import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.viewmodel.cupondetalle.CuponDetalleViewModel
 
-val PrimaryColor = Color(0xFF0096A6)
-val LightColor = Color(0xFF4DB8C4)
+// Definición de colores
+val PrimaryColor = Color(0xFF5d548f)
+val LightColor = Color(0xFF4DB8C4) // Se mantiene, aunque el degradado principal ya no lo usa
 val BackgroundLight = Color(0xFFF8F9FA)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +47,7 @@ fun CuponDetalleView(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val idUsuario = 1
+    val idUsuario = 1 // Considera obtener esto de un DataStore/ViewModel
 
     // Mostrar Snackbar cuando haya mensaje
     LaunchedEffect(snackbarMessage) {
@@ -66,7 +69,10 @@ fun CuponDetalleView(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Detalle del cupón", fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(
+                        "Detalle del cupón", fontWeight = FontWeight.Bold, color = Color.White,
+                        fontFamily = PoppinsFamily
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -80,68 +86,106 @@ fun CuponDetalleView(
         containerColor = BackgroundLight
     ) { innerPadding ->
 
+        // Estructura principal: Cabecera, Contenido (scroll), Botón (fijo)
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(innerPadding) // Aplica el padding del Scaffold aquí
                 .fillMaxSize()
         ) {
-            // 📸 Sección superior
+
+            // 📸 Sección superior (Cabecera con imagen completa)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Brush.verticalGradient(listOf(PrimaryColor, LightColor)))
-                    .padding(vertical = 32.dp, horizontal = 24.dp),
-                contentAlignment = Alignment.Center
+                    .height(250.dp) // Altura fija para la cabecera
+                    .background(PrimaryColor), // Color de fondo mientras carga la imagen
+                contentAlignment = Alignment.BottomCenter // Alinea el texto abajo
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    AsyncImage(
-                        model = promo.imagen,
-                        contentDescription = "Imagen de la promoción",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(3.dp, Color.White, CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = promo.descripcion,
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                // Imagen de fondo que llena el Box
+                AsyncImage(
+                    model = promo.imagen,
+                    contentDescription = "Imagen de la promoción",
+                    modifier = Modifier.fillMaxSize(), // Llena el Box
+                    contentScale = ContentScale.Crop // Recorta para llenar sin distorsionar
+                )
+
+                // Degradado sutil sobre la imagen para legibilidad del texto
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                                startY = 300f // Inicia el degradado más abajo
+                            )
+                        )
+                )
+
+                // Texto del título superpuesto
+                Text(
+                    text = promo.nombre,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = PoppinsFamily,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 24.dp) // Espaciado
+                )
             }
 
-            // 📋 Info
-            Column(modifier = Modifier.padding(20.dp)) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
+
+            // 📋 Info (Contenido desplazable)
+            Column(
+                modifier = Modifier
+                    .weight(1f) // Ocupa el espacio restante
+                    .verticalScroll(rememberScrollState()) // Permite el scroll
+                    .padding(horizontal = 24.dp, vertical = 24.dp)
+            ) {
+                // Tarjeta de Descripción
+                InfoCard(
+                    icon = Icons.Default.Description,
+                    title = "En qué consiste",
+                    content = {
                         Text(
-                            text = promo.nombre,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF212121)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Vigencia: ${promo.fecha_inicio.take(10)} al ${promo.fecha_fin.take(10)}",
+                            text = promo.descripcion,
                             fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = PoppinsFamily,
                             color = Color(0xFF444444)
                         )
                     }
-                }
+                )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                // 🎟️ Botón
+                // Tarjeta de Vigencia
+                InfoCard(
+                    icon = Icons.Default.CalendarToday,
+                    title = "Vigencia",
+                    content = {
+                        Text(
+                            text = "Del: ${promo.fecha_inicio.take(10)}\nAl: ${promo.fecha_fin.take(10)}",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = PoppinsFamily,
+                            color = Color(0xFF444444),
+                            lineHeight = 24.sp
+                        )
+                    }
+                )
+            }
+
+            // 🎟️ Botón (Fijo en la parte inferior)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 20.dp)
+            ) {
                 Button(
                     onClick = { viewModel.generarQr(idUsuario, promo.id) },
+                    enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),
@@ -158,10 +202,55 @@ fun CuponDetalleView(
                     } else {
                         Icon(Icons.Default.QrCode2, contentDescription = null, modifier = Modifier.size(28.dp))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("Generar código QR", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text("Generar código QR", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, fontFamily = PoppinsFamily)
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Un Composable reutilizable para mostrar secciones de información
+ * de manera estructurada y visualmente atractiva.
+ */
+@Composable
+private fun InfoCard(
+    icon: ImageVector,
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            // Fila para Icono y Título
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = PrimaryColor,
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = PoppinsFamily,
+                    color = Color(0xFF212121)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(color = Color.Gray.copy(alpha = 0.2f))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Contenido (inyectado)
+            content()
         }
     }
 }

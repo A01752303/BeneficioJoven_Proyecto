@@ -39,11 +39,11 @@ class HomeVM : ViewModel() {
             } catch (e: Exception) {
                 _errorState.value = "Error al cargar las promociones. Revisa tu conexión."
                 _promociones.value = emptyList()
+                e.printStackTrace()
             } finally {
                 _isLoading.value = false // Oculta el Skeleton
             }
         }
     }
 
-    // --- (Se quitó la función refrescarPromociones) ---
 }

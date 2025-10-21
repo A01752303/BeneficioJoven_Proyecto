@@ -1,5 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -54,10 +55,13 @@ import java.util.Locale
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import androidx.compose.ui.text.TextStyle
 
-
-val TealPrimary = Color(0xFF0096A6)
-val TealLight = Color(0xFF4DB8C4)
+val TealPrimary = Color(0xFF5d548f)
+val TealLight = Color(0xFF5d548f)
 val BackgroundGray = Color(0xFFF5F5F5)
 val CardBackground = Color(0xFFFFFFFF)
 
@@ -68,8 +72,8 @@ enum class SortOption(val label: String) {
 
 val couponTypes = listOf(
     "Todos",
-    "Descuento (%)",
-    "Precio fijo (MXN)",
+    "Descuento",
+    "Precio fijo",
     "2x1",
     "Trae un amigo",
     "Otra"
@@ -178,29 +182,37 @@ fun HomeView(
                             .fillMaxWidth()
                             .safeDrawingPadding()
                     ) {
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            "Bienvenid@",
-                            fontSize = 22.sp,
-                            fontFamily = PoppinsFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = White
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
+
                         OutlinedTextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            // --- 👇 CAMBIO 1: Reducir el tamaño del texto que se ingresa ---
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                fontFamily = PoppinsFamily,
+                                color = White,
+                            ),
+
                             placeholder = {
-                                Text("Busca tu cupón...",
+                                Text(
+                                    "Busca tu cupón...",
                                     color = Color.White.copy(alpha = 0.7f),
-                                    fontFamily = PoppinsFamily)
+                                    fontFamily = PoppinsFamily,
+                                    // --- 👇 CAMBIO 2: Reducir el tamaño del placeholder ---
+                                    fontSize = 14.sp,
+                                )
                             },
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Search,
                                     contentDescription = "Buscar",
-                                    tint = Color.White
+                                    tint = Color.White,
+                                    // --- 👇 CAMBIO 3: Reducir el tamaño del icono ---
+                                    modifier = Modifier.size(20.dp)
                                 )
                             },
                             trailingIcon = {
@@ -209,17 +221,17 @@ fun HomeView(
                                         Icon(
                                             Icons.Default.Close,
                                             contentDescription = "Limpiar",
-                                            tint = Color.White
+                                            tint = Color.White,
+                                            // --- 👇 CAMBIO 4: Reducir el tamaño del icono ---
+                                            modifier = Modifier.size(20.dp)
                                         )
                                     }
                                 }
                             },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
+                            colors = OutlinedTextFieldDefaults.colors(
                                 cursorColor = Color.White,
-                                focusedIndicatorColor = Color.White,
-                                unfocusedIndicatorColor = Color.White.copy(alpha = 0.7f),
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.7f),
                                 focusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
                                 unfocusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
                                 focusedLeadingIconColor = Color.White,
@@ -228,12 +240,13 @@ fun HomeView(
                                 unfocusedTrailingIconColor = Color.White,
                                 focusedContainerColor = Color.Transparent,
                                 unfocusedContainerColor = Color.Transparent
+                                // NOTA: El color del texto se define ahora en 'textStyle'
                             ),
                             singleLine = true,
                             shape = RoundedCornerShape(50)
-
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        // Opcional: Reducir espacios
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -275,23 +288,36 @@ fun HomeView(
                 .padding(top = innerPadding.calculateTopPadding())
         ) {
 
-            // --- 1. CONTENIDO FIJO (STICKY) ---
-            CategoryRow(
-                categories = categorias,
-                selectedTitulo = selectedCategoryTitulo,
-                onCategorySelected = { categoryTitulo ->
-                    selectedCategoryTitulo = categoryTitulo
-                }
-            )
+            // --- 👇 CAMBIO: Columna contenedora para redondear ---
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+                    )
+                    .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
+            ) {
+                // --- 1. CONTENIDO FIJO (STICKY) ---
+                CategoryRow(
+                    categories = categorias,
+                    selectedTitulo = selectedCategoryTitulo,
+                    onCategorySelected = { categoryTitulo ->
+                        selectedCategoryTitulo = categoryTitulo
+                    }
+                )
 
-            SectionTitle("Filtros")
+                SectionTitle("Filtros")
 
-            FilterChipsRow(
-                selectedType = selectedCouponType,
-                onTypeSelected = { selectedCouponType = it },
-                selectedOption = sortOption,
-                onOptionSelected = { sortOption = it }
-            )
+                FilterChipsRow(
+                    selectedType = selectedCouponType,
+                    onTypeSelected = { selectedCouponType = it },
+                    selectedOption = sortOption,
+                    onOptionSelected = { sortOption = it }
+                )
+            }
+            // --- 👆 FIN DEL CAMBIO ---
+
 
             // --- 2. CONTENIDO DESLIZABLE (SCROLLABLE) ---
             // Este Box ocupa el espacio restante
@@ -413,7 +439,7 @@ private fun SectionTitle(title: String) {
         color = TealPrimary,
         modifier = Modifier
             .fillMaxWidth()
-            .background(White)
+            // .background(White) // <--- ELIMINADO
             .padding(horizontal = 16.dp)
     )
 }
@@ -587,7 +613,7 @@ private fun FilterChipsRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            // .background(Color.White) // <--- ELIMINADO
             .padding(bottom = 8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -775,8 +801,8 @@ private fun CategoryRow(
 ) {
     LazyRow(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White),
+            .fillMaxWidth(),
+        // .background(Color.White), // <--- ELIMINADO
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
@@ -785,7 +811,7 @@ private fun CategoryRow(
         item {
             CategoryItem(
                 title = "Todos",
-                imageUrl = null,
+                imageUrl = "", // Se pasa String vacío, lo manejará CategoryItem
                 isSelected = selectedTitulo == "Todos",
                 onClick = { onCategorySelected("Todos") }
             )
@@ -795,7 +821,7 @@ private fun CategoryRow(
             if (category.titulo.lowercase() != "todos" && category.titulo.lowercase() != "all") {
                 CategoryItem(
                     title = category.titulo,
-                    imageUrl = category.imagen,
+                    imageUrl = category.image,
                     isSelected = selectedTitulo == category.titulo,
                     onClick = { onCategorySelected(category.titulo) }
                 )
@@ -807,10 +833,13 @@ private fun CategoryRow(
 @Composable
 private fun CategoryItem(
     title: String,
-    imageUrl: String?,
+    imageUrl: String?, // <-- Acepta un String nullable
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    // Obtenemos el contexto aquí
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .width(64.dp)
@@ -818,10 +847,22 @@ private fun CategoryItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        // --- 👇 AQUÍ ESTÁ EL CAMBIO ---
+        // Si la URL no es nula ni está en blanco, intenta cargarla como SVG
         if (!imageUrl.isNullOrBlank()) {
+
+            // Crea el ImageLoader que soporta SVG
+            val imageLoader = ImageLoader.Builder(context)
+                .components {
+                    add(SvgDecoder.Factory())
+                }
+                .build()
+
+            // Usa AsyncImage con el ImageLoader personalizado
             AsyncImage(
                 model = imageUrl,
                 contentDescription = title,
+                imageLoader = imageLoader, // <-- Se lo pasamos aquí
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(50.dp)
@@ -829,6 +870,7 @@ private fun CategoryItem(
                     .background(BackgroundGray)
             )
         } else {
+            // Este es tu código de "fallback" si no hay imagen (para "Todos" o si falta la URL)
             Box(
                 modifier = Modifier
                     .size(50.dp)

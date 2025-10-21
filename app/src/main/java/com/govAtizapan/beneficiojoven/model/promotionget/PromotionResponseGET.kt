@@ -8,6 +8,8 @@ data class Categoria(
 // Data class actualizada
 data class PromotionResponseGET(
     val id: Int,
+    val negocio_nombre: String,
+    val negocio_logo: String,
     val categorias: List<Categoria>, // Campo añadido
     val nombre: String,
     val descripcion: String,

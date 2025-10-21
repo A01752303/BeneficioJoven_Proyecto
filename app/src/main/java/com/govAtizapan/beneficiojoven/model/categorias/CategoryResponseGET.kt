@@ -4,5 +4,5 @@ data class CategoryResponseGET(
     val id: Int,
     val titulo: String,
     val descripcion: String,
-    val imagen: String?
+    val image: String?
 )
