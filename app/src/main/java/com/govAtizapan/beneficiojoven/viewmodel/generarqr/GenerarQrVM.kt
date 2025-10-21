@@ -14,13 +14,13 @@ class GenerarQRViewModel : ViewModel() {
     private val _qrBitmap = MutableStateFlow<Bitmap?>(null)
     val qrBitmap: StateFlow<Bitmap?> = _qrBitmap
 
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _isqrLoading = MutableStateFlow(true)
+    val isqrLoading: StateFlow<Boolean> = _isqrLoading
 
     fun generarQR(idCanje: Int?) {
         if (idCanje == null) return
 
-        _isLoading.value = true
+        _isqrLoading.value = true
         viewModelScope.launch {
             try {
                 val bitmap = QRCodeGenerator.generarQR("CANJE-$idCanje")
@@ -29,8 +29,11 @@ class GenerarQRViewModel : ViewModel() {
                 e.printStackTrace()
                 _qrBitmap.value = null
             } finally {
-                _isLoading.value = false
+                _isqrLoading.value = false
             }
         }
+    }
+    fun clearQrData() {
+        _qrBitmap.value = null
     }
 }

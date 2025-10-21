@@ -1,6 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.home
 
-import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi // <-- Importante
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -54,11 +54,23 @@ import java.util.Locale
 // Imports añadidos para el TopAppBar colapsable
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+// import androidx.compose.ui.input.nestedscroll.nestedScroll // <-- ELIMINADO
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
+
+// --- IMPORTS PARA EL DRAWER ---
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer // <-- Import corregido
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.rememberDrawerState
+// --- FIN DE IMPORTS ---
 
 val TealPrimary = Color(0xFF5d548f)
 val TealLight = Color(0xFF5d548f)
@@ -81,7 +93,8 @@ val couponTypes = listOf(
 
 const val EXPIRATION_THRESHOLD_DAYS: Long = 3
 
-@OptIn(ExperimentalMaterial3Api::class)
+// --- AÑADIMOS ExperimentalFoundationApi ---
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeView(
     navController: NavController,
@@ -102,7 +115,10 @@ fun HomeView(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    // val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()) // <-- ELIMINADO
+
+    // --- Estado para el Navigation Drawer ---
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
 
     LaunchedEffect(Unit) {
@@ -122,7 +138,7 @@ fun HomeView(
         }
     }
 
-    // --- Lógica de filtrado (movida aquí para estar disponible para el when) ---
+    // --- Lógica de filtrado (Sin cambios) ---
     val filteredAndSortedPromos = remember(searchQuery, promociones, selectedCategoryTitulo, sortOption, selectedCouponType) {
         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
         val now = Date()
@@ -149,8 +165,8 @@ fun HomeView(
                 } else {
                     val apiType = promo.tipo.lowercase().trim()
                     when (selectedCouponType) {
-                        "Descuento (%)" -> apiType == "porcentaje"
-                        "Precio fijo (MXN)" -> apiType == "precio"
+                        "Descuento" -> apiType == "porcentaje"
+                        "Precio fijo" -> apiType == "precio"
                         "2x1" -> apiType == "2x1"
                         "Trae un amigo" -> apiType == "trae un amigo"
                         "Otra" -> apiType == "otra"
@@ -171,261 +187,333 @@ fun HomeView(
         }
     }
 
+    // --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                // ... (Contenido del Drawer sin cambios)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .background(TealPrimary),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        "Beneficio Joven",
+                        style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
+                        modifier = Modifier.padding(16.dp),
+                        fontFamily = PoppinsFamily
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Perfil") },
+                    label = { Text("Mi Perfil", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
+                    label = { Text("Ajustes", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Info, contentDescription = "Acerca de") },
+                    label = { Text("Acerca de", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                    }
+                )
+                Divider(modifier = Modifier.padding(vertical = 12.dp))
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión") },
+                    label = { Text("Cerrar Sesión", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        navController.navigate(AppScreens.BienvenidaView.route)
+                        coroutineScope.launch { drawerState.close() }
+                    }
+                )
+            }
+        }
+    ) { // --- El contenido del Drawer es el Scaffold ---
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .safeDrawingPadding()
+        Scaffold(
+            // modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // <-- ELIMINADO
+            topBar = {
+                // ... (TopAppBar sin cambios)
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                drawerState.open()
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Abrir menú",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    title = {
+                        Text(
+                            "Home",
+                            color = Color.White,
+                            fontFamily = PoppinsFamily,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = TealPrimary,
+                    ),
+                )
+            },
+            bottomBar = {
+                // ... (BottomAppBar sin cambios)
+                BottomAppBar(
+                    containerColor = Color.White,
+                    tonalElevation = 8.dp
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
+                        IconButton(onClick = { /* Ya en home */ }) {
+                            Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
+                        }
+                        IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
+                            Icon(Icons.Default.LocationOn, contentDescription = "Mapa")
+                        }
+                        IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
+                            Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
+                        }
+                    }
+                }
+            },
+            containerColor = BackgroundGray
+        ) { innerPadding ->
 
-                        Spacer(modifier = Modifier.height(12.dp))
+            // --- NUEVA ESTRUCTURA DE COLUMNA ---
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding()) // <-- Padding del TopAppBar
+            ) {
 
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            // --- 👇 CAMBIO 1: Reducir el tamaño del texto que se ingresa ---
-                            textStyle = TextStyle(
-                                fontSize = 14.sp,
+                // --- 1. BARRA DE BÚSQUEDA (FIJA) ---
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(TealPrimary) // Fondo para que combine con el TopAppBar
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
+                            fontFamily = PoppinsFamily,
+                            color = White,
+                        ),
+                        placeholder = {
+                            Text(
+                                "Busca tu cupón...",
+                                color = Color.White.copy(alpha = 0.7f),
                                 fontFamily = PoppinsFamily,
-                                color = White,
-                            ),
+                                fontSize = 14.sp,
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Buscar",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Limpiar",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = Color.White,
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = Color.White.copy(alpha = 0.7f),
+                            focusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
+                            unfocusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
+                            focusedLeadingIconColor = Color.White,
+                            unfocusedLeadingIconColor = Color.White,
+                            focusedTrailingIconColor = Color.White,
+                            unfocusedTrailingIconColor = Color.White,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                        ),
+                        singleLine = true,
+                        shape = RoundedCornerShape(50)
+                    )
+                }
+                // --- FIN DE LA BARRA DE BÚSQUEDA ---
 
-                            placeholder = {
-                                Text(
-                                    "Busca tu cupón...",
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontFamily = PoppinsFamily,
-                                    // --- 👇 CAMBIO 2: Reducir el tamaño del placeholder ---
-                                    fontSize = 14.sp,
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Search,
-                                    contentDescription = "Buscar",
-                                    tint = Color.White,
-                                    // --- 👇 CAMBIO 3: Reducir el tamaño del icono ---
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            },
-                            trailingIcon = {
-                                if (searchQuery.isNotEmpty()) {
-                                    IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(
-                                            Icons.Default.Close,
-                                            contentDescription = "Limpiar",
-                                            tint = Color.White,
-                                            // --- 👇 CAMBIO 4: Reducir el tamaño del icono ---
-                                            modifier = Modifier.size(20.dp)
+
+                // --- 2. FILTROS (FIJOS) ---
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.White, // Fondo blanco para los filtros
+                            shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+                        )
+                        .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
+                        .padding(top = 16.dp) // <-- AÑADIDO: Espacio superior
+                ) {
+
+                    SectionTitle("Filtros")
+
+                    FilterChipsRow(
+                        selectedType = selectedCouponType,
+                        onTypeSelected = { selectedCouponType = it },
+                        selectedOption = sortOption,
+                        onOptionSelected = { sortOption = it }
+                    )
+                }
+                // --- 👆 FIN DEL CONTENIDO FIJO ---
+
+
+                // --- 3. CONTENIDO DESLIZABLE (SCROLLABLE) ---
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f) // <-- Ocupa todo el espacio restante
+                ) {
+                    when {
+                        isLoading -> {
+                            SkeletonList(
+                                PaddingValues(bottom = innerPadding.calculateBottomPadding())
+                            )
+                        }
+                        errorState != null && promociones.isEmpty() -> {
+                            ErrorStateView(
+                                message = errorState ?: "Ocurrió un error desconocido.",
+                                onRetry = { viewModel.cargarPromociones() },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = innerPadding.calculateBottomPadding())
+                            )
+                        }
+
+                        // --- INICIO DE LA MODIFICACIÓN ---
+                        // 'else' AHORA CUBRE EL ESTADO VACÍO Y EL ESTADO CON DATOS
+                        else -> {
+                            LazyColumn(
+                                state = lazyListState,
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    top = 16.dp, // Espacio sobre las categorías
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = innerPadding.calculateBottomPadding() + 12.dp
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+
+                                // --- 1. CATEGORÍAS (SIEMPRE VISIBLES) ---
+                                item(key = "category_row") {
+                                    CategoryRow(
+                                        categories = categorias,
+                                        selectedTitulo = selectedCategoryTitulo,
+                                        onCategorySelected = { categoryTitulo ->
+                                            selectedCategoryTitulo = categoryTitulo
+                                        }
+                                    )
+                                }
+
+                                // --- 2. CONTENIDO CONDICIONAL ---
+                                if (filteredAndSortedPromos.isEmpty()) {
+                                    // --- ESTADO VACÍO (DENTRO DE LA LISTA) ---
+                                    item(key = "empty_state") {
+                                        EmptyStateView(
+                                            searchQuery,
+                                            selectedCategoryTitulo,
+                                            modifier = Modifier
+                                                .fillParentMaxHeight(0.7f) // Ocupa 70% del espacio
+                                        )
+                                    }
+                                } else {
+                                    // --- LISTA DE RESULTADOS ---
+                                    item(key = "results_count") {
+                                        val resultsText = if (filteredAndSortedPromos.size == 1) {
+                                            "Mostrando 1 resultado"
+                                        } else {
+                                            "Mostrando ${filteredAndSortedPromos.size} resultados"
+                                        }
+                                        Text(
+                                            text = resultsText,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            fontFamily = PoppinsFamily,
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(bottom = 4.dp)
+                                        )
+                                    }
+
+                                    items(filteredAndSortedPromos, key = { it.id }) { promo ->
+
+                                        val (isExpiringSoon, daysRemaining) = remember(promo.fecha_fin) {
+                                            try {
+                                                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+                                                val expirationDate = parser.parse(promo.fecha_fin)
+                                                val now = Date()
+
+                                                if (expirationDate != null && expirationDate.after(now)) {
+                                                    val timeDiffMs = expirationDate.time - now.time
+                                                    val daysLeft = timeDiffMs / (1000 * 60 * 60 * 24)
+                                                    val isExpiring = daysLeft < EXPIRATION_THRESHOLD_DAYS
+                                                    Pair(isExpiring, daysLeft)
+                                                } else {
+                                                    Pair(false, null)
+                                                }
+                                            } catch (e: Exception) {
+                                                Pair(false, null)
+                                            }
+                                        }
+
+                                        PromoCard(
+                                            promo = promo,
+                                            isExpiringSoon = isExpiringSoon,
+                                            daysRemaining = daysRemaining,
+                                            onClick = {
+                                                navController.navigate("detalleCupon/${promo.id}")
+                                            }
                                         )
                                     }
                                 }
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                cursorColor = Color.White,
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.7f),
-                                focusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
-                                unfocusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
-                                focusedLeadingIconColor = Color.White,
-                                unfocusedLeadingIconColor = Color.White,
-                                focusedTrailingIconColor = Color.White,
-                                unfocusedTrailingIconColor = Color.White,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent
-                                // NOTA: El color del texto se define ahora en 'textStyle'
-                            ),
-                            singleLine = true,
-                            shape = RoundedCornerShape(50)
-                        )
-                        // Opcional: Reducir espacios
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = TealPrimary,
-                    scrolledContainerColor = TealPrimary
-                ),
-                scrollBehavior = scrollBehavior
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = Color.White,
-                tonalElevation = 8.dp
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    IconButton(onClick = { /* Ya en home */ }) {
-                        Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
-                    }
-                    IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
-                        Icon(Icons.Default.LocationOn, contentDescription = "Mapa")
-                    }
-                    IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
-                    }
-                }
-            }
-        },
-        containerColor = BackgroundGray
-    ) { innerPadding ->
-
-        // --- 👇 NUEVA ESTRUCTURA DE COLUMNA ---
-        // Esta Column aplica el padding SUPERIOR del Scaffold
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-        ) {
-
-            // --- 👇 CAMBIO: Columna contenedora para redondear ---
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
-                    )
-                    .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-            ) {
-                // --- 1. CONTENIDO FIJO (STICKY) ---
-                CategoryRow(
-                    categories = categorias,
-                    selectedTitulo = selectedCategoryTitulo,
-                    onCategorySelected = { categoryTitulo ->
-                        selectedCategoryTitulo = categoryTitulo
-                    }
-                )
-
-                SectionTitle("Filtros")
-
-                FilterChipsRow(
-                    selectedType = selectedCouponType,
-                    onTypeSelected = { selectedCouponType = it },
-                    selectedOption = sortOption,
-                    onOptionSelected = { sortOption = it }
-                )
-            }
-            // --- 👆 FIN DEL CAMBIO ---
-
-
-            // --- 2. CONTENIDO DESLIZABLE (SCROLLABLE) ---
-            // Este Box ocupa el espacio restante
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f) // <-- Ocupa todo el espacio restante
-            ) {
-                when {
-                    isLoading -> {
-                        // El SkeletonList ahora no necesita padding superior,
-                        // solo el inferior del Scaffold
-                        SkeletonList(
-                            PaddingValues(bottom = innerPadding.calculateBottomPadding())
-                        )
-                    }
-                    errorState != null && promociones.isEmpty() -> {
-                        // El ErrorStateView ahora no necesita padding superior
-                        ErrorStateView(
-                            message = errorState ?: "Ocurrió un error desconocido.",
-                            onRetry = { viewModel.cargarPromociones() },
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(bottom = innerPadding.calculateBottomPadding())
-                        )
-                    }
-                    filteredAndSortedPromos.isEmpty() -> {
-                        // El EmptyStateView se mostrará en el espacio restante
-                        EmptyStateView(
-                            searchQuery,
-                            selectedCategoryTitulo,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(bottom = innerPadding.calculateBottomPadding())
-                        )
-                    }
-                    else -> {
-                        // La LazyColumn ahora solo contiene la lista
-                        LazyColumn(
-                            state = lazyListState,
-                            modifier = Modifier.fillMaxSize(),
-                            // Padding: Arriba (para separar de filtros),
-                            // Lados (para contenido), Abajo (para BottomBar)
-                            contentPadding = PaddingValues(
-                                top = 16.dp,
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = innerPadding.calculateBottomPadding() + 12.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            // CONTEO DE RESULTADOS
-                            item(key = "results_count") {
-                                val resultsText = if (filteredAndSortedPromos.size == 1) {
-                                    "Mostrando 1 resultado"
-                                } else {
-                                    "Mostrando ${filteredAndSortedPromos.size} resultados"
-                                }
-                                Text(
-                                    text = resultsText,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = PoppinsFamily,
-                                    color = Color.Gray,
-                                    // Ya no necesita padding horizontal
-                                    modifier = Modifier.padding(bottom = 4.dp)
-                                )
-                            }
-
-                            // LISTA DE PROMOCIONES
-                            items(filteredAndSortedPromos, key = { it.id }) { promo ->
-
-                                val (isExpiringSoon, daysRemaining) = remember(promo.fecha_fin) {
-                                    try {
-                                        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
-                                        val expirationDate = parser.parse(promo.fecha_fin)
-                                        val now = Date()
-
-                                        if (expirationDate != null && expirationDate.after(now)) {
-                                            val timeDiffMs = expirationDate.time - now.time
-                                            val daysLeft = timeDiffMs / (1000 * 60 * 60 * 24)
-                                            val isExpiring = daysLeft < EXPIRATION_THRESHOLD_DAYS
-                                            Pair(isExpiring, daysLeft)
-                                        } else {
-                                            Pair(false, null)
-                                        }
-                                    } catch (e: Exception) {
-                                        Pair(false, null)
-                                    }
-                                }
-
-                                // Ya no se necesita el Box con padding horizontal
-                                PromoCard(
-                                    promo = promo,
-                                    isExpiringSoon = isExpiringSoon,
-                                    daysRemaining = daysRemaining,
-                                    onClick = {
-                                        navController.navigate("detalleCupon/${promo.id}")
-                                    }
-                                )
-                                // Ya no se necesita el Spacer vertical
                             }
                         }
+                        // --- FIN DE LA MODIFICACIÓN ---
                     }
                 }
             }
         }
-    }
+    } // --- Aquí cierra el ModalNavigationDrawer ---
 }
 
 
@@ -439,7 +527,6 @@ private fun SectionTitle(title: String) {
         color = TealPrimary,
         modifier = Modifier
             .fillMaxWidth()
-            // .background(White) // <--- ELIMINADO
             .padding(horizontal = 16.dp)
     )
 }
@@ -613,7 +700,6 @@ private fun FilterChipsRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            // .background(Color.White) // <--- ELIMINADO
             .padding(bottom = 8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -675,10 +761,10 @@ private fun FilterChipsRow(
 private fun ErrorStateView(
     message: String,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier // <-- Añadido modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier // <-- Aplicado modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -709,12 +795,13 @@ private fun ErrorStateView(
 private fun EmptyStateView(
     searchQuery: String,
     selectedCategory: String?,
-    modifier: Modifier = Modifier // <-- Añadido modifier
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier // <-- Aplicado modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = modifier
+            // .fillMaxSize() // <-- MODIFICADO: Ya no llena toda la pantalla
+            .padding(16.dp)
+            .height(200.dp), // Damos una altura fija para centrarlo
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -733,18 +820,25 @@ private fun EmptyStateView(
 
 @Composable
 private fun SkeletonList(
-    contentPadding: PaddingValues = PaddingValues() // <-- Añadido padding
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            // Aplicar padding (para el bottom bar)
             .padding(contentPadding),
-        // Padding interno de la lista
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         userScrollEnabled = false
     ) {
+        // Simula el espacio de las categorías
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp) // Altura aproximada de la fila de categorías
+                    .background(Color.LightGray.copy(alpha = 0.6f), shape = RoundedCornerShape(16.dp))
+            )
+        }
         items(4) {
             PromoCardSkeleton()
         }
@@ -795,14 +889,14 @@ private fun PromoCardSkeleton() {
 
 @Composable
 private fun CategoryRow(
-    categories: List<CategoryResponseGET>, // Usa tu modelo
+    categories: List<CategoryResponseGET>,
     selectedTitulo: String?,
     onCategorySelected: (String?) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
-            .fillMaxWidth(),
-        // .background(Color.White), // <--- ELIMINADO
+            .fillMaxWidth()
+            .background(Color.White), // <-- MODIFICADO
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
@@ -811,7 +905,7 @@ private fun CategoryRow(
         item {
             CategoryItem(
                 title = "Todos",
-                imageUrl = "", // Se pasa String vacío, lo manejará CategoryItem
+                imageUrl = "",
                 isSelected = selectedTitulo == "Todos",
                 onClick = { onCategorySelected("Todos") }
             )
@@ -833,11 +927,10 @@ private fun CategoryRow(
 @Composable
 private fun CategoryItem(
     title: String,
-    imageUrl: String?, // <-- Acepta un String nullable
+    imageUrl: String?,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    // Obtenemos el contexto aquí
     val context = LocalContext.current
 
     Column(
@@ -847,22 +940,18 @@ private fun CategoryItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // --- 👇 AQUÍ ESTÁ EL CAMBIO ---
-        // Si la URL no es nula ni está en blanco, intenta cargarla como SVG
         if (!imageUrl.isNullOrBlank()) {
 
-            // Crea el ImageLoader que soporta SVG
             val imageLoader = ImageLoader.Builder(context)
                 .components {
                     add(SvgDecoder.Factory())
                 }
                 .build()
 
-            // Usa AsyncImage con el ImageLoader personalizado
             AsyncImage(
                 model = imageUrl,
                 contentDescription = title,
-                imageLoader = imageLoader, // <-- Se lo pasamos aquí
+                imageLoader = imageLoader,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(50.dp)
@@ -870,7 +959,6 @@ private fun CategoryItem(
                     .background(BackgroundGray)
             )
         } else {
-            // Este es tu código de "fallback" si no hay imagen (para "Todos" o si falta la URL)
             Box(
                 modifier = Modifier
                     .size(50.dp)

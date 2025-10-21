@@ -3,7 +3,6 @@ package com.govAtizapan.beneficiojoven.view.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.govAtizapan.beneficiojoven.view.home.CuponDetalleView
-import com.govAtizapan.beneficiojoven.view.home.GenerarQRView
 import com.govAtizapan.beneficiojoven.viewmodel.home.HomeVM
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -91,15 +90,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             if (promo != null) {
                 CuponDetalleView(navController = navController, promo = promo)
             }
-        }
-
-        // 🟩 NUEVO → pantalla para generar QR
-        composable(
-            route = AppScreens.GenerarQR.route,
-            arguments = listOf(navArgument("idCanje") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val idCanje = backStackEntry.arguments?.getInt("idCanje")
-            GenerarQRView(navController = navController, idCanje = idCanje)
         }
 
         // Ruta para Pantalla Google Maps - Comercios Cercanos

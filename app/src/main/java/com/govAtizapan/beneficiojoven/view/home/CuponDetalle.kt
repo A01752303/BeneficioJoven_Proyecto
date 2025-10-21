@@ -1,21 +1,22 @@
 package com.govAtizapan.beneficiojoven.view.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border // Sigue aquí por si lo usas en otro lado, aunque no en la cabecera
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape // Sigue aquí por si lo usas en otro lado
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -28,40 +29,54 @@ import coil.compose.AsyncImage
 import com.govAtizapan.beneficiojoven.model.promotionget.PromotionResponseGET
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.viewmodel.cupondetalle.CuponDetalleViewModel
+import com.govAtizapan.beneficiojoven.viewmodel.generarqr.GenerarQRViewModel
 
 // Definición de colores
 val PrimaryColor = Color(0xFF5d548f)
-val LightColor = Color(0xFF4DB8C4) // Se mantiene, aunque el degradado principal ya no lo usa
 val BackgroundLight = Color(0xFFF8F9FA)
+
+// Ya no se necesita el enum RedemptionStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CuponDetalleView(
     navController: NavController,
     promo: PromotionResponseGET,
-    viewModel: CuponDetalleViewModel = viewModel()
+    detalleViewModel: CuponDetalleViewModel = viewModel(),
+    qrViewModel: GenerarQRViewModel = viewModel()
 ) {
-    val isLoading by viewModel.isLoading.collectAsState()
-    val snackbarMessage by viewModel.snackbarMessage.collectAsState()
-    val idCanje by viewModel.idCanje.collectAsState()
-
+    // --- Estados del DetalleViewModel ---
+    val isIdLoading by detalleViewModel.isLoading.collectAsState()
+    val snackbarMessage by detalleViewModel.snackbarMessage.collectAsState()
+    val idCanje by detalleViewModel.idCanje.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val idUsuario = 1 // Considera obtener esto de un DataStore/ViewModel
 
-    // Mostrar Snackbar cuando haya mensaje
+    // --- Estados del GenerarQRViewModel (basado en tu VM) ---
+    val qrBitmap by qrViewModel.qrBitmap.collectAsState()
+    val isQrLoading by qrViewModel.isqrLoading.collectAsState()
+
+    // --- Controladores para el Bottom Sheet ---
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetOpen by remember { mutableStateOf(false) }
+
+    // Mostrar Snackbar (sin cambios)
     LaunchedEffect(snackbarMessage) {
         snackbarMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.clearSnackbar()
+            detalleViewModel.clearSnackbar()
         }
     }
 
-    // Navegar cuando haya idCanje generado
+    // --- Lanzar el BottomSheet cuando haya idCanje ---
     LaunchedEffect(idCanje) {
         idCanje?.let {
-            navController.navigate("generarQR/$it")
-            viewModel.clearIdCanje()
+            // 1. Indicar al qrViewModel que genere el bitmap
+            qrViewModel.generarQR(it)
+            // 2. Abrir el bottom sheet
+            isSheetOpen = true
+            // 3. Limpiar el idCanje del detalleViewModel
+            detalleViewModel.clearIdCanje()
         }
     }
 
@@ -76,7 +91,7 @@ fun CuponDetalleView(
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PrimaryColor)
@@ -86,10 +101,10 @@ fun CuponDetalleView(
         containerColor = BackgroundLight
     ) { innerPadding ->
 
-        // Estructura principal: Cabecera, Contenido (scroll), Botón (fijo)
+        // Estructura principal (sin cambios)
         Column(
             modifier = Modifier
-                .padding(innerPadding) // Aplica el padding del Scaffold aquí
+                .padding(innerPadding)
                 .fillMaxSize()
         ) {
 
@@ -97,31 +112,26 @@ fun CuponDetalleView(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp) // Altura fija para la cabecera
-                    .background(PrimaryColor), // Color de fondo mientras carga la imagen
-                contentAlignment = Alignment.BottomCenter // Alinea el texto abajo
+                    .height(250.dp)
+                    .background(PrimaryColor),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                // Imagen de fondo que llena el Box
                 AsyncImage(
                     model = promo.imagen,
                     contentDescription = "Imagen de la promoción",
-                    modifier = Modifier.fillMaxSize(), // Llena el Box
-                    contentScale = ContentScale.Crop // Recorta para llenar sin distorsionar
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
-
-                // Degradado sutil sobre la imagen para legibilidad del texto
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
-                                startY = 300f // Inicia el degradado más abajo
+                                startY = 300f
                             )
                         )
                 )
-
-                // Texto del título superpuesto
                 Text(
                     text = promo.nombre,
                     fontSize = 28.sp,
@@ -131,7 +141,7 @@ fun CuponDetalleView(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 24.dp) // Espaciado
+                        .padding(horizontal = 24.dp, vertical = 24.dp)
                 )
             }
 
@@ -139,14 +149,14 @@ fun CuponDetalleView(
             // 📋 Info (Contenido desplazable)
             Column(
                 modifier = Modifier
-                    .weight(1f) // Ocupa el espacio restante
-                    .verticalScroll(rememberScrollState()) // Permite el scroll
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
                 // Tarjeta de Descripción
                 InfoCard(
                     icon = Icons.Default.Description,
-                    title = "En qué consiste",
+                    title = "Descripción del cupón",
                     content = {
                         Text(
                             text = promo.descripcion,
@@ -184,21 +194,21 @@ fun CuponDetalleView(
                     .padding(horizontal = 24.dp, vertical = 20.dp)
             ) {
                 Button(
-                    onClick = { viewModel.generarQr(idUsuario, promo.id) },
-                    enabled = !isLoading,
+                    onClick = { detalleViewModel.generarQr(idUsuario, promo.id) },
+                    enabled = !isIdLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
                 ) {
-                    if (isLoading) {
+                    if (isIdLoading) {
                         CircularProgressIndicator(
                             color = Color.White,
                             modifier = Modifier.size(22.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text("Generando QR...")
+                        Text("Obteniendo folio...")
                     } else {
                         Icon(Icons.Default.QrCode2, contentDescription = null, modifier = Modifier.size(28.dp))
                         Spacer(modifier = Modifier.width(12.dp))
@@ -208,11 +218,91 @@ fun CuponDetalleView(
             }
         }
     }
+
+    // --- MODAL BOTTOM SHEET PARA EL QR ---
+    if (isSheetOpen) {
+
+        // Fondo negro por defecto, ya no cambia de color
+        val sheetContainerColor = TealPrimary
+
+        ModalBottomSheet(
+            onDismissRequest = {
+                isSheetOpen = false
+                // Limpia el QR cuando el sheet se cierra
+                qrViewModel.clearQrData()
+            },
+            sheetState = sheetState,
+            containerColor = sheetContainerColor,
+            modifier = Modifier.navigationBarsPadding()
+        ) {
+            // Contenido del Bottom Sheet
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Damos un poco más de padding abajo
+                    .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 48.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                when {
+                    isQrLoading -> {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(color = Color.White)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("Generando QR...", color = Color.White, fontFamily = PoppinsFamily)
+                        }
+                    }
+                    qrBitmap != null -> {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "¡Tu QR está listo!",
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = PoppinsFamily,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            // Fondo blanco para que el QR sea legible
+                            Image(
+                                bitmap = qrBitmap!!.asImageBitmap(),
+                                contentDescription = "Código QR",
+                                modifier = Modifier
+                                    .size(250.dp)
+                                    .background(Color.White, RoundedCornerShape(16.dp))
+                                    .padding(12.dp) // Padding interno
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Text(
+                                text = "Muestra este código en el establecimiento para validar tu canje.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White.copy(alpha = 0.9f),
+                                textAlign = TextAlign.Center,
+                                fontFamily = PoppinsFamily,
+                                lineHeight = 24.sp
+                            )
+
+                        }
+                    }
+                    else -> {
+                        // Se muestra si !isQrLoading Y qrBitmap == null
+                        Text(
+                            "No se pudo generar el código QR.",
+                            color = Color.White,
+                            fontFamily = PoppinsFamily
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 /**
  * Un Composable reutilizable para mostrar secciones de información
- * de manera estructurada y visualmente atractiva.
+ * (Sin cambios)
  */
 @Composable
 private fun InfoCard(
@@ -246,7 +336,11 @@ private fun InfoCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = Color.Gray.copy(alpha = 0.2f))
+            HorizontalDivider(
+                Modifier,
+                DividerDefaults.Thickness,
+                color = Color.Gray.copy(alpha = 0.2f)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             // Contenido (inyectado)
