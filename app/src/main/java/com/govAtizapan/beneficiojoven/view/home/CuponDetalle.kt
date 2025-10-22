@@ -50,7 +50,7 @@ fun CuponDetalleView(
     val snackbarMessage by detalleViewModel.snackbarMessage.collectAsState()
     val idCanje by detalleViewModel.idCanje.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val idUsuario = 1 // Considera obtener esto de un DataStore/ViewModel
+
 
     // --- Estados del GenerarQRViewModel (basado en tu VM) ---
     val qrBitmap by qrViewModel.qrBitmap.collectAsState()
@@ -194,7 +194,7 @@ fun CuponDetalleView(
                     .padding(horizontal = 24.dp, vertical = 20.dp)
             ) {
                 Button(
-                    onClick = { detalleViewModel.generarQr(idUsuario, promo.id) },
+                    onClick = { detalleViewModel.generarQr(promo.id) },
                     enabled = !isIdLoading,
                     modifier = Modifier
                         .fillMaxWidth()
