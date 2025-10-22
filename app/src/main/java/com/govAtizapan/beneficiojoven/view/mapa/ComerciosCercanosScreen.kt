@@ -2,7 +2,9 @@ package com.govAtizapan.beneficiojoven.view.mapa
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,15 +35,16 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.maps.android.compose.*
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.tasks.await
 
 data class Business(val name: String, val latLng: LatLng, val address: String?)
@@ -57,40 +60,22 @@ fun ComerciosCercanosScreen(navController: NavController) {
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Estado para permisos, ubicación, negocios y mensajes
+    // Estado para permisos, negocios y Google Play Services
     var hasLocationPermission by remember { mutableStateOf(checkLocationPermission(context)) }
     var businesses by remember { mutableStateOf<List<Business>>(emptyList()) }
-    var statusMessage by remember { mutableStateOf("Cargando mapa...") }
     var isGooglePlayServicesAvailable by remember { mutableStateOf(checkGooglePlayServices(context)) }
-    var isPlacesInitialized by remember { mutableStateOf(false) }
+    var isPlacesInitialized by remember { mutableStateOf(Places.isInitialized()) }
     val placesClient = remember { Places.createClient(context) }
 
-    // Inicializar Places API
-    LaunchedEffect(Unit) {
-        if (!Places.isInitialized()) {
-            try {
-                // Reemplaza "TU_CLAVE_API_AQUÍ" con tu clave API real de Google Cloud Console
-                Places.initialize(context, "TU_CLAVE_API_AQUÍ")
-                isPlacesInitialized = true
-                Log.d("ComerciosCercanos", "Places API inicializado correctamente")
-            } catch (e: Exception) {
-                isPlacesInitialized = false
-                statusMessage = "Error: No se pudo inicializar Places API."
-                Log.e("ComerciosCercanos", "Error al inicializar Places API: ${e.message}")
-            }
-        } else {
-            isPlacesInitialized = true
-            Log.d("ComerciosCercanos", "Places API ya estaba inicializado")
-        }
-    }
+    // Estado para manejar la navegación a Google Maps
+    var selectedBusiness by remember { mutableStateOf<Business?>(null) }
 
-    // Lanzador para solicitud de permisos
+    // Lanzador para permisos
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasLocationPermission = isGranted
         if (isGranted) {
-            statusMessage = "Obteniendo ubicación..."
             Log.d("ComerciosCercanos", "Permiso concedido, intentando obtener ubicación")
             coroutineScope.launch(Dispatchers.IO) {
                 fetchUserLocationAndBusinesses(
@@ -100,31 +85,56 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     cameraPositionState,
                     { newBusinesses ->
                         businesses = newBusinesses
-                        statusMessage = if (newBusinesses.isNotEmpty()) {
+                        Log.d("ComerciosCercanos", if (newBusinesses.isNotEmpty()) {
                             "Mostrando ${newBusinesses.size} negocios cercanos."
                         } else {
                             "No se encontraron negocios cercanos."
-                        }
+                        })
                     }
                 )
             }
         } else {
-            statusMessage = "Permiso de ubicación denegado. Mostrando ubicación por defecto."
             Log.w("ComerciosCercanos", "Permiso de ubicación denegado por el usuario")
             cameraPositionState.position = CameraPosition.fromLatLngZoom(defaultLocation, 15f)
         }
     }
 
+    // Lanzador para abrir Google Maps
+    val mapsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { _ ->
+        Log.d("ComerciosCercanos", "Google Maps intent launched")
+    }
+
+    // Efecto para manejar la selección de un negocio y abrir Google Maps
+    LaunchedEffect(selectedBusiness) {
+        selectedBusiness?.let { business ->
+            try {
+                val gmmIntentUri = Uri.parse("google.navigation:q=${business.latLng.latitude},${business.latLng.longitude}")
+                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+                    setPackage("com.google.android.apps.maps")
+                }
+                if (mapIntent.resolveActivity(context.packageManager) != null) {
+                    mapsLauncher.launch(mapIntent)
+                    Log.d("ComerciosCercanos", "Iniciando navegación a ${business.name}")
+                } else {
+                    Log.e("ComerciosCercanos", "Google Maps no está instalado")
+                }
+            } catch (e: Exception) {
+                Log.e("ComerciosCercanos", "Error al abrir Google Maps: ${e.message}")
+            }
+            selectedBusiness = null
+        }
+    }
+
     // Verificar servicios y permisos al cargar
-    LaunchedEffect(isPlacesInitialized) {
+    LaunchedEffect(Unit) {
         if (!isGooglePlayServicesAvailable) {
-            statusMessage = "Error: Google Play Services no disponible."
             Log.e("ComerciosCercanos", "Google Play Services no está disponible o está desactualizado")
             return@LaunchedEffect
         }
 
         if (!isPlacesInitialized) {
-            statusMessage = "Error: Clave API no configurada correctamente."
             Log.e("ComerciosCercanos", "Places API no está inicializado")
             return@LaunchedEffect
         }
@@ -134,7 +144,6 @@ fun ComerciosCercanosScreen(navController: NavController) {
             Log.d("ComerciosCercanos", "Solicitando permiso de ubicación")
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
-            statusMessage = "Obteniendo ubicación..."
             Log.d("ComerciosCercanos", "Permiso ya concedido, obteniendo ubicación")
             coroutineScope.launch(Dispatchers.IO) {
                 fetchUserLocationAndBusinesses(
@@ -144,11 +153,11 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     cameraPositionState,
                     { newBusinesses ->
                         businesses = newBusinesses
-                        statusMessage = if (newBusinesses.isNotEmpty()) {
+                        Log.d("ComerciosCercanos", if (newBusinesses.isNotEmpty()) {
                             "Mostrando ${newBusinesses.size} negocios cercanos."
                         } else {
                             "No se encontraron negocios cercanos."
-                        }
+                        })
                     }
                 )
             }
@@ -212,7 +221,11 @@ fun ComerciosCercanosScreen(navController: NavController) {
                             Marker(
                                 state = MarkerState(position = business.latLng),
                                 title = business.name,
-                                snippet = business.address
+                                snippet = business.address,
+                                onClick = {
+                                    selectedBusiness = business
+                                    true
+                                }
                             )
                         }
                     }
@@ -242,32 +255,60 @@ fun ComerciosCercanosScreen(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(100.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     .background(Color.White)
             ) {
-                Column {
-                    Text(
-                        text = "Información",
-                        modifier = Modifier.padding(16.dp),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = statusMessage,
-                        modifier = Modifier.padding(16.dp),
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     if (!hasLocationPermission) {
                         Button(
-                            onClick = { permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
+                            onClick = {
+                                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                            },
                             modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(end = 8.dp)
                         ) {
                             Text("Reintentar permiso de ubicación")
                         }
+                    }
+                    Button(
+                        onClick = {
+                            if (!hasLocationPermission) {
+                                Log.d("ComerciosCercanos", "Solicitando permiso para recentrar")
+                                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                            } else {
+                                Log.d("ComerciosCercanos", "Intentando recentrar mapa")
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    try {
+                                        val location = fusedLocationClient.lastLocation.await()
+                                        if (location != null) {
+                                            val userLocation = LatLng(location.latitude, location.longitude)
+                                            withContext(Dispatchers.Main) {
+                                                cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
+                                            }
+                                            Log.d("ComerciosCercanos", "Mapa recentrado a: $userLocation")
+                                        } else {
+                                            Log.w("ComerciosCercanos", "Ubicación nula al recentrar")
+                                        }
+                                    } catch (e: SecurityException) {
+                                        Log.e("ComerciosCercanos", "SecurityException al recentrar: ${e.message}")
+                                    } catch (e: Exception) {
+                                        Log.e("ComerciosCercanos", "Error al recentrar: ${e.message}")
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = if (hasLocationPermission) 0.dp else 8.dp)
+                    ) {
+                        Text("Volver a mi ubicación")
                     }
                 }
             }
@@ -310,7 +351,9 @@ suspend fun fetchUserLocationAndBusinesses(
         val location = fusedLocationClient.lastLocation.await()
         if (location != null) {
             val userLocation = LatLng(location.latitude, location.longitude)
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
+            withContext(Dispatchers.Main) {
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
+            }
             Log.d("ComerciosCercanos", "Ubicación obtenida: $userLocation")
             // Obtener negocios cercanos
             val businesses = fetchNearbyBusinesses(placesClient, userLocation)
