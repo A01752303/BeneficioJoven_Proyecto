@@ -58,16 +58,12 @@ object RetrofitClient {
             .client(httpClient)
             .build()
     }
-
-
-
     val promotionsApi: PromotionsApi by lazy {
         retrofit.create(PromotionsApi::class.java)
     }
     val userLoginApi: UserLoginApi by lazy {
         retrofit.create(UserLoginApi::class.java)
     }
-
     val userRegisterApi: UserRegisterApi by lazy {
         retrofit.create(UserRegisterApi::class.java)
     }
@@ -86,4 +82,7 @@ object RetrofitClient {
         retrofit.create(ComercioPromotionsApi::class.java)
     }
 
+    val obtenerDatosUsuarioApi: ObtenerDatosUsuarioApi by lazy{
+        retrofit.create(ObtenerDatosUsuarioApi::class.java)
+    }
 }

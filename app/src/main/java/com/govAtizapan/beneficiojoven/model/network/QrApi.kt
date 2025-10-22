@@ -8,7 +8,6 @@ import retrofit2.http.POST
 
 interface QrApi {
 
-    // POST /api/canjes/generar_qr
     @POST("/functionality/usuario/codigo-qr/")
     suspend fun generarQr(
         @Body body: QrRequest

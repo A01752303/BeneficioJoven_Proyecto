@@ -59,7 +59,6 @@ import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
-
 // --- IMPORTS PARA EL DRAWER ---
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.AccountCircle
@@ -70,7 +69,6 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer // <-- Import corregido
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
-// --- FIN DE IMPORTS ---
 
 val TealPrimary = Color(0xFF5d548f)
 val TealLight = Color(0xFF5d548f)
@@ -103,7 +101,6 @@ fun HomeView(
 ) {
     val promociones by viewModel.promociones.collectAsState()
     val categorias by viewModel2.categorias.collectAsState()
-
     val isLoading by viewModel.isLoading.collectAsState()
     val errorState by viewModel.errorState.collectAsState()
 
@@ -115,11 +112,10 @@ fun HomeView(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()) // <-- ELIMINADO
+// val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()) // <-- ELIMINADO
 
-    // --- Estado para el Navigation Drawer ---
+// --- Estado para el Navigation Drawer ---
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
 
     LaunchedEffect(Unit) {
         if (promociones.isEmpty()) {
@@ -138,7 +134,7 @@ fun HomeView(
         }
     }
 
-    // --- Lógica de filtrado (Sin cambios) ---
+// --- Lógica de filtrado (Sin cambios) ---
     val filteredAndSortedPromos = remember(searchQuery, promociones, selectedCategoryTitulo, sortOption, selectedCouponType) {
         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
         val now = Date()
@@ -173,9 +169,7 @@ fun HomeView(
                         else -> false
                     }
                 }
-
                 isNotExpired && matchesSearch && matchesCategory && matchesCouponType
-
             } catch (e: Exception) {
                 false
             }
@@ -187,12 +181,12 @@ fun HomeView(
         }
     }
 
-    // --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
+// --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                // ... (Contenido del Drawer sin cambios)
+// ... (Contenido del Drawer sin cambios)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -247,9 +241,9 @@ fun HomeView(
     ) { // --- El contenido del Drawer es el Scaffold ---
 
         Scaffold(
-            // modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // <-- ELIMINADO
+// modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // <-- ELIMINADO
             topBar = {
-                // ... (TopAppBar sin cambios)
+// ... (TopAppBar sin cambios)
                 TopAppBar(
                     navigationIcon = {
                         IconButton(onClick = {
@@ -278,7 +272,7 @@ fun HomeView(
                 )
             },
             bottomBar = {
-                // ... (BottomAppBar sin cambios)
+// ... (BottomAppBar sin cambios)
                 BottomAppBar(
                     containerColor = Color.White,
                     tonalElevation = 8.dp
@@ -302,14 +296,14 @@ fun HomeView(
             containerColor = BackgroundGray
         ) { innerPadding ->
 
-            // --- NUEVA ESTRUCTURA DE COLUMNA ---
+// --- NUEVA ESTRUCTURA DE COLUMNA ---
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = innerPadding.calculateTopPadding()) // <-- Padding del TopAppBar
             ) {
 
-                // --- 1. BARRA DE BÚSQUEDA (FIJA) ---
+// --- 1. BARRA DE BÚSQUEDA (FIJA) ---
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -371,10 +365,9 @@ fun HomeView(
                         shape = RoundedCornerShape(50)
                     )
                 }
-                // --- FIN DE LA BARRA DE BÚSQUEDA ---
+// --- FIN DE LA BARRA DE BÚSQUEDA ---
 
-
-                // --- 2. FILTROS (FIJOS) ---
+// --- 2. FILTROS (FIJOS) ---
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -385,9 +378,7 @@ fun HomeView(
                         .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
                         .padding(top = 16.dp) // <-- AÑADIDO: Espacio superior
                 ) {
-
                     SectionTitle("Filtros")
-
                     FilterChipsRow(
                         selectedType = selectedCouponType,
                         onTypeSelected = { selectedCouponType = it },
@@ -395,10 +386,9 @@ fun HomeView(
                         onOptionSelected = { sortOption = it }
                     )
                 }
-                // --- 👆 FIN DEL CONTENIDO FIJO ---
+// --- 👆 FIN DEL CONTENIDO FIJO ---
 
-
-                // --- 3. CONTENIDO DESLIZABLE (SCROLLABLE) ---
+// --- 3. CONTENIDO DESLIZABLE (SCROLLABLE) ---
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -420,21 +410,21 @@ fun HomeView(
                             )
                         }
 
-                        // 'else' AHORA CUBRE EL ESTADO VACÍO Y EL ESTADO CON DATOS
+// 'else' AHORA CUBRE EL ESTADO VACÍO Y EL ESTADO CON DATOS
                         else -> {
                             LazyColumn(
                                 state = lazyListState,
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(
-                                    // top = 16.dp, // <-- ELIMINADO
-                                    // start = 16.dp, // <-- ELIMINADO
-                                    // end = 16.dp,   // <-- ELIMINADO
+// top = 16.dp, // <-- ELIMINADO
+// start = 16.dp, // <-- ELIMINADO
+// end = 16.dp, // <-- ELIMINADO
                                     bottom = innerPadding.calculateBottomPadding() + 12.dp
                                 ),
-                                // verticalArrangement = Arrangement.spacedBy(16.dp) // <-- ELIMINADO
+// verticalArrangement = Arrangement.spacedBy(16.dp) // <-- ELIMINADO
                             ) {
 
-                                // --- 1. CATEGORÍAS (SIEMPRE VISIBLES) ---
+// --- 1. CATEGORÍAS (SIEMPRE VISIBLES) ---
                                 item(key = "category_row") {
                                     CategoryRow(
                                         categories = categorias,
@@ -445,9 +435,9 @@ fun HomeView(
                                     )
                                 }
 
-                                // --- 2. CONTENIDO CONDICIONAL ---
+// --- 2. CONTENIDO CONDICIONAL ---
                                 if (filteredAndSortedPromos.isEmpty()) {
-                                    // --- ESTADO VACÍO (DENTRO DE LA LISTA) ---
+// --- ESTADO VACÍO (DENTRO DE LA LISTA) ---
                                     item(key = "empty_state") {
                                         Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
                                         EmptyStateView(
@@ -459,7 +449,7 @@ fun HomeView(
                                         )
                                     }
                                 } else {
-                                    // --- LISTA DE RESULTADOS ---
+// --- LISTA DE RESULTADOS ---
                                     item(key = "results_count") {
                                         Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
                                         val resultsText = if (filteredAndSortedPromos.size == 1) {
@@ -501,7 +491,7 @@ fun HomeView(
                                             }
                                         }
 
-                                        // --- ENVOLTURA AÑADIDA ---
+// --- ENVOLTURA AÑADIDA ---
                                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                                             PromoCard(
                                                 promo = promo,
@@ -523,7 +513,6 @@ fun HomeView(
     } // --- Aquí cierra el ModalNavigationDrawer ---
 }
 
-
 @Composable
 private fun SectionTitle(title: String) {
     Text(
@@ -538,7 +527,6 @@ private fun SectionTitle(title: String) {
     )
 }
 
-// --- INICIO DE LA MODIFICACIÓN ---
 @Composable
 fun PromoCard(
     promo: PromotionResponseGET,
@@ -629,11 +617,10 @@ fun PromoCard(
                     fontFamily = PoppinsFamily
                 )
 
-                // --- INICIO DE LÓGICA DE PRECIO/DESCUENTO ---
+// --- INICIO DE LÓGICA DE PRECIO/DESCUENTO ---
                 val tipo = promo.tipo.lowercase().trim()
                 val precioDouble = promo.precio.toDoubleOrNull() ?: 0.0
                 val precioValido = precioDouble > 0.0
-
                 var showSpacer = false
 
                 when (tipo) {
@@ -660,7 +647,7 @@ fun PromoCard(
                         }
                     }
                     "porcentaje" -> {
-                        // Convertimos el string de porcentaje a Double
+// Convertimos el string de porcentaje a Double
                         val porcentajeDouble = promo.porcentaje.toDoubleOrNull() ?: 0.0
                         val porcentajeValido = porcentajeDouble > 0.0
 
@@ -674,12 +661,12 @@ fun PromoCard(
                                     fontFamily = PoppinsFamily,
                                 )
 
-                                // Formatear el porcentaje (ej. 20.0 -> "20", 20.5 -> "20.5")
+// Formatear el porcentaje (ej. 20.0 -> "20", 20.5 -> "20.5")
                                 val descuentoFormateado = if (porcentajeDouble % 1.0 == 0.0) {
-                                    // Si es un número entero (termina en .0)
+// Si es un número entero (termina en .0)
                                     porcentajeDouble.toInt().toString()
                                 } else {
-                                    // Si tiene decimales
+// Si tiene decimales
                                     String.format("%.1f", porcentajeDouble)
                                 }
 
@@ -754,7 +741,7 @@ fun PromoCard(
                         showSpacer = true
                     }
                     else -> {
-                        // Fallback: Si el tipo no se reconoce, pero hay un precio, mostrarlo.
+// Fallback: Si el tipo no se reconoce, pero hay un precio, mostrarlo.
                         if (precioValido) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -861,7 +848,6 @@ private fun FilterChipsRow(
             )
         }
 
-
         items(SortOption.values()) { option ->
             FilterChip(
                 selected = selectedOption == option,
@@ -926,7 +912,7 @@ private fun EmptyStateView(
 ) {
     Box(
         modifier = modifier
-            // .fillMaxSize() // <-- MODIFICADO: Ya no llena toda la pantalla
+// .fillMaxSize() // <-- MODIFICADO: Ya no llena toda la pantalla
             .padding(16.dp)
             .height(200.dp), // Damos una altura fija para centrarlo
         contentAlignment = Alignment.Center
@@ -957,7 +943,7 @@ private fun SkeletonList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         userScrollEnabled = false
     ) {
-        // Simula el espacio de las categorías
+// Simula el espacio de las categorías
         item {
             Box(
                 modifier = Modifier
@@ -1028,7 +1014,6 @@ private fun CategoryRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
     ) {
-
         item {
             CategoryItem(
                 title = "Todos",
@@ -1066,9 +1051,7 @@ private fun CategoryItem(
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         if (!imageUrl.isNullOrBlank()) {
-
             val imageLoader = ImageLoader.Builder(context)
                 .components {
                     add(SvgDecoder.Factory())

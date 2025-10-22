@@ -228,7 +228,6 @@ fun CuponDetalleView(
         ModalBottomSheet(
             onDismissRequest = {
                 isSheetOpen = false
-                // Limpia el QR cuando el sheet se cierra
                 qrViewModel.clearQrData()
             },
             sheetState = sheetState,
