@@ -1,5 +1,6 @@
 package com.govAtizapan.beneficiojoven.view.home
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi // <-- Importante
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
@@ -51,15 +52,12 @@ import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-// Imports añadidos para el TopAppBar colapsable
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-// import androidx.compose.ui.input.nestedscroll.nestedScroll // <-- ELIMINADO
 import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
-// --- IMPORTS PARA EL DRAWER ---
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Settings
@@ -69,6 +67,8 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer // <-- Import corregido
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
+import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
+import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.UserRepository
 
 val TealPrimary = Color(0xFF5d548f)
 val TealLight = Color(0xFF5d548f)
@@ -112,6 +112,11 @@ fun HomeView(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
+    // --- ESTADO PARA DATOS DE USUARIO ---
+    val userRepository = remember { UserRepository() }
+    var userData by remember { mutableStateOf<ObtenerUsuarioResponseGET?>(null) }
+    // --- FIN DE ESTADO ---
+
 // val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()) // <-- ELIMINADO
 
 // --- Estado para el Navigation Drawer ---
@@ -134,7 +139,10 @@ fun HomeView(
         }
     }
 
-// --- Lógica de filtrado (Sin cambios) ---
+    LaunchedEffect(userRepository) {
+        userData = userRepository.fetchUserData()
+    }
+
     val filteredAndSortedPromos = remember(searchQuery, promociones, selectedCategoryTitulo, sortOption, selectedCouponType) {
         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
         val now = Date()
@@ -182,25 +190,73 @@ fun HomeView(
     }
 
 // --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
+    // --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-// ... (Contenido del Drawer sin cambios)
-                Box(
+                // --- REEMPLAZAMOS EL 'Box' ANTERIOR POR UN 'Column' CON LOS DATOS ---
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp)
-                        .background(TealPrimary),
-                    contentAlignment = Alignment.CenterStart
+                        .background(TealPrimary)
+                        .padding(16.dp),
+                    // Alineamos el contenido a la izquierda (inicio)
+                    horizontalAlignment = Alignment.Start
                 ) {
+                    Spacer(Modifier.height(24.dp)) // Espacio superior
+
+                    // Círculo de Perfil
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            // Un fondo semi-transparente para el círculo
+                            .background(Color.White.copy(alpha = 0.3f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Perfil",
+                            tint = Color.White,
+                            modifier = Modifier.size(50.dp)
+                        )
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    val currentData = userData
+                    Log.d("HomeView", "Valor de userData en el Drawer: $currentData")
+
+                    val nombreCompleto = if (currentData != null) {
+                        "${currentData.nombre} ${currentData.apellido_paterno} ${currentData.apellido_materno}".trim()
+                    } else {
+                        "Cargando..."
+                    }
+
                     Text(
-                        "Beneficio Joven",
-                        style = MaterialTheme.typography.titleLarge.copy(color = Color.White),
-                        modifier = Modifier.padding(16.dp),
-                        fontFamily = PoppinsFamily
+                        text = nombreCompleto,
+                        style = MaterialTheme.typography.titleMedium.copy(color = Color.White),
+                        fontFamily = PoppinsFamily,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
+
+                    Spacer(Modifier.height(4.dp))
+
+                    Text(
+                        text = userData?.correo ?: "...",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.8f)),
+                        fontFamily = PoppinsFamily,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Spacer(Modifier.height(16.dp)) // Espacio inferior
                 }
+                // --- FIN DEL NUEVO ENCABEZADO DEL DRAWER ---
+
                 Spacer(Modifier.height(12.dp))
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Perfil") },
@@ -208,6 +264,7 @@ fun HomeView(
                     selected = false,
                     onClick = {
                         coroutineScope.launch { drawerState.close() }
+                        // TODO: Navegar a la pantalla de perfil si es necesario
                     }
                 )
                 NavigationDrawerItem(
@@ -232,7 +289,13 @@ fun HomeView(
                     label = { Text("Cerrar Sesión", fontFamily = PoppinsFamily) },
                     selected = false,
                     onClick = {
-                        navController.navigate(AppScreens.BienvenidaView.route)
+                        navController.navigate(AppScreens.BienvenidaView.route) {
+                            // Limpia la pila de navegación para que el usuario no pueda volver
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
                         coroutineScope.launch { drawerState.close() }
                     }
                 )

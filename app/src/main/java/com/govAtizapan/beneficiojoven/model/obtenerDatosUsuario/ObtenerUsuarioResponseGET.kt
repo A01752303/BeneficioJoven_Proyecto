@@ -6,5 +6,5 @@ data class ObtenerUsuarioResponseGET (
     val apellido_paterno: String,
     val apellido_materno: String,
     val correo: String,
-    val telefono: String?
+    val telefono: String
 )

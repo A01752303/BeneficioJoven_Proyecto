@@ -6,10 +6,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ObtenerDatosUsuarioApi{
-    @GET("/functionality/usuario/info/{token}")
-    suspend fun obtenerDatosUsuario(
-        @Path("token") token: String
-    ): Response<ObtenerUsuarioResponseGET>
+    @GET("/functionality/usuario/info/")
+    suspend fun obtenerDatosUsuario(): Response<ObtenerUsuarioResponseGET>
 }
 
 

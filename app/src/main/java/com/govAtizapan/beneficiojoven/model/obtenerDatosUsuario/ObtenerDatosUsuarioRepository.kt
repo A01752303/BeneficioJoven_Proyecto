@@ -1,43 +1,43 @@
 package com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario
 
+import android.util.Log
 import com.govAtizapan.beneficiojoven.model.network.RetrofitClient
-import com.govAtizapan.beneficiojoven.model.sessionManager.SessionManager
+import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
+// Ya no importamos SessionManager aquí, el interceptor se encarga.
 
 class UserRepository {
 
     private val api = RetrofitClient.obtenerDatosUsuarioApi
+    private val TAG = "UserRepository"
 
     suspend fun fetchUserData(): ObtenerUsuarioResponseGET? {
-        // 1. Obtienes el token guardado en tu SessionManager
-        val authToken = SessionManager.accessToken
+        Log.d(TAG, "Iniciando fetchUserData (token será manejado por interceptor)")
 
-        // 2. Verificas que el token no sea nulo o vacío antes de hacer la llamada
-        if (!authToken.isNullOrEmpty()) {
-            try {
-                // 3. Pasas el token como argumento a la función de la API
-                val response = api.obtenerDatosUsuario(authToken)
+        // 1. Ya no obtenemos el token manualmente.
+        // El 'authInterceptor' en RetrofitClient se encargará de añadirlo
+        // automáticamente a la cabecera (Header).
 
-                if (response.isSuccessful) {
-                    val userData = response.body()
-                    // Aquí manejas la respuesta exitosa con los datos del usuario (userData)
-                    println("Datos del usuario recibidos: $userData")
-                    return userData // <-- DEVOLVEMOS LOS DATOS
-                } else {
-                    // Aquí manejas los errores, como token inválido, etc.
-                    val errorCode = response.code()
-                    val errorMessage = response.errorBody()?.string()
-                    println("Error al obtener datos: Código $errorCode, Mensaje: $errorMessage")
-                    return null // <-- Devolvemos null en caso de error
-                }
-            } catch (e: Exception) {
-                // Manejas excepciones de red u otras
-                println("Excepción al realizar la llamada: ${e.message}")
-                return null // <-- Devolvemos null en caso de excepción
+        try {
+            // 2. Llamamos a la función sin pasarle el token
+            val response = api.obtenerDatosUsuario()
+            Log.d(TAG, "Llamada a API realizada. URL: ${response.raw().request.url}")
+
+
+            if (response.isSuccessful) {
+                val userData = response.body()
+                Log.i(TAG, "Datos del usuario recibidos: $userData")
+                return userData // <-- DEVOLVEMOS LOS DATOS
+            } else {
+                // Manejamos errores
+                val errorCode = response.code()
+                val errorMessage = response.errorBody()?.string()
+                Log.e(TAG, "Error al obtener datos: Código $errorCode, Mensaje: $errorMessage")
+                return null // <-- Devolvemos null en caso de error
             }
-        } else {
-            // Manejas el caso en que no haya un token disponible
-            println("Error: No se encontró un token de autenticación.")
-            return null // <-- Devolvemos null si no hay token
+        } catch (e: Exception) {
+            // Manejamos excepciones de red u otras
+            Log.e(TAG, "Excepción al realizar la llamada: ${e.message}", e)
+            return null // <-- Devolvemos null en caso de excepción
         }
     }
 }
