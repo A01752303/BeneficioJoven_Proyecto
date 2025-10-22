@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -54,7 +55,6 @@ fun ComerciosCercanosScreen(navController: NavController) {
     }
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    val placesClient = remember { Places.createClient(context) }
     val coroutineScope = rememberCoroutineScope()
 
     // Estado para permisos, ubicación, negocios y mensajes
@@ -62,6 +62,27 @@ fun ComerciosCercanosScreen(navController: NavController) {
     var businesses by remember { mutableStateOf<List<Business>>(emptyList()) }
     var statusMessage by remember { mutableStateOf("Cargando mapa...") }
     var isGooglePlayServicesAvailable by remember { mutableStateOf(checkGooglePlayServices(context)) }
+    var isPlacesInitialized by remember { mutableStateOf(false) }
+    val placesClient = remember { Places.createClient(context) }
+
+    // Inicializar Places API
+    LaunchedEffect(Unit) {
+        if (!Places.isInitialized()) {
+            try {
+                // Reemplaza "TU_CLAVE_API_AQUÍ" con tu clave API real de Google Cloud Console
+                Places.initialize(context, "TU_CLAVE_API_AQUÍ")
+                isPlacesInitialized = true
+                Log.d("ComerciosCercanos", "Places API inicializado correctamente")
+            } catch (e: Exception) {
+                isPlacesInitialized = false
+                statusMessage = "Error: No se pudo inicializar Places API."
+                Log.e("ComerciosCercanos", "Error al inicializar Places API: ${e.message}")
+            }
+        } else {
+            isPlacesInitialized = true
+            Log.d("ComerciosCercanos", "Places API ya estaba inicializado")
+        }
+    }
 
     // Lanzador para solicitud de permisos
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -90,22 +111,21 @@ fun ComerciosCercanosScreen(navController: NavController) {
         } else {
             statusMessage = "Permiso de ubicación denegado. Mostrando ubicación por defecto."
             Log.w("ComerciosCercanos", "Permiso de ubicación denegado por el usuario")
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(defaultLocation, 15f)
         }
     }
 
     // Verificar servicios y permisos al cargar
-    LaunchedEffect(Unit) {
-        // Verificar Google Play Services
+    LaunchedEffect(isPlacesInitialized) {
         if (!isGooglePlayServicesAvailable) {
             statusMessage = "Error: Google Play Services no disponible."
             Log.e("ComerciosCercanos", "Google Play Services no está disponible o está desactualizado")
             return@LaunchedEffect
         }
 
-        // Verificar si Places está inicializado
-        if (!Places.isInitialized()) {
-            Log.e("ComerciosCercanos", "Places API no está inicializado. Verifica la clave API en AndroidManifest.xml")
+        if (!isPlacesInitialized) {
             statusMessage = "Error: Clave API no configurada correctamente."
+            Log.e("ComerciosCercanos", "Places API no está inicializado")
             return@LaunchedEffect
         }
 
@@ -171,7 +191,7 @@ fun ComerciosCercanosScreen(navController: NavController) {
                 color = TealPrimary
             )
 
-            if (isGooglePlayServicesAvailable) {
+            if (isGooglePlayServicesAvailable && isPlacesInitialized) {
                 Box(modifier = Modifier.weight(1f)) {
                     GoogleMap(
                         modifier = Modifier.fillMaxSize(),
@@ -206,10 +226,14 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Google Play Services no disponible. Por favor, actualiza o instala.",
+                        text = if (!isGooglePlayServicesAvailable) {
+                            "Google Play Services no disponible. Por favor, actualiza o instala."
+                        } else {
+                            "Error al inicializar Places API. Verifica la clave API."
+                        },
                         color = Color.Red,
                         fontSize = 16.sp,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
