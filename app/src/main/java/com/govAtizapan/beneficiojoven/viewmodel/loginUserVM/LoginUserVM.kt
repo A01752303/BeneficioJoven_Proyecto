@@ -11,6 +11,7 @@ import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.govAtizapan.beneficiojoven.model.sessionManager.SessionRole // ⬅️ 1. IMPORTA EL ENUM 'UserType'
 
 class LoginUserVM : ViewModel() {
     private val _ui = MutableStateFlow(LoginUserUiState())
@@ -35,19 +36,40 @@ class LoginUserVM : ViewModel() {
                     if (loginData != null) {
                         if (loginData.tipo.equals(expectedRole.name, ignoreCase = true)) {
                             _ui.value = LoginUserUiState(isLoading = false, success = "¡Bienvenido!")
-                            // --- ¡CAMBIO REALIZADO AQUÍ! ---
-                            // Guardamos el access_token en nuestro gestor de sesión.
-                            SessionManager.saveAuthToken(loginData.accessToken)
+
                             // ------------------------------------
+                            // ⬅️ 2. LÍNEA ANTIGUA ELIMINADA
+                            // SessionManager.saveAuthToken(loginData.accessToken)
+                            // ------------------------------------
+
+                            // ⬅️ 3. LÓGICA NUEVA AÑADIDA
+                            // Mapea tu 'UserRole' (del ViewModel) al 'UserType' (del SessionManager)
+                            val sessionUserType = when (expectedRole) {
+                                UserRole.Usuario -> SessionRole.Usuario
+                                UserRole.Colaborador -> SessionRole.Colaborador
+                                // Agrega más casos si es necesario
+                            }
+
+                            // Guarda la sesión completa con el TIPO
+                            SessionManager.saveSession(loginData.accessToken, sessionUserType)
+                            // ------------------------------------
+
 
                             _ui.value = LoginUserUiState(isLoading = false, success = "¡Bienvenido!")
                             Log.d("Cambió de pantalla", "cambio")
-                            Log.d("Imprimir token", "El token es: ${SessionManager.accessToken}")
                             Log.d("Imprimir Response", "El response es: $resp")
 
                             when (expectedRole) {
-                                UserRole.Usuario -> navController.navigate(AppScreens.HomeView.route)
-                                UserRole.Colaborador -> navController.navigate(AppScreens.ComercioHome.route)
+                                UserRole.Usuario -> navController.navigate(AppScreens.HomeView.route){
+                                    popUpTo(AppScreens.LoginView.route) {
+                                        inclusive = true
+                                    }
+                                }
+                                UserRole.Colaborador -> navController.navigate(AppScreens.ComercioHome.route){
+                                    popUpTo(AppScreens.LoginView.route) {
+                                        inclusive = true
+                                    }
+                                }
                             }
 
                         } else {
@@ -66,3 +88,10 @@ class LoginUserVM : ViewModel() {
         }
     }
 }
+
+// ⛔️ NOTA: Asumo que tu enum 'UserRole' se ve algo así:
+// enum class UserRole {
+//    Usuario,
+//    Colaborador
+// }
+// Si 'Colaborador' no es el nombre correcto, ajústalo en el 'when' de arriba.

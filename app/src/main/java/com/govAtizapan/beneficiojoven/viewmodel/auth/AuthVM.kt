@@ -12,10 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-// AuthViewModel.kt
 class AuthVM : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
-
     private val _authState = MutableStateFlow(AuthState())
     val authState = _authState.asStateFlow()
 
@@ -52,14 +50,11 @@ class AuthVM : ViewModel() {
             }
         }
     }
-
     private fun processAuthResult(result: AuthResult) {
         _authState.value = AuthState(isLoading = false)
         val isNewUser = result.additionalUserInfo?.isNewUser ?: false
         if (isNewUser) {
             _navigationState.value = LoginNavigationState.NavigateToNewUserProfile
-        } else {
-            _navigationState.value = LoginNavigationState.NavigateToHome
         }
     }
 

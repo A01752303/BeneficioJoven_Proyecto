@@ -135,16 +135,14 @@ fun LoginView(
         }
     }
 
-    // 6. Llama a tu Composable de UI, pasándole la función que debe ejecutar al hacer clic
     Login(
         onLoginClicked = { email, pass ->
             val requestBody = LoginUserRequest(email = email, contrasena = pass)
-            // Llamamos a la función del ViewModel que se encarga del login en tu backend.
             loginViewModel.attemptLogin(
                 body = requestBody,
                 expectedRole = UserRole.Usuario, // Asumimos que esta vista es para el rol "Usuario".
                 navController = navController)
-            // authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
+            authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
         },
         onGoogleClick = {
             googleLauncher.launch(googleSignInClient.signInIntent)

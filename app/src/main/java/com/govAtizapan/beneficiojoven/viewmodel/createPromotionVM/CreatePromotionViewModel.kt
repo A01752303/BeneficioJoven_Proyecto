@@ -135,8 +135,10 @@ class CreatePromotionViewModel : ViewModel() {
         if (!s.isValid) return
 
         viewModelScope.launch {
+
+            val accessToken = SessionManager.fetchAuthToken()
             // Validar sesión
-            if (SessionManager.accessToken.isNullOrBlank()) {
+            if (accessToken.isNullOrBlank()) {
                 update { copy(errorMessage = "No hay token de sesión. Inicia sesión de nuevo.") }
                 return@launch
             }

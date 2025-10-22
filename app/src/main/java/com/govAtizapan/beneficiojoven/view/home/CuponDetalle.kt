@@ -32,11 +32,9 @@ import com.govAtizapan.beneficiojoven.view.home.homeViews.TealPrimary
 import com.govAtizapan.beneficiojoven.viewmodel.cupondetalle.CuponDetalleViewModel
 import com.govAtizapan.beneficiojoven.viewmodel.generarqr.GenerarQRViewModel
 
-// Definición de colores
 val PrimaryColor = Color(0xFF5d548f)
 val BackgroundLight = Color(0xFFF8F9FA)
 
-// Ya no se necesita el enum RedemptionStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,22 +44,18 @@ fun CuponDetalleView(
     detalleViewModel: CuponDetalleViewModel = viewModel(),
     qrViewModel: GenerarQRViewModel = viewModel()
 ) {
-    // --- Estados del DetalleViewModel ---
     val isIdLoading by detalleViewModel.isLoading.collectAsState()
     val snackbarMessage by detalleViewModel.snackbarMessage.collectAsState()
     val idCanje by detalleViewModel.idCanje.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
 
-    // --- Estados del GenerarQRViewModel (basado en tu VM) ---
     val qrBitmap by qrViewModel.qrBitmap.collectAsState()
     val isQrLoading by qrViewModel.isqrLoading.collectAsState()
 
-    // --- Controladores para el Bottom Sheet ---
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by remember { mutableStateOf(false) }
 
-    // Mostrar Snackbar (sin cambios)
     LaunchedEffect(snackbarMessage) {
         snackbarMessage?.let {
             snackbarHostState.showSnackbar(it)
@@ -69,14 +63,10 @@ fun CuponDetalleView(
         }
     }
 
-    // --- Lanzar el BottomSheet cuando haya idCanje ---
     LaunchedEffect(idCanje) {
         idCanje?.let {
-            // 1. Indicar al qrViewModel que genere el bitmap
             qrViewModel.generarQR(it)
-            // 2. Abrir el bottom sheet
             isSheetOpen = true
-            // 3. Limpiar el idCanje del detalleViewModel
             detalleViewModel.clearIdCanje()
         }
     }
@@ -102,14 +92,12 @@ fun CuponDetalleView(
         containerColor = BackgroundLight
     ) { innerPadding ->
 
-        // Estructura principal (sin cambios)
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
 
-            // 📸 Sección superior (Cabecera con imagen completa)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -169,7 +157,6 @@ fun CuponDetalleView(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Tarjeta de Vigencia
                 InfoCard(
                     icon = Icons.Default.CalendarToday,
                     title = "Vigencia",
@@ -186,7 +173,6 @@ fun CuponDetalleView(
                 )
             }
 
-            // 🎟️ Botón (Fijo en la parte inferior)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,10 +204,8 @@ fun CuponDetalleView(
         }
     }
 
-    // --- MODAL BOTTOM SHEET PARA EL QR ---
     if (isSheetOpen) {
 
-        // Fondo negro por defecto, ya no cambia de color
         val sheetContainerColor = TealPrimary
 
         ModalBottomSheet(
@@ -233,11 +217,9 @@ fun CuponDetalleView(
             containerColor = sheetContainerColor,
             modifier = Modifier.navigationBarsPadding()
         ) {
-            // Contenido del Bottom Sheet
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    // Damos un poco más de padding abajo
                     .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 48.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -262,7 +244,6 @@ fun CuponDetalleView(
                                 color = Color.White
                             )
                             Spacer(modifier = Modifier.height(24.dp))
-                            // Fondo blanco para que el QR sea legible
                             Image(
                                 bitmap = qrBitmap!!.asImageBitmap(),
                                 contentDescription = "Código QR",
@@ -284,7 +265,6 @@ fun CuponDetalleView(
                         }
                     }
                     else -> {
-                        // Se muestra si !isQrLoading Y qrBitmap == null
                         Text(
                             "No se pudo generar el código QR.",
                             color = Color.White,
@@ -297,11 +277,6 @@ fun CuponDetalleView(
     }
 }
 
-
-/**
- * Un Composable reutilizable para mostrar secciones de información
- * (Sin cambios)
- */
 @Composable
 private fun InfoCard(
     icon: ImageVector,
@@ -315,7 +290,6 @@ private fun InfoCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            // Fila para Icono y Título
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = icon,
@@ -340,8 +314,6 @@ private fun InfoCard(
                 color = Color.Gray.copy(alpha = 0.2f)
             )
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Contenido (inyectado)
             content()
         }
     }

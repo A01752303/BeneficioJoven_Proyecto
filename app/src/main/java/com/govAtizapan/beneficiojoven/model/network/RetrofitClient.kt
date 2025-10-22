@@ -22,17 +22,15 @@ object RetrofitClient {
     private val authInterceptor = Interceptor { chain ->
         val original = chain.request()
 
-        // 🔄 Toma el token actual del SessionManager
-        val AUTH_TOKEN = SessionManager.accessToken
+        val authToken = SessionManager.fetchAuthToken()
 
         val request = original.newBuilder()
-            // Solo agrega el header si hay token guardado
             .apply {
-                if (AUTH_TOKEN != null) {
-                    header("Authorization", "Bearer $AUTH_TOKEN")
+                if (authToken != null) { // Cambia "AUTH_TOKEN" por "authToken"
+                    header("Authorization", "Bearer $authToken")
                 }
             }
-            .header("Accept", "application/json") // 🔑 Especifica que esperas JSON
+            .header("Accept", "application/json")
             .method(original.method, original.body)
             .build()
 

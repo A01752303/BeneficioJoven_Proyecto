@@ -113,5 +113,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("io.coil-kt:coil-svg:2.6.0")
+
+    implementation("androidx.security:security-crypto-ktx:1.1.0")
 }
 

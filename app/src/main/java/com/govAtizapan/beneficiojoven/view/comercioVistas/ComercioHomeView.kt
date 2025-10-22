@@ -36,11 +36,9 @@ fun ComercioHome(
 ) {
     val ui by vm.ui.collectAsState()
 
-    // --- Estado UI local para búsqueda y filtros (mismo patrón que Home) ---
     var searchQuery by remember { mutableStateOf("") }
     var filtro by remember { mutableStateOf(ComercioFilter.TODAS) }
 
-    // --- Filtrado en memoria (por nombre y estado activo/inactivo) ---
     val promocionesFiltradas = remember(ui.promociones, searchQuery, filtro) {
         ui.promociones
             .filter { p ->
