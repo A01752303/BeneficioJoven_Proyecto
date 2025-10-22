@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.govAtizapan.beneficiojoven.model.promotionget.PromotionResponseGET
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
+import com.govAtizapan.beneficiojoven.view.home.homeViews.TealPrimary
 import com.govAtizapan.beneficiojoven.viewmodel.cupondetalle.CuponDetalleViewModel
 import com.govAtizapan.beneficiojoven.viewmodel.generarqr.GenerarQRViewModel
 
@@ -146,14 +147,12 @@ fun CuponDetalleView(
             }
 
 
-            // 📋 Info (Contenido desplazable)
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
-                // Tarjeta de Descripción
                 InfoCard(
                     icon = Icons.Default.Description,
                     title = "Descripción del cupón",

@@ -1,4 +1,4 @@
-package com.govAtizapan.beneficiojoven.view.home
+package com.govAtizapan.beneficiojoven.view.home.homeViews
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi // <-- Importante
@@ -63,6 +63,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer // <-- Import corregido
 import androidx.compose.material3.NavigationDrawerItem
@@ -112,14 +113,10 @@ fun HomeView(
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // --- ESTADO PARA DATOS DE USUARIO ---
     val userRepository = remember { UserRepository() }
     var userData by remember { mutableStateOf<ObtenerUsuarioResponseGET?>(null) }
-    // --- FIN DE ESTADO ---
 
-// val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState()) // <-- ELIMINADO
 
-// --- Estado para el Navigation Drawer ---
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     LaunchedEffect(Unit) {
@@ -189,19 +186,15 @@ fun HomeView(
         }
     }
 
-// --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
-    // --- CORRECCIÓN: Envolver Scaffold en ModalNavigationDrawer ---
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                // --- REEMPLAZAMOS EL 'Box' ANTERIOR POR UN 'Column' CON LOS DATOS ---
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(TealPrimary)
                         .padding(16.dp),
-                    // Alineamos el contenido a la izquierda (inicio)
                     horizontalAlignment = Alignment.Start
                 ) {
                     Spacer(Modifier.height(24.dp)) // Espacio superior
@@ -212,13 +205,13 @@ fun HomeView(
                             .size(80.dp)
                             .clip(CircleShape)
                             // Un fondo semi-transparente para el círculo
-                            .background(Color.White.copy(alpha = 0.3f)),
+                            .background(White.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.AccountCircle,
                             contentDescription = "Perfil",
-                            tint = Color.White,
+                            tint = White,
                             modifier = Modifier.size(50.dp)
                         )
                     }
@@ -236,7 +229,7 @@ fun HomeView(
 
                     Text(
                         text = nombreCompleto,
-                        style = MaterialTheme.typography.titleMedium.copy(color = Color.White),
+                        style = MaterialTheme.typography.titleMedium.copy(color = White),
                         fontFamily = PoppinsFamily,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -247,7 +240,7 @@ fun HomeView(
 
                     Text(
                         text = userData?.correo ?: "...",
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.8f)),
+                        style = MaterialTheme.typography.bodyMedium.copy(color = White.copy(alpha = 0.8f)),
                         fontFamily = PoppinsFamily,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -283,7 +276,11 @@ fun HomeView(
                         coroutineScope.launch { drawerState.close() }
                     }
                 )
-                Divider(modifier = Modifier.padding(vertical = 12.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    thickness = DividerDefaults.Thickness,
+                    color = DividerDefaults.color
+                )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión") },
                     label = { Text("Cerrar Sesión", fontFamily = PoppinsFamily) },
@@ -304,9 +301,7 @@ fun HomeView(
     ) { // --- El contenido del Drawer es el Scaffold ---
 
         Scaffold(
-// modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // <-- ELIMINADO
             topBar = {
-// ... (TopAppBar sin cambios)
                 TopAppBar(
                     navigationIcon = {
                         IconButton(onClick = {
@@ -317,14 +312,14 @@ fun HomeView(
                             Icon(
                                 imageVector = Icons.Default.Menu,
                                 contentDescription = "Abrir menú",
-                                tint = Color.White
+                                tint = White
                             )
                         }
                     },
                     title = {
                         Text(
                             "Home",
-                            color = Color.White,
+                            color = White,
                             fontFamily = PoppinsFamily,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -337,7 +332,7 @@ fun HomeView(
             bottomBar = {
 // ... (BottomAppBar sin cambios)
                 BottomAppBar(
-                    containerColor = Color.White,
+                    containerColor = White,
                     tonalElevation = 8.dp
                 ) {
                     Row(
@@ -386,7 +381,7 @@ fun HomeView(
                         placeholder = {
                             Text(
                                 "Busca tu cupón...",
-                                color = Color.White.copy(alpha = 0.7f),
+                                color = White.copy(alpha = 0.7f),
                                 fontFamily = PoppinsFamily,
                                 fontSize = 14.sp,
                             )
@@ -395,7 +390,7 @@ fun HomeView(
                             Icon(
                                 Icons.Default.Search,
                                 contentDescription = "Buscar",
-                                tint = Color.White,
+                                tint = White,
                                 modifier = Modifier.size(20.dp)
                             )
                         },
@@ -405,22 +400,22 @@ fun HomeView(
                                     Icon(
                                         Icons.Default.Close,
                                         contentDescription = "Limpiar",
-                                        tint = Color.White,
+                                        tint = White,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
                             }
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            cursorColor = Color.White,
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.7f),
-                            focusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
-                            unfocusedPlaceholderColor = Color.White.copy(alpha = 0.7f),
-                            focusedLeadingIconColor = Color.White,
-                            unfocusedLeadingIconColor = Color.White,
-                            focusedTrailingIconColor = Color.White,
-                            unfocusedTrailingIconColor = Color.White,
+                            cursorColor = White,
+                            focusedBorderColor = White,
+                            unfocusedBorderColor = White.copy(alpha = 0.7f),
+                            focusedPlaceholderColor = White.copy(alpha = 0.7f),
+                            unfocusedPlaceholderColor = White.copy(alpha = 0.7f),
+                            focusedLeadingIconColor = White,
+                            unfocusedLeadingIconColor = White,
+                            focusedTrailingIconColor = White,
+                            unfocusedTrailingIconColor = White,
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent
                         ),
@@ -435,7 +430,7 @@ fun HomeView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = Color.White, // Fondo blanco para los filtros
+                            color = White, // Fondo blanco para los filtros
                             shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                         )
                         .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
@@ -652,7 +647,7 @@ fun PromoCard(
                     Icon(
                         imageVector = Icons.Default.Schedule,
                         contentDescription = "Fecha de vencimiento",
-                        tint = Color.White,
+                        tint = White,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -660,7 +655,7 @@ fun PromoCard(
                         text = validityText,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White,
+                        color = White,
                         fontFamily = PoppinsFamily,
                     )
                 }
@@ -724,12 +719,9 @@ fun PromoCard(
                                     fontFamily = PoppinsFamily,
                                 )
 
-// Formatear el porcentaje (ej. 20.0 -> "20", 20.5 -> "20.5")
                                 val descuentoFormateado = if (porcentajeDouble % 1.0 == 0.0) {
-// Si es un número entero (termina en .0)
                                     porcentajeDouble.toInt().toString()
                                 } else {
-// Si tiene decimales
                                     String.format("%.1f", porcentajeDouble)
                                 }
 
@@ -889,7 +881,7 @@ private fun FilterChipsRow(
                 label = { Text(type, fontFamily = PoppinsFamily) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = TealLight,
-                    selectedLabelColor = Color.White
+                    selectedLabelColor = White
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     borderColor = TealPrimary,
@@ -919,7 +911,7 @@ private fun FilterChipsRow(
                 label = { Text(option.label) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = TealLight,
-                    selectedLabelColor = Color.White
+                    selectedLabelColor = White
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     borderColor = TealPrimary,
@@ -1072,7 +1064,7 @@ private fun CategoryRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White), // <-- Fondo blanco
+            .background(White), // <-- Fondo blanco
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
@@ -1142,7 +1134,7 @@ private fun CategoryItem(
                 Icon(
                     imageVector = Icons.Default.Apps,
                     contentDescription = title,
-                    tint = if (isSelected) Color.White else TealPrimary
+                    tint = if (isSelected) White else TealPrimary
                 )
             }
         }

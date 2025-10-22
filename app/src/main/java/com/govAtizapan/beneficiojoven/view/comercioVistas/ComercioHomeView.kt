@@ -24,8 +24,8 @@ import com.govAtizapan.beneficiojoven.view.comercioVistas.components.ComercioFil
 import com.govAtizapan.beneficiojoven.view.comercioVistas.components.ComercioFiltersRow
 import com.govAtizapan.beneficiojoven.viewmodel.comercio.ComercioHomeViewModel
 // Colores ya usados en HomeView para mantener el mismo look&feel
-import com.govAtizapan.beneficiojoven.view.home.TealPrimary
-import com.govAtizapan.beneficiojoven.view.home.CardBackground
+import com.govAtizapan.beneficiojoven.view.home.homeViews.TealPrimary
+import com.govAtizapan.beneficiojoven.view.home.homeViews.CardBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

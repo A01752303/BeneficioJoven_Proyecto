@@ -15,7 +15,7 @@ import com.govAtizapan.beneficiojoven.view.bienvenidaView.BienvenidaView
 import com.govAtizapan.beneficiojoven.view.loginView.LoginView
 import com.govAtizapan.beneficiojoven.view.splashScreen.SplashScreen
 import com.govAtizapan.beneficiojoven.view.loadingScreen.LoadingScreen
-import com.govAtizapan.beneficiojoven.view.home.HomeView
+import com.govAtizapan.beneficiojoven.view.home.homeViews.HomeView
 import com.govAtizapan.beneficiojoven.view.registro.NuevaCuentaVista
 import com.govAtizapan.beneficiojoven.view.comercioVistas.InicioSesionComercio
 import com.govAtizapan.beneficiojoven.view.registro.EmailRegistro

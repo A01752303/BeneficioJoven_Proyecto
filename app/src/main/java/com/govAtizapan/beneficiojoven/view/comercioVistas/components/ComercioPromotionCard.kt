@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.govAtizapan.beneficiojoven.model.comercio.ComercioPromotion
 import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
-import com.govAtizapan.beneficiojoven.view.home.TealLight
-import com.govAtizapan.beneficiojoven.view.home.TealPrimary
+import com.govAtizapan.beneficiojoven.view.home.homeViews.TealLight
+import com.govAtizapan.beneficiojoven.view.home.homeViews.TealPrimary
 import androidx.compose.foundation.BorderStroke
 
 
