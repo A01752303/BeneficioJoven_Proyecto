@@ -420,19 +420,18 @@ fun HomeView(
                             )
                         }
 
-                        // --- INICIO DE LA MODIFICACIÓN ---
                         // 'else' AHORA CUBRE EL ESTADO VACÍO Y EL ESTADO CON DATOS
                         else -> {
                             LazyColumn(
                                 state = lazyListState,
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(
-                                    top = 16.dp, // Espacio sobre las categorías
-                                    start = 16.dp,
-                                    end = 16.dp,
+                                    // top = 16.dp, // <-- ELIMINADO
+                                    // start = 16.dp, // <-- ELIMINADO
+                                    // end = 16.dp,   // <-- ELIMINADO
                                     bottom = innerPadding.calculateBottomPadding() + 12.dp
                                 ),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                // verticalArrangement = Arrangement.spacedBy(16.dp) // <-- ELIMINADO
                             ) {
 
                                 // --- 1. CATEGORÍAS (SIEMPRE VISIBLES) ---
@@ -450,16 +449,19 @@ fun HomeView(
                                 if (filteredAndSortedPromos.isEmpty()) {
                                     // --- ESTADO VACÍO (DENTRO DE LA LISTA) ---
                                     item(key = "empty_state") {
+                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
                                         EmptyStateView(
                                             searchQuery,
                                             selectedCategoryTitulo,
                                             modifier = Modifier
                                                 .fillParentMaxHeight(0.7f) // Ocupa 70% del espacio
+                                                .padding(horizontal = 16.dp) // <-- AÑADIDO
                                         )
                                     }
                                 } else {
                                     // --- LISTA DE RESULTADOS ---
                                     item(key = "results_count") {
+                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
                                         val resultsText = if (filteredAndSortedPromos.size == 1) {
                                             "Mostrando 1 resultado"
                                         } else {
@@ -471,11 +473,14 @@ fun HomeView(
                                             fontWeight = FontWeight.Medium,
                                             fontFamily = PoppinsFamily,
                                             color = Color.Gray,
-                                            modifier = Modifier.padding(bottom = 4.dp)
+                                            modifier = Modifier
+                                                .padding(bottom = 4.dp)
+                                                .padding(horizontal = 16.dp) // <-- AÑADIDO
                                         )
                                     }
 
                                     items(filteredAndSortedPromos, key = { it.id }) { promo ->
+                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
 
                                         val (isExpiringSoon, daysRemaining) = remember(promo.fecha_fin) {
                                             try {
@@ -496,19 +501,21 @@ fun HomeView(
                                             }
                                         }
 
-                                        PromoCard(
-                                            promo = promo,
-                                            isExpiringSoon = isExpiringSoon,
-                                            daysRemaining = daysRemaining,
-                                            onClick = {
-                                                navController.navigate("detalleCupon/${promo.id}")
-                                            }
-                                        )
+                                        // --- ENVOLTURA AÑADIDA ---
+                                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                            PromoCard(
+                                                promo = promo,
+                                                isExpiringSoon = isExpiringSoon,
+                                                daysRemaining = daysRemaining,
+                                                onClick = {
+                                                    navController.navigate("detalleCupon/${promo.id}")
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
-                        // --- FIN DE LA MODIFICACIÓN ---
                     }
                 }
             }
@@ -531,6 +538,7 @@ private fun SectionTitle(title: String) {
     )
 }
 
+// --- INICIO DE LA MODIFICACIÓN ---
 @Composable
 fun PromoCard(
     promo: PromotionResponseGET,
@@ -621,6 +629,159 @@ fun PromoCard(
                     fontFamily = PoppinsFamily
                 )
 
+                // --- INICIO DE LÓGICA DE PRECIO/DESCUENTO ---
+                val tipo = promo.tipo.lowercase().trim()
+                val precioDouble = promo.precio.toDoubleOrNull() ?: 0.0
+                val precioValido = precioDouble > 0.0
+
+                var showSpacer = false
+
+                when (tipo) {
+                    "precio" -> {
+                        if (precioValido) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Precio: ",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF666666),
+                                    fontFamily = PoppinsFamily,
+                                )
+                                val precioFormateado = String.format("%.2f", precioDouble)
+                                Text(
+                                    text = "$$precioFormateado",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TealPrimary,
+                                    fontFamily = PoppinsFamily
+                                )
+                            }
+                            showSpacer = true
+                        }
+                    }
+                    "porcentaje" -> {
+                        // Convertimos el string de porcentaje a Double
+                        val porcentajeDouble = promo.porcentaje.toDoubleOrNull() ?: 0.0
+                        val porcentajeValido = porcentajeDouble > 0.0
+
+                        if (porcentajeValido) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Descuento: ",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF666666),
+                                    fontFamily = PoppinsFamily,
+                                )
+
+                                // Formatear el porcentaje (ej. 20.0 -> "20", 20.5 -> "20.5")
+                                val descuentoFormateado = if (porcentajeDouble % 1.0 == 0.0) {
+                                    // Si es un número entero (termina en .0)
+                                    porcentajeDouble.toInt().toString()
+                                } else {
+                                    // Si tiene decimales
+                                    String.format("%.1f", porcentajeDouble)
+                                }
+
+                                Text(
+                                    text = "$descuentoFormateado%",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TealPrimary,
+                                    fontFamily = PoppinsFamily
+                                )
+                            }
+                            showSpacer = true
+                        }
+                    }
+                    "2x1" -> {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Promoción: ",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF666666),
+                                fontFamily = PoppinsFamily,
+                            )
+                            Text(
+                                text = "2x1",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TealPrimary,
+                                fontFamily = PoppinsFamily
+                            )
+                        }
+                        showSpacer = true
+                    }
+                    "trae un amigo" -> {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Promoción: ",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF666666),
+                                fontFamily = PoppinsFamily,
+                            )
+                            Text(
+                                text = "Trae un amigo",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TealPrimary,
+                                fontFamily = PoppinsFamily,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        showSpacer = true
+                    }
+                    "otra" -> {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Promoción: ",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color(0xFF666666),
+                                fontFamily = PoppinsFamily,
+                            )
+                            Text(
+                                text = "Especial",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TealPrimary,
+                                fontFamily = PoppinsFamily
+                            )
+                        }
+                        showSpacer = true
+                    }
+                    else -> {
+                        // Fallback: Si el tipo no se reconoce, pero hay un precio, mostrarlo.
+                        if (precioValido) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Precio: ",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color(0xFF666666),
+                                    fontFamily = PoppinsFamily,
+                                )
+                                val precioFormateado = String.format("%.2f", precioDouble)
+                                Text(
+                                    text = "$$precioFormateado",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TealPrimary,
+                                    fontFamily = PoppinsFamily
+                                )
+                            }
+                            showSpacer = true
+                        }
+                    }
+                }
+
+                if (showSpacer) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 if (promo.categorias.isNotEmpty()) {
@@ -649,40 +810,6 @@ fun PromoCard(
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                }
-
-                Text(
-                    text = promo.descripcion,
-                    fontSize = 15.sp,
-                    color = Color(0xFF666666),
-                    lineHeight = 20.sp,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                    fontFamily = PoppinsFamily,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                if (promo.precio.isNotEmpty() && promo.precio != "0.00000") {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Precio: ",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = Color(0xFF666666),
-                            fontFamily = PoppinsFamily,
-                        )
-                        val precioFormateado = promo.precio.toDoubleOrNull()?.let { precioDouble ->
-                            String.format("%.2f", precioDouble)
-                        } ?: promo.precio
-                        Text(
-                            text = "$$precioFormateado",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TealPrimary,
-                            fontFamily = PoppinsFamily
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
@@ -896,7 +1023,7 @@ private fun CategoryRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White), // <-- MODIFICADO
+            .background(Color.White), // <-- Fondo blanco
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
