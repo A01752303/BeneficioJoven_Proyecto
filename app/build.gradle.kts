@@ -101,6 +101,8 @@ dependencies {
     implementation(libs.google.maps.android.compose) // Para MarkerState y ComposeMap
     implementation(libs.play.services.maps) // Para CameraPosition
     implementation(libs.play.services.location) // Para LocationServices
+    implementation("com.google.android.libraries.places:places:3.5.0")
+
 
     // Accompanist Permissions para manejar permisos
     implementation(libs.accompanist.permissions) // Reemplazado por este estilo
