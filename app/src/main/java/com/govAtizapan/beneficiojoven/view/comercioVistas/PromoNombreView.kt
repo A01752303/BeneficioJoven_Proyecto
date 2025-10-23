@@ -3,6 +3,8 @@ package com.govAtizapan.beneficiojoven.view.comercioVistas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -25,6 +27,7 @@ import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotio
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PromoNombreView(
+    onBack: () -> Unit,          // 👈 nuevo callback de regreso
     onNext: () -> Unit,
     vm: CreatePromotionViewModel
 ) {
@@ -32,9 +35,17 @@ fun PromoNombreView(
 
     Scaffold(
         topBar = {
-            // TopBar minimalista como en tu flujo de registro
             CenterAlignedTopAppBar(
                 title = {},
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Regresar",
+                            tint = TealPrimary
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White
                 )
@@ -67,16 +78,6 @@ fun PromoNombreView(
             )
             Spacer(Modifier.height(20.dp))
 
-            // ID del negocio (opcional mostrar en este primer paso, si lo prefieres muévelo a Resumen)
-//            AppStandardTextField(
-//                value = ui.idNegocio,
-//                onValueChange = { vm.onEvent(CreatePromotionEvent.IdNegocioChanged(it)) },
-//                label = "ID del negocio",
-//                keyboardOptions = KeyboardOptions.Default,
-//                isError = ui.idNegocio.isNotBlank() && ui.idNegocio.toIntOrNull() == null
-//            )
-//            Spacer(Modifier.height(16.dp))
-
             // Título
             AppStandardTextField(
                 value = ui.titulo,
@@ -86,7 +87,7 @@ fun PromoNombreView(
             )
             Spacer(Modifier.height(16.dp))
 
-            // Tipo (mismo look de tus TextField celestes, label fuera)
+            // Tipo de promoción
             TipoPromocionSelector(
                 selected = ui.tipo,
                 onSelected = { vm.onEvent(CreatePromotionEvent.TipoChanged(it)) }
@@ -106,10 +107,12 @@ fun PromoNombreView(
                     contentColor = Color.White
                 )
             ) {
-                Text("Siguiente",
+                Text(
+                    "Siguiente",
                     fontFamily = PoppinsFamily,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp)
+                    fontSize = 18.sp
+                )
             }
         }
     }
@@ -136,7 +139,6 @@ private fun TipoPromocionSelector(
     val borderCyan = Color(0xFFB2EBF2)
     val shape = RoundedCornerShape(16.dp)
 
-
     Text(
         text = "Tipo de promoción",
         modifier = Modifier.padding(bottom = 8.dp),
@@ -158,7 +160,7 @@ private fun TipoPromocionSelector(
             shape = shape,
             modifier = Modifier
                 .menuAnchor(
-                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, // evita deprecado
+                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                     enabled = true
                 )
                 .fillMaxWidth()
@@ -185,6 +187,5 @@ private fun TipoPromocionSelector(
                 )
             }
         }
-
     }
 }

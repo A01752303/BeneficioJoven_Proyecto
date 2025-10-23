@@ -25,6 +25,7 @@ import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotio
 @Composable
 fun PromoResumenView(
     onBack: () -> Unit,
+    onFinish: () -> Unit,
     vm: CreatePromotionViewModel
 ) {
     val ui by vm.ui.collectAsState()
@@ -63,17 +64,23 @@ fun PromoResumenView(
     // ====== Diálogos ======
     if (ui.successMessage != null) {
         AlertDialog(
-            onDismissRequest = { vm.onEvent(CreatePromotionEvent.ConsumeMessages) },
-            title = { Text("Promoción enviada") },
+            onDismissRequest = { /* evita cerrar tocando fuera si quieres */ },
+            title = { Text("¡Promoción enviada!") },
             text = { Text(ui.successMessage ?: "Se envió correctamente.") },
             confirmButton = {
                 TextButton(onClick = {
+                    // 1) Limpia estados si lo requieres (opcional)
                     vm.onEvent(CreatePromotionEvent.ClearForm)
-                    vm.onEvent(CreatePromotionEvent.ConsumeMessages)
-                }) { Text("Aceptar") }
+
+                    // 2) Vuelve a la Home de comercio
+                    onFinish()
+                }) {
+                    Text("Aceptar")
+                }
             }
         )
     }
+
     if (ui.errorMessage != null) {
         AlertDialog(
             onDismissRequest = { vm.onEvent(CreatePromotionEvent.ConsumeMessages) },

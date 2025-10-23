@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotionViewModel
 
 // Raíz del sub-grafo de "registro de promociones"
@@ -20,7 +21,6 @@ sealed class PromoScreens(val route: String) {
 }
 
 /** Úsalo desde tu NavHost principal: addPromoGraph(navController) */
-// PromoFlowNav.kt
 fun NavGraphBuilder.addPromoGraph(navController: NavHostController) {
     navigation(
         startDestination = PromoScreens.PromoNombre.route,
@@ -35,6 +35,7 @@ fun NavGraphBuilder.addPromoGraph(navController: NavHostController) {
             val vm: CreatePromotionViewModel = viewModel(parentEntry)
 
             PromoNombreView(
+                onBack = { navController.popBackStack() }, // ← NUEVO: regresa a ComercioHome
                 onNext = { navController.navigate(PromoScreens.PromoDetalles.route) },
                 vm = vm
             )
@@ -79,9 +80,15 @@ fun NavGraphBuilder.addPromoGraph(navController: NavHostController) {
 
             PromoResumenView(
                 onBack = { navController.popBackStack() },
+                onFinish = {
+                    // Ir a la pantalla principal de comercio y sacar del back stack el sub-grafo del flujo
+                    navController.navigate(AppScreens.ComercioHome.route) {
+                        popUpTo(PROMO_GRAPH_ROUTE) { inclusive = true } // cierra el flujo de registro
+                        launchSingleTop = true
+                    }
+                },
                 vm = vm
             )
         }
     }
 }
-
