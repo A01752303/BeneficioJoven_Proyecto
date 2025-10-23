@@ -1,7 +1,7 @@
 package com.govAtizapan.beneficiojoven.view.home.homeViews
 
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi // <-- Importante
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -67,7 +67,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer // <-- Import corregido
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
@@ -97,7 +97,6 @@ val couponTypes = listOf(
 
 const val EXPIRATION_THRESHOLD_DAYS: Long = 3
 
-// --- AÑADIMOS ExperimentalFoundationApi ---
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeView(
@@ -120,7 +119,6 @@ fun HomeView(
 
     val userRepository = remember { UserRepository() }
     var userData by remember { mutableStateOf<ObtenerUsuarioResponseGET?>(null) }
-
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
@@ -202,14 +200,12 @@ fun HomeView(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Spacer(Modifier.height(24.dp)) // Espacio superior
+                    Spacer(Modifier.height(24.dp))
 
-                    // Círculo de Perfil
                     Box(
                         modifier = Modifier
                             .size(80.dp)
                             .clip(CircleShape)
-                            // Un fondo semi-transparente para el círculo
                             .background(White.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -251,9 +247,8 @@ fun HomeView(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Spacer(Modifier.height(16.dp)) // Espacio inferior
+                    Spacer(Modifier.height(16.dp))
                 }
-                // --- FIN DEL NUEVO ENCABEZADO DEL DRAWER ---
 
                 Spacer(Modifier.height(12.dp))
                 NavigationDrawerItem(
@@ -262,7 +257,6 @@ fun HomeView(
                     selected = false,
                     onClick = {
                         coroutineScope.launch { drawerState.close() }
-                        // TODO: Navegar a la pantalla de perfil si es necesario
                     }
                 )
                 NavigationDrawerItem(
@@ -301,7 +295,6 @@ fun HomeView(
                     selected = false,
                     onClick = {
                         navController.navigate(AppScreens.BienvenidaView.route) {
-                            // Limpia la pila de navegación para que el usuario no pueda volver
                             popUpTo(navController.graph.startDestinationId) {
                                 inclusive = true
                             }
@@ -312,8 +305,7 @@ fun HomeView(
                 )
             }
         }
-    ) { // --- El contenido del Drawer es el Scaffold ---
-
+    ) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -344,42 +336,117 @@ fun HomeView(
                 )
             },
             bottomBar = {
-// ... (BottomAppBar sin cambios)
-                BottomAppBar(
-                    containerColor = White,
-                    tonalElevation = 8.dp
+                // BOTTOM BAR MODIFICADA - Solo Home y Maps con diseño mejorado
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp),
+                    tonalElevation = 8.dp,
+                    shadowElevation = 8.dp
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
                     ) {
-                        IconButton(onClick = { /* Ya en home */ }) {
-                            Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
+                        // FAB Central - Botón de acción central
+                        FloatingActionButton(
+                            onClick = {
+                                Log.d("HomeView", "Botón central presionado")
+                            },
+                            modifier = Modifier
+                                .size(56.dp)
+                                .align(Alignment.TopCenter)
+                                .offset(y = (-28).dp),
+                            containerColor = TealPrimary,
+                            contentColor = White
+                        ) {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Buscar",
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
-                        IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
-                            Icon(Icons.Default.LocationOn, contentDescription = "Mapa")
-                        }
-                        IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
-                            Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
+
+                        // Navegación inferior - Solo Home y Maps
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            // Botón Home (izquierda) - Ya estamos en Home
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        Log.d("HomeView", "Ya en Home")
+                                    },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Home,
+                                        contentDescription = "Home",
+                                        tint = TealPrimary,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+                                Text(
+                                    "Home",
+                                    fontSize = 12.sp,
+                                    color = TealPrimary,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = PoppinsFamily
+                                )
+                            }
+
+                            // Espacio para el FAB
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            // Botón Mapa (derecha)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate(AppScreens.ComerciosCercanosScreen.route)
+                                    },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.LocationOn,
+                                        contentDescription = "Mapa",
+                                        tint = TealPrimary,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+                                Text(
+                                    "Mapa",
+                                    fontSize = 12.sp,
+                                    color = TealPrimary,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = PoppinsFamily
+                                )
+                            }
                         }
                     }
                 }
             },
             containerColor = BackgroundGray
         ) { innerPadding ->
-
-// --- NUEVA ESTRUCTURA DE COLUMNA ---
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding()) // <-- Padding del TopAppBar
+                    .padding(top = innerPadding.calculateTopPadding())
             ) {
-
-// --- 1. BARRA DE BÚSQUEDA (FIJA) ---
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(TealPrimary) // Fondo para que combine con el TopAppBar
+                        .background(TealPrimary)
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     OutlinedTextField(
@@ -437,18 +504,16 @@ fun HomeView(
                         shape = RoundedCornerShape(50)
                     )
                 }
-// --- FIN DE LA BARRA DE BÚSQUEDA ---
 
-// --- 2. FILTROS (FIJOS) ---
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = White, // Fondo blanco para los filtros
+                            color = White,
                             shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                         )
                         .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-                        .padding(top = 16.dp) // <-- AÑADIDO: Espacio superior
+                        .padding(top = 16.dp)
                 ) {
                     SectionTitle("Filtros")
                     FilterChipsRow(
@@ -458,13 +523,11 @@ fun HomeView(
                         onOptionSelected = { sortOption = it }
                     )
                 }
-// --- 👆 FIN DEL CONTENIDO FIJO ---
 
-// --- 3. CONTENIDO DESLIZABLE (SCROLLABLE) ---
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(1f) // <-- Ocupa todo el espacio restante
+                        .weight(1f)
                 ) {
                     when {
                         isLoading -> {
@@ -481,22 +544,14 @@ fun HomeView(
                                     .padding(bottom = innerPadding.calculateBottomPadding())
                             )
                         }
-
-// 'else' AHORA CUBRE EL ESTADO VACÍO Y EL ESTADO CON DATOS
                         else -> {
                             LazyColumn(
                                 state = lazyListState,
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(
-// top = 16.dp, // <-- ELIMINADO
-// start = 16.dp, // <-- ELIMINADO
-// end = 16.dp, // <-- ELIMINADO
                                     bottom = innerPadding.calculateBottomPadding() + 12.dp
                                 ),
-// verticalArrangement = Arrangement.spacedBy(16.dp) // <-- ELIMINADO
                             ) {
-
-// --- 1. CATEGORÍAS (SIEMPRE VISIBLES) ---
                                 item(key = "category_row") {
                                     CategoryRow(
                                         categories = categorias,
@@ -507,23 +562,20 @@ fun HomeView(
                                     )
                                 }
 
-// --- 2. CONTENIDO CONDICIONAL ---
                                 if (filteredAndSortedPromos.isEmpty()) {
-// --- ESTADO VACÍO (DENTRO DE LA LISTA) ---
                                     item(key = "empty_state") {
-                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
+                                        Spacer(modifier = Modifier.height(16.dp))
                                         EmptyStateView(
                                             searchQuery,
                                             selectedCategoryTitulo,
                                             modifier = Modifier
-                                                .fillParentMaxHeight(0.7f) // Ocupa 70% del espacio
-                                                .padding(horizontal = 16.dp) // <-- AÑADIDO
+                                                .fillParentMaxHeight(0.7f)
+                                                .padding(horizontal = 16.dp)
                                         )
                                     }
                                 } else {
-// --- LISTA DE RESULTADOS ---
                                     item(key = "results_count") {
-                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
+                                        Spacer(modifier = Modifier.height(16.dp))
                                         val resultsText = if (filteredAndSortedPromos.size == 1) {
                                             "Mostrando 1 resultado"
                                         } else {
@@ -537,12 +589,12 @@ fun HomeView(
                                             color = Color.Gray,
                                             modifier = Modifier
                                                 .padding(bottom = 4.dp)
-                                                .padding(horizontal = 16.dp) // <-- AÑADIDO
+                                                .padding(horizontal = 16.dp)
                                         )
                                     }
 
                                     items(filteredAndSortedPromos, key = { it.id }) { promo ->
-                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
+                                        Spacer(modifier = Modifier.height(16.dp))
 
                                         val (isExpiringSoon, daysRemaining) = remember(promo.fecha_fin) {
                                             try {
@@ -564,7 +616,6 @@ fun HomeView(
                                         }
                                         val esFavorito = viewModel.esFavorito(promo)
 
-// --- ENVOLTURA AÑADIDA ---
                                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                                             PromoCard(
                                                 promo = promo,
@@ -585,7 +636,7 @@ fun HomeView(
                 }
             }
         }
-    } // --- Aquí cierra el ModalNavigationDrawer ---
+    }
 }
 
 @Composable
@@ -699,7 +750,6 @@ fun PromoCard(
                         fontFamily = PoppinsFamily
                     )
 
-                    // ❤️ Botón para agregar o quitar de favoritos (envía POST)
                     val coroutineScope = rememberCoroutineScope()
                     val apartarRepo = remember { ApartarPromocionRepository() }
 
@@ -707,8 +757,6 @@ fun PromoCard(
                         coroutineScope.launch {
                             val result = apartarRepo.apartarPromocion(promo.id)
                             Log.d("PromoCard", "Resultado POST: $result")
-
-                            // Actualiza la UI local (vista) de favoritos
                             onToggleFavorito(promo)
                         }
                     }) {
@@ -728,10 +776,7 @@ fun PromoCard(
                     color = Color(0xFF666666),
                     fontFamily = PoppinsFamily
                 )
-            }
-                }
 
-// --- INICIO DE LÓGICA DE PRECIO/DESCUENTO ---
                 val tipo = promo.tipo.lowercase().trim()
                 val precioDouble = promo.precio.toDoubleOrNull() ?: 0.0
                 val precioValido = precioDouble > 0.0
@@ -761,7 +806,6 @@ fun PromoCard(
                         }
                     }
                     "porcentaje" -> {
-// Convertimos el string de porcentaje a Double
                         val porcentajeDouble = promo.porcentaje.toDoubleOrNull() ?: 0.0
                         val porcentajeValido = porcentajeDouble > 0.0
 
@@ -852,7 +896,6 @@ fun PromoCard(
                         showSpacer = true
                     }
                     else -> {
-// Fallback: Si el tipo no se reconoce, pero hay un precio, mostrarlo.
                         if (precioValido) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -911,8 +954,8 @@ fun PromoCard(
                 }
             }
         }
-
-
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1023,9 +1066,8 @@ private fun EmptyStateView(
 ) {
     Box(
         modifier = modifier
-// .fillMaxSize() // <-- MODIFICADO: Ya no llena toda la pantalla
             .padding(16.dp)
-            .height(200.dp), // Damos una altura fija para centrarlo
+            .height(200.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -1054,12 +1096,11 @@ private fun SkeletonList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         userScrollEnabled = false
     ) {
-// Simula el espacio de las categorías
         item {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp) // Altura aproximada de la fila de categorías
+                    .height(100.dp)
                     .background(Color.LightGray.copy(alpha = 0.6f), shape = RoundedCornerShape(16.dp))
             )
         }
@@ -1120,7 +1161,7 @@ private fun CategoryRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White), // <-- Fondo blanco
+            .background(White),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top

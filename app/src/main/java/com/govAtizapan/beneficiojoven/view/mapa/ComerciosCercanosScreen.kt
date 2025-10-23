@@ -10,11 +10,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -166,22 +167,112 @@ fun ComerciosCercanosScreen(navController: NavController) {
 
     Scaffold(
         bottomBar = {
-            BottomAppBar(
-                containerColor = Color.White,
-                tonalElevation = 8.dp
+            // BOTTOM BAR CON DISEÑO SIMILAR AL XML - Solo Home y Maps con FAB
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+                tonalElevation = 8.dp,
+                shadowElevation = 8.dp
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
                 ) {
-                    IconButton(onClick = { navController.navigate(AppScreens.HomeView.route) }) {
-                        Icon(Icons.Default.Home, contentDescription = "Inicio", tint = TealPrimary)
+                    // FAB Central - Similar al XML
+                    FloatingActionButton(
+                        onClick = {
+                            // Acción para el botón central (podría ser para agregar algo)
+                            Log.d("ComerciosCercanos", "FAB presionado")
+                        },
+                        modifier = Modifier
+                            .size(56.dp)
+                            .align(Alignment.TopCenter)
+                            .offset(y = (-28).dp),
+                        containerColor = Color.White,
+                        contentColor = TealPrimary
+                    ) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = "Acción central",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                    IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
-                        Icon(Icons.Default.LocationOn, contentDescription = "Mapa", tint = TealPrimary)
-                    }
-                    IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión", tint = TealPrimary)
+
+                    // Navegación inferior - Solo Home y Maps
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        // Botón Home (izquierda)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            IconButton(
+                                onClick = { navController.navigate(AppScreens.HomeView.route) },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Home,
+                                    contentDescription = "Home",
+                                    tint = TealPrimary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Text(
+                                "Home",
+                                fontSize = 12.sp,
+                                color = TealPrimary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+
+                        // Espacio para el FAB
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        // Botón Mapa (derecha)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    // Ya estamos en el mapa, podríamos recargar o centrar
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        try {
+                                            val location = fusedLocationClient.lastLocation.await()
+                                            if (location != null) {
+                                                val userLocation = LatLng(location.latitude, location.longitude)
+                                                withContext(Dispatchers.Main) {
+                                                    cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e("ComerciosCercanos", "Error al centrar mapa: ${e.message}")
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.LocationOn,
+                                    contentDescription = "Mapa",
+                                    tint = TealPrimary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                            Text(
+                                "Mapa",
+                                fontSize = 12.sp,
+                                color = TealPrimary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
             }
@@ -252,18 +343,19 @@ fun ComerciosCercanosScreen(navController: NavController) {
                 }
             }
 
-            Box(
+            // Panel inferior con controles
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                    .background(Color.White)
+                    .height(100.dp),
+                tonalElevation = 4.dp
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (!hasLocationPermission) {
                         Button(
@@ -274,16 +366,14 @@ fun ComerciosCercanosScreen(navController: NavController) {
                                 .weight(1f)
                                 .padding(end = 8.dp)
                         ) {
-                            Text("Reintentar permiso de ubicación")
+                            Text("Permiso de ubicación")
                         }
                     }
                     Button(
                         onClick = {
                             if (!hasLocationPermission) {
-                                Log.d("ComerciosCercanos", "Solicitando permiso para recentrar")
                                 permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                             } else {
-                                Log.d("ComerciosCercanos", "Intentando recentrar mapa")
                                 coroutineScope.launch(Dispatchers.IO) {
                                     try {
                                         val location = fusedLocationClient.lastLocation.await()
@@ -292,12 +382,7 @@ fun ComerciosCercanosScreen(navController: NavController) {
                                             withContext(Dispatchers.Main) {
                                                 cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
                                             }
-                                            Log.d("ComerciosCercanos", "Mapa recentrado a: $userLocation")
-                                        } else {
-                                            Log.w("ComerciosCercanos", "Ubicación nula al recentrar")
                                         }
-                                    } catch (e: SecurityException) {
-                                        Log.e("ComerciosCercanos", "SecurityException al recentrar: ${e.message}")
                                     } catch (e: Exception) {
                                         Log.e("ComerciosCercanos", "Error al recentrar: ${e.message}")
                                     }
@@ -308,7 +393,7 @@ fun ComerciosCercanosScreen(navController: NavController) {
                             .weight(1f)
                             .padding(start = if (hasLocationPermission) 0.dp else 8.dp)
                     ) {
-                        Text("Volver a mi ubicación")
+                        Text("Mi ubicación")
                     }
                 }
             }
@@ -316,6 +401,7 @@ fun ComerciosCercanosScreen(navController: NavController) {
     }
 }
 
+// Las funciones auxiliares permanecen igual...
 fun checkLocationPermission(context: Context): Boolean {
     val result = ContextCompat.checkSelfPermission(
         context,
@@ -355,16 +441,12 @@ suspend fun fetchUserLocationAndBusinesses(
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
             }
             Log.d("ComerciosCercanos", "Ubicación obtenida: $userLocation")
-            // Obtener negocios cercanos
             val businesses = fetchNearbyBusinesses(placesClient, userLocation)
             updateBusinesses(businesses)
         } else {
             Log.w("ComerciosCercanos", "Ubicación nula. Servicios de ubicación desactivados?")
             updateBusinesses(emptyList())
         }
-    } catch (e: SecurityException) {
-        Log.e("ComerciosCercanos", "SecurityException al obtener ubicación: ${e.message}")
-        updateBusinesses(emptyList())
     } catch (e: Exception) {
         Log.e("ComerciosCercanos", "Error al obtener ubicación: ${e.message}")
         updateBusinesses(emptyList())
@@ -390,15 +472,9 @@ suspend fun fetchNearbyBusinesses(placesClient: PlacesClient, location: LatLng):
                     )
                 }
             }
-            .take(10) // Limitar a 10 negocios
+            .take(10)
         Log.d("ComerciosCercanos", "Negocios encontrados: ${businesses.size}")
         businesses
-    } catch (e: SecurityException) {
-        Log.e("ComerciosCercanos", "SecurityException en Places API: ${e.message}")
-        emptyList()
-    } catch (e: com.google.android.gms.common.api.ApiException) {
-        Log.e("ComerciosCercanos", "ApiException en Places API: ${e.statusCode} - ${e.message}")
-        emptyList()
     } catch (e: Exception) {
         Log.e("ComerciosCercanos", "Error en Places API: ${e.message}")
         emptyList()
