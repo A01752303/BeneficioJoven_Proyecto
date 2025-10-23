@@ -464,13 +464,13 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Tel: 55 5366 3800",
+                        text = "Tel: 55-16-68-17-48",
                         fontSize = 14.sp,
                         fontFamily = PoppinsFamily,
                         color = Color.Gray
                     )
                     Text(
-                        text = "Palacio Municipal, Av. Pdte. Adolfo López Mateos, El Potrero",
+                        text = "Avenida del parque SN, Jardines de Atizapán, Atizapán de Zaragoza",
                         fontSize = 14.sp,
                         fontFamily = PoppinsFamily,
                         color = Color.Gray,
