@@ -35,7 +35,14 @@ class HomeVM : ViewModel() {
             _errorState.value = null
             try {
                 val data = repository.obtenerPromociones()
+
+                // ✅ Asignar promociones al flujo
                 _promociones.value = data
+
+                // ❤️ Inicializar favoritos con las promociones que vienen marcadas como apartadas
+                favoritos.clear()
+                favoritos.addAll(data.filter { it.es_apartado })
+
             } catch (e: Exception) {
                 _errorState.value = "Error al cargar las promociones. Revisa tu conexión."
                 _promociones.value = emptyList()

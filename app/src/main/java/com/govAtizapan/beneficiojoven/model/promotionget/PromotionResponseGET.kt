@@ -25,5 +25,6 @@ data class PromotionResponseGET(
     val activo: Boolean,
     val fecha_creado: String,
     val id_administrador_negocio: Int,
-    val id_negocio: Int
+    val id_negocio: Int,
+    val es_apartado: Boolean = false
 )

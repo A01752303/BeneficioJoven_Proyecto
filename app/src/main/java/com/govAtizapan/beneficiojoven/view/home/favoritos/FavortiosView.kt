@@ -96,7 +96,9 @@ fun FavoritosView(
                                 navController.navigate("detalleCupon/${promo.id}")
                             },
                             esFavorito = true,
-                            onToggleFavorito = { /* Aquí no hace falta volver a apartar */ }
+                            onToggleFavorito = { /* Aquí no hace falta volver a apartar */ },
+                            mostrarCorazon = false
+
                         )
                     }
                 }

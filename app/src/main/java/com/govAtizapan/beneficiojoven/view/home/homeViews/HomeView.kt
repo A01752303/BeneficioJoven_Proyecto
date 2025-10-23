@@ -1,8 +1,7 @@
 package com.govAtizapan.beneficiojoven.view.home.homeViews
 
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi // <-- Importante
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,12 +17,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.* // Importa navigationBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
@@ -62,7 +60,6 @@ import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Info
@@ -70,15 +67,14 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.ModalNavigationDrawer // <-- Import corregido
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.UserRepository
 import com.govAtizapan.beneficiojoven.model.promocionesapartar.ApartarPromocionRepository
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.em
-import com.govAtizapan.beneficiojoven.R
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 
 val TealPrimary = Color(0xFF5d548f)
 val TealLight = Color(0xFF5d548f)
@@ -101,6 +97,7 @@ val couponTypes = listOf(
 
 const val EXPIRATION_THRESHOLD_DAYS: Long = 3
 
+// --- AÑADIMOS ExperimentalFoundationApi ---
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeView(
@@ -124,9 +121,8 @@ fun HomeView(
     val userRepository = remember { UserRepository() }
     var userData by remember { mutableStateOf<ObtenerUsuarioResponseGET?>(null) }
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     LaunchedEffect(Unit) {
         if (promociones.isEmpty()) {
@@ -206,17 +202,19 @@ fun HomeView(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(24.dp)) // Espacio superior
 
+                    // Círculo de Perfil
                     Box(
                         modifier = Modifier
                             .size(80.dp)
                             .clip(CircleShape)
+                            // Un fondo semi-transparente para el círculo
                             .background(White.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.img_0),
+                            imageVector = Icons.Default.AccountCircle,
                             contentDescription = "Perfil",
                             tint = White,
                             modifier = Modifier.size(50.dp)
@@ -253,10 +251,20 @@ fun HomeView(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(16.dp)) // Espacio inferior
                 }
+                // --- FIN DEL NUEVO ENCABEZADO DEL DRAWER ---
 
                 Spacer(Modifier.height(12.dp))
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Perfil") },
+                    label = { Text("Mi Perfil", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                        // TODO: Navegar a la pantalla de perfil si es necesario
+                    }
+                )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
                     label = { Text("Favoritos", fontFamily = PoppinsFamily) },
@@ -264,6 +272,14 @@ fun HomeView(
                     onClick = {
                         coroutineScope.launch { drawerState.close() }
                         navController.navigate("favoritos")
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
+                    label = { Text("Ajustes", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
                     }
                 )
                 NavigationDrawerItem(
@@ -280,11 +296,12 @@ fun HomeView(
                     color = DividerDefaults.color
                 )
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Cerrar sesión") },
+                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión") },
                     label = { Text("Cerrar Sesión", fontFamily = PoppinsFamily) },
                     selected = false,
                     onClick = {
                         navController.navigate(AppScreens.BienvenidaView.route) {
+                            // Limpia la pila de navegación para que el usuario no pueda volver
                             popUpTo(navController.graph.startDestinationId) {
                                 inclusive = true
                             }
@@ -295,8 +312,8 @@ fun HomeView(
                 )
             }
         }
+    ) { // --- El contenido del Drawer es el Scaffold ---
 
-    ) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -327,88 +344,42 @@ fun HomeView(
                 )
             },
             bottomBar = {
-                // Usamos NavigationBar, el componente estándar
-                NavigationBar(
-                    containerColor = Color.White,
+// ... (BottomAppBar sin cambios)
+                BottomAppBar(
+                    containerColor = White,
                     tonalElevation = 8.dp
-                    // Este componente ya respeta los insets (la barra de gestos) por defecto
                 ) {
-                    // 1. Botón Home
-                    NavigationBarItem(
-                        selected = true, // Le decimos que Home está seleccionado
-                        onClick = { Log.d("HomeView", "Ya en Home") },
-                        icon = {
-                            Icon(
-                                Icons.Default.Home,
-                                contentDescription = "Home"
-                            )
-                        },
-                        label = { Text("Home", fontFamily = PoppinsFamily) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = TealPrimary, // <-- Tu color principal
-                            selectedTextColor = TealPrimary, // <-- Tu color principal
-                            indicatorColor = Color.Transparent, // <-- O un color de fondo si quieres
-                            unselectedIconColor = Color.Gray,
-                            unselectedTextColor = Color.Gray
-                        )
-                    )
-
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {
-                            showBottomSheet = true // <-- ESTE ES EL CAMBIO
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.logo_sinnombre), // O el ícono que hayas elegido
-                                contentDescription = "Tarjeta",
-                                modifier = Modifier.size(24.dp),
-                                // --- 2. AÑADE EL TINTE FIJO ---
-                            )
-                        },
-                        label = { Text("Tarjeta", fontFamily = PoppinsFamily) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = TealPrimary, // <-- Tu color principal
-                            selectedTextColor = TealPrimary, // <-- Tu color principal
-                            indicatorColor = Color.Transparent, // <-- O un color de fondo si quieres
-                            unselectedIconColor = Color.Gray,
-                            unselectedTextColor = Color.Gray
-                        )
-                    )
-
-                    // 3. Botón Mapa
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) },
-                        icon = {
-                            Icon(
-                                Icons.Default.LocationOn,
-                                contentDescription = "Mapa"
-                            )
-                        },
-                        label = { Text("Mapa", fontFamily = PoppinsFamily) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = TealPrimary, // <-- Tu color principal
-                            selectedTextColor = TealPrimary, // <-- Tu color principal
-                            indicatorColor = Color.Transparent, // <-- O un color de fondo si quieres
-                            unselectedIconColor = Color.Gray,
-                            unselectedTextColor = Color.Gray
-                        )
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        IconButton(onClick = { /* Ya en home */ }) {
+                            Icon(Icons.Default.Home, contentDescription = "Home", tint = TealPrimary)
+                        }
+                        IconButton(onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) }) {
+                            Icon(Icons.Default.LocationOn, contentDescription = "Mapa")
+                        }
+                        IconButton(onClick = { navController.navigate(AppScreens.BienvenidaView.route) }) {
+                            Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión")
+                        }
+                    }
                 }
             },
             containerColor = BackgroundGray
         ) { innerPadding ->
-            // --- INICIO DE LA CORRECCIÓN 2 ---
+
+// --- NUEVA ESTRUCTURA DE COLUMNA ---
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding) // <-- LÍNEA MODIFICADA
+                    .padding(top = innerPadding.calculateTopPadding()) // <-- Padding del TopAppBar
             ) {
+
+// --- 1. BARRA DE BÚSQUEDA (FIJA) ---
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(TealPrimary)
+                        .background(TealPrimary) // Fondo para que combine con el TopAppBar
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     OutlinedTextField(
@@ -466,16 +437,18 @@ fun HomeView(
                         shape = RoundedCornerShape(50)
                     )
                 }
+// --- FIN DE LA BARRA DE BÚSQUEDA ---
 
+// --- 2. FILTROS (FIJOS) ---
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = White,
+                            color = White, // Fondo blanco para los filtros
                             shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                         )
                         .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp) // <-- AÑADIDO: Espacio superior
                 ) {
                     SectionTitle("Filtros")
                     FilterChipsRow(
@@ -485,17 +458,18 @@ fun HomeView(
                         onOptionSelected = { sortOption = it }
                     )
                 }
+// --- 👆 FIN DEL CONTENIDO FIJO ---
 
+// --- 3. CONTENIDO DESLIZABLE (SCROLLABLE) ---
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .weight(1f)
+                        .weight(1f) // <-- Ocupa todo el espacio restante
                 ) {
                     when {
                         isLoading -> {
-                            // --- CORRECCIÓN 3.1 ---
                             SkeletonList(
-                                PaddingValues() // <-- Padding limpiado
+                                PaddingValues(bottom = innerPadding.calculateBottomPadding())
                             )
                         }
                         errorState != null && promociones.isEmpty() -> {
@@ -504,19 +478,25 @@ fun HomeView(
                                 onRetry = { viewModel.cargarPromociones() },
                                 modifier = Modifier
                                     .fillMaxSize()
-                                // --- CORRECCIÓN 3.2 ---
-                                // Padding inferior eliminado
+                                    .padding(bottom = innerPadding.calculateBottomPadding())
                             )
                         }
+
+// 'else' AHORA CUBRE EL ESTADO VACÍO Y EL ESTADO CON DATOS
                         else -> {
                             LazyColumn(
                                 state = lazyListState,
                                 modifier = Modifier.fillMaxSize(),
-                                // --- CORRECCIÓN 3.3 ---
                                 contentPadding = PaddingValues(
-                                    bottom = 12.dp // <-- Padding limpiado
+// top = 16.dp, // <-- ELIMINADO
+// start = 16.dp, // <-- ELIMINADO
+// end = 16.dp, // <-- ELIMINADO
+                                    bottom = innerPadding.calculateBottomPadding() + 12.dp
                                 ),
+// verticalArrangement = Arrangement.spacedBy(16.dp) // <-- ELIMINADO
                             ) {
+
+// --- 1. CATEGORÍAS (SIEMPRE VISIBLES) ---
                                 item(key = "category_row") {
                                     CategoryRow(
                                         categories = categorias,
@@ -527,20 +507,23 @@ fun HomeView(
                                     )
                                 }
 
+// --- 2. CONTENIDO CONDICIONAL ---
                                 if (filteredAndSortedPromos.isEmpty()) {
+// --- ESTADO VACÍO (DENTRO DE LA LISTA) ---
                                     item(key = "empty_state") {
-                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
                                         EmptyStateView(
                                             searchQuery,
                                             selectedCategoryTitulo,
                                             modifier = Modifier
-                                                .fillParentMaxHeight(0.7f)
-                                                .padding(horizontal = 16.dp)
+                                                .fillParentMaxHeight(0.7f) // Ocupa 70% del espacio
+                                                .padding(horizontal = 16.dp) // <-- AÑADIDO
                                         )
                                     }
                                 } else {
+// --- LISTA DE RESULTADOS ---
                                     item(key = "results_count") {
-                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
                                         val resultsText = if (filteredAndSortedPromos.size == 1) {
                                             "Mostrando 1 resultado"
                                         } else {
@@ -554,12 +537,12 @@ fun HomeView(
                                             color = Color.Gray,
                                             modifier = Modifier
                                                 .padding(bottom = 4.dp)
-                                                .padding(horizontal = 16.dp)
+                                                .padding(horizontal = 16.dp) // <-- AÑADIDO
                                         )
                                     }
 
                                     items(filteredAndSortedPromos, key = { it.id }) { promo ->
-                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Spacer(modifier = Modifier.height(16.dp)) // <-- AÑADIDO
 
                                         val (isExpiringSoon, daysRemaining) = remember(promo.fecha_fin) {
                                             try {
@@ -581,6 +564,7 @@ fun HomeView(
                                         }
                                         val esFavorito = viewModel.esFavorito(promo)
 
+// --- ENVOLTURA AÑADIDA ---
                                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                                             PromoCard(
                                                 promo = promo,
@@ -601,124 +585,7 @@ fun HomeView(
                 }
             }
         }
-        // --- INICIO DEL NUEVO BLOQUE DE BOTTOM SHEET ---
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    showBottomSheet = false // Para que se cierre al tocar afuera
-                }
-            ) {
-                // Usamos una Columna para organizar el contenido verticalmente
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 32.dp), // Espacio inferior
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    // --- 1. TÍTULO ---
-                    Text(
-                        text = "Mi tarjeta BENEFICIO JOVEN",
-                        fontSize = 18.sp,
-                        fontFamily = PoppinsFamily,
-                        fontWeight = FontWeight.Bold,
-                        color = TealPrimary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f) // 85% del ancho
-                            .aspectRatio(1.586f), // Proporción de tarjeta
-                        elevation = CardDefaults.cardElevation(8.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.tarjeta),
-                            contentDescription = "Mi Tarjeta",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    val userId = userData?.id ?: 0 // Usa 0 si 'userData' es nulo
-                    val cardNumber = generateCardNumber(userId)
-
-                    Surface(
-                        shape = RoundedCornerShape(50), // Redondeado
-                        color = Color.White, // Blanco
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                    ) {
-                        Text(
-                            text = cardNumber,
-                            fontSize = 18.sp,
-                            fontFamily = PoppinsFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.Black,
-                            letterSpacing = 0.1.em, // Espacio entre letras
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // --- 4. DATOS DE CONTACTO ---
-                    Text(
-                        text = "¡Contáctanos!",
-                        fontSize = 16.sp,
-                        fontFamily = PoppinsFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Black
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Tel: 55-16-68-17-48",
-                        fontSize = 14.sp,
-                        fontFamily = PoppinsFamily,
-                        color = Color.Gray
-                    )
-
-                    Text(
-                        text = " Avenida del parque SN," +
-                                " Jardines de Atizapán," +
-                                " Atizapán de Zaragoza",
-                        fontSize = 14.sp,
-                        fontFamily = PoppinsFamily,
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 32.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-// ===================================================================
-// --- EL RESTO DEL ARCHIVO (HELPERS) SE MANTIENE 100% IGUAL ---
-// ===================================================================
-
-private fun generateCardNumber(id: Int): String {
-    // 1. Define el número base
-    val baseNumber = 1234567890120000L
-
-    // 2. Suma el ID del usuario al número base
-    val fullCode = baseNumber + id.toLong()
-
-    // 3. Convierte a String, asegurando que tenga 16 dígitos (rellenando con 0s a la izquierda si fuera necesario)
-    val codeString = fullCode.toString().padStart(16, '0')
-
-    // 4. Agrupa en bloques de 4 dígitos
-    return codeString.chunked(4).joinToString(" ")
+    } // --- Aquí cierra el ModalNavigationDrawer ---
 }
 
 @Composable
@@ -742,7 +609,8 @@ fun PromoCard(
     daysRemaining: Long?,
     onClick: () -> Unit,
     onToggleFavorito: (PromotionResponseGET) -> Unit,
-    esFavorito: Boolean
+    esFavorito: Boolean,
+    mostrarCorazon: Boolean = true
 ) {
     Card(
         modifier = Modifier
@@ -811,6 +679,25 @@ fun PromoCard(
                         fontFamily = PoppinsFamily,
                     )
                 }
+
+                // ⭐ Etiqueta si está apartado
+                if (promo.es_apartado) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp)
+                            .background(Color(0xFFFFC107), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Apartado",
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            fontFamily = PoppinsFamily
+                        )
+                    }
+                }
             }
 
             Column(
@@ -832,21 +719,24 @@ fun PromoCard(
                         fontFamily = PoppinsFamily
                     )
 
-                    val coroutineScope = rememberCoroutineScope()
-                    val apartarRepo = remember { ApartarPromocionRepository() }
+                    // ❤️ Solo mostrar si mostrarCorazon = true
+                    if (mostrarCorazon) {
+                        val coroutineScope = rememberCoroutineScope()
+                        val apartarRepo = remember { ApartarPromocionRepository() }
 
-                    IconButton(onClick = {
-                        coroutineScope.launch {
-                            val result = apartarRepo.apartarPromocion(promo.id)
-                            Log.d("PromoCard", "Resultado POST: $result")
-                            onToggleFavorito(promo)
+                        IconButton(onClick = {
+                            coroutineScope.launch {
+                                val result = apartarRepo.apartarPromocion(promo.id)
+                                Log.d("PromoCard", "Resultado POST: $result")
+                                onToggleFavorito(promo)
+                            }
+                        }) {
+                            Icon(
+                                imageVector = if (esFavorito) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Marcar como favorito",
+                                tint = if (esFavorito) Color.Red else Color.Gray
+                            )
                         }
-                    }) {
-                        Icon(
-                            imageVector = if (esFavorito) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Marcar como favorito",
-                            tint = if (esFavorito) Color.Red else Color.Gray
-                        )
                     }
                 }
 
@@ -858,7 +748,10 @@ fun PromoCard(
                     color = Color(0xFF666666),
                     fontFamily = PoppinsFamily
                 )
+            }
+                }
 
+// --- INICIO DE LÓGICA DE PRECIO/DESCUENTO ---
                 val tipo = promo.tipo.lowercase().trim()
                 val precioDouble = promo.precio.toDoubleOrNull() ?: 0.0
                 val precioValido = precioDouble > 0.0
@@ -888,6 +781,7 @@ fun PromoCard(
                         }
                     }
                     "porcentaje" -> {
+// Convertimos el string de porcentaje a Double
                         val porcentajeDouble = promo.porcentaje.toDoubleOrNull() ?: 0.0
                         val porcentajeValido = porcentajeDouble > 0.0
 
@@ -978,6 +872,7 @@ fun PromoCard(
                         showSpacer = true
                     }
                     else -> {
+// Fallback: Si el tipo no se reconoce, pero hay un precio, mostrarlo.
                         if (precioValido) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -1036,8 +931,8 @@ fun PromoCard(
                 }
             }
         }
-    }
-}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1075,12 +970,12 @@ private fun FilterChipsRow(
         }
 
         item {
-            HorizontalDivider(
+            Divider(
                 modifier = Modifier
                     .height(30.dp)
                     .width(1.dp)
                     .padding(vertical = 4.dp),
-                thickness = DividerDefaults.Thickness, color = Color.LightGray
+                color = Color.LightGray
             )
         }
 
@@ -1148,8 +1043,9 @@ private fun EmptyStateView(
 ) {
     Box(
         modifier = modifier
+// .fillMaxSize() // <-- MODIFICADO: Ya no llena toda la pantalla
             .padding(16.dp)
-            .height(200.dp),
+            .height(200.dp), // Damos una altura fija para centrarlo
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -1178,11 +1074,12 @@ private fun SkeletonList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         userScrollEnabled = false
     ) {
+// Simula el espacio de las categorías
         item {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(100.dp) // Altura aproximada de la fila de categorías
                     .background(Color.LightGray.copy(alpha = 0.6f), shape = RoundedCornerShape(16.dp))
             )
         }
@@ -1243,7 +1140,7 @@ private fun CategoryRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White),
+            .background(White), // <-- Fondo blanco
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Top
