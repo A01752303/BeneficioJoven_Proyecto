@@ -83,4 +83,11 @@ object RetrofitClient {
     val obtenerDatosUsuarioApi: ObtenerDatosUsuarioApi by lazy{
         retrofit.create(ObtenerDatosUsuarioApi::class.java)
     }
-}
+    val apartarPromocionApi: ApartarPromocionApi by lazy {
+        retrofit.create(ApartarPromocionApi::class.java)
+    }
+
+    // 🔹 NUEVO: GET /functionality/usuario/list/promociones-apartadas/
+    val promocionesApartadasApi: PromocionesApartadasApi by lazy {
+        retrofit.create(PromocionesApartadasApi::class.java)
+    }}

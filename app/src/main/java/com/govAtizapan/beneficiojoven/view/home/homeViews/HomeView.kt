@@ -60,8 +60,10 @@ import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
@@ -70,6 +72,9 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.UserRepository
+import com.govAtizapan.beneficiojoven.model.promocionesapartar.ApartarPromocionRepository
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 
 val TealPrimary = Color(0xFF5d548f)
 val TealLight = Color(0xFF5d548f)
@@ -258,6 +263,15 @@ fun HomeView(
                     onClick = {
                         coroutineScope.launch { drawerState.close() }
                         // TODO: Navegar a la pantalla de perfil si es necesario
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
+                    label = { Text("Favoritos", fontFamily = PoppinsFamily) },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                        navController.navigate("favoritos")
                     }
                 )
                 NavigationDrawerItem(
@@ -548,6 +562,7 @@ fun HomeView(
                                                 Pair(false, null)
                                             }
                                         }
+                                        val esFavorito = viewModel.esFavorito(promo)
 
 // --- ENVOLTURA AÑADIDA ---
                                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -557,7 +572,9 @@ fun HomeView(
                                                 daysRemaining = daysRemaining,
                                                 onClick = {
                                                     navController.navigate("detalleCupon/${promo.id}")
-                                                }
+                                                },
+                                                onToggleFavorito = { viewModel.toggleFavorito(it) },
+                                                esFavorito = viewModel.esFavorito(promo)
                                             )
                                         }
                                     }
@@ -590,7 +607,9 @@ fun PromoCard(
     promo: PromotionResponseGET,
     isExpiringSoon: Boolean,
     daysRemaining: Long?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onToggleFavorito: (PromotionResponseGET) -> Unit,
+    esFavorito: Boolean
 ) {
     Card(
         modifier = Modifier
@@ -666,14 +685,51 @@ fun PromoCard(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = promo.nombre,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF212121),
+                        lineHeight = 24.sp,
+                        fontFamily = PoppinsFamily
+                    )
+
+                    // ❤️ Botón para agregar o quitar de favoritos (envía POST)
+                    val coroutineScope = rememberCoroutineScope()
+                    val apartarRepo = remember { ApartarPromocionRepository() }
+
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            val result = apartarRepo.apartarPromocion(promo.id)
+                            Log.d("PromoCard", "Resultado POST: $result")
+
+                            // Actualiza la UI local (vista) de favoritos
+                            onToggleFavorito(promo)
+                        }
+                    }) {
+                        Icon(
+                            imageVector = if (esFavorito) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = "Marcar como favorito",
+                            tint = if (esFavorito) Color.Red else Color.Gray
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
-                    text = promo.nombre,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF212121),
-                    lineHeight = 24.sp,
+                    text = promo.descripcion,
+                    fontSize = 14.sp,
+                    color = Color(0xFF666666),
                     fontFamily = PoppinsFamily
                 )
+            }
+                }
 
 // --- INICIO DE LÓGICA DE PRECIO/DESCUENTO ---
                 val tipo = promo.tipo.lowercase().trim()
@@ -855,8 +911,8 @@ fun PromoCard(
                 }
             }
         }
-    }
-}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

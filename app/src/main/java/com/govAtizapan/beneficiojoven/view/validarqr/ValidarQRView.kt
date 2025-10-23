@@ -1,8 +1,13 @@
 package com.govAtizapan.beneficiojoven.view.validarqr
+
 import android.Manifest
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,56 +17,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.govAtizapan.beneficiojoven.model.network.RetrofitClient
-import com.govAtizapan.beneficiojoven.model.qrvalidacion.QrValidateRequest
+import com.govAtizapan.beneficiojoven.viewmodel.validaqr.QrResultType
+import com.govAtizapan.beneficiojoven.viewmodel.validaqr.ValidarQRViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import kotlinx.coroutines.launch
-import android.util.Log
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ValidarQRView() {
-    // ✅ Ya no necesitamos el idEstablecimiento de prueba: el token hace.
-    val permissions = rememberMultiplePermissionsState(listOf(Manifest.permission.CAMERA))
-    val scope = rememberCoroutineScope()
+fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
 
-    var mensaje by remember { mutableStateOf("") }
-    var colorMensaje by remember { mutableStateOf(Color.Black) }
+    val permissions = rememberMultiplePermissionsState(listOf(Manifest.permission.CAMERA))
+    val uiState by viewModel.uiState.collectAsState()
 
     val scanLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
         val contenido = result.contents ?: ""
         if (contenido.isNotEmpty()) {
-            // 🧠 Mostrar en consola qué QR se escaneó
             Log.d("ValidarQRView", "QR escaneado: $contenido")
-
-            scope.launch {
-                try {
-                    // ✅ Solo enviamos el código, el token va en el header automáticamente
-                    val response = RetrofitClient.validarQrApi.validarQr(
-                        QrValidateRequest(codigo = contenido)
-                    )
-
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (body?.success == true) {
-                            mensaje = "✅ Canje válido: ${body.message ?: "Cupón aplicado correctamente."}"
-                            colorMensaje = Color(0xFF009688)
-                        } else {
-                            mensaje = "🚫 ${body?.message ?: "Canje inválido o pertenece a otro establecimiento."}"
-                            colorMensaje = Color.Red
-                        }
-                    } else {
-                        mensaje = "❌ Error del servidor (${response.code()})"
-                        colorMensaje = Color.Red
-                    }
-                } catch (e: Exception) {
-                    mensaje = "⚠️ Error de conexión: ${e.message}"
-                    colorMensaje = Color.Red
-                }
-            }
+            viewModel.validarCodigoQR(contenido)
         }
     }
 
@@ -77,48 +52,108 @@ fun ValidarQRView() {
             )
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(20.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .background(uiState.colorFondo),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.QrCodeScanner,
-                contentDescription = "Escanear",
-                tint = Color(0xFF0096A6),
-                modifier = Modifier.size(120.dp)
-            )
+            when (uiState.tipoResultado) {
+                QrResultType.NONE -> {
+                    // 🕹 Pantalla inicial
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.QrCodeScanner,
+                            contentDescription = "Escanear",
+                            tint = Color(0xFF0096A6),
+                            modifier = Modifier.size(120.dp)
+                        )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = {
-                    val options = ScanOptions()
-                    options.setBeepEnabled(true)
-                    options.setOrientationLocked(true)
-                    options.setCaptureActivity(CaptureActivityPortrait::class.java)
-                    scanLauncher.launch(options)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0096A6))
-            ) {
-                Text("Escanear QR", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            }
+                        Button(
+                            onClick = {
+                                val options = ScanOptions()
+                                options.setBeepEnabled(true)
+                                options.setOrientationLocked(true)
+                                options.setCaptureActivity(CaptureActivityPortrait::class.java)
+                                scanLauncher.launch(options)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.8f)
+                                .height(60.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0096A6))
+                        ) {
+                            Text("Escanear QR", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                QrResultType.SUCCESS -> {
+                    // 🟩 Pantalla verde con palomita
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Canje válido",
+                            tint = Color.White,
+                            modifier = Modifier.size(160.dp)
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = "Canje válido",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White
+                        )
 
-            if (mensaje.isNotEmpty()) {
-                Text(
-                    text = mensaje,
-                    color = colorMensaje,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                        Spacer(modifier = Modifier.height(40.dp))
+
+                        Button(
+                            onClick = { viewModel.resetearEstado() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                        ) {
+                            Text("Volver", color = Color.Black, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                QrResultType.ERROR -> {
+                    // 🟥 Pantalla roja con X
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = "Cupón inválido",
+                            tint = Color.White,
+                            modifier = Modifier.size(160.dp)
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = "Cupón inválido",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White
+                        )
+
+                        Spacer(modifier = Modifier.height(40.dp))
+
+                        Button(
+                            onClick = { viewModel.resetearEstado() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                        ) {
+                            Text("Volver", color = Color.Black, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
             }
         }
     }

@@ -34,6 +34,7 @@ import com.govAtizapan.beneficiojoven.view.mapa.ComerciosCercanosScreen
 import com.govAtizapan.beneficiojoven.view.registro.FinalizaRegistro
 import com.govAtizapan.beneficiojoven.viewmodel.loginUserVM.LoginUserVM
 import com.govAtizapan.beneficiojoven.view.validarqr.ValidarQRView
+import com.govAtizapan.beneficiojoven.view.home.favoritos.FavoritosView
 
 
 // Es una buena práctica definir las rutas como constantes
@@ -164,6 +165,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 ComercioHome(
                     onCrearPromo = { /* Aquí podrías abrir otra pantalla si quieres */ },
                     onValidarQR = { navController.navigate(AppScreens.ValidarQRView.route) }
+                )
+            }
+            composable(route = "favoritos") {
+                FavoritosView(
+                    navController = navController,
+                    // 👇 Sin pasar ningún ViewModel manualmente
+                    // Compose se encargará de instanciar FavoritosViewModel por sí mismo
                 )
             }
         }

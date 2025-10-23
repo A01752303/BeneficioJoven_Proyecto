@@ -34,5 +34,6 @@ sealed class AppScreens(val route: String) {
 
     object ComerciosCercanosScreen: AppScreens("comercios_cercanos_screen")
     object ValidarQRView : AppScreens("validar_qr_view")
+    object FavoritosView : AppScreens("favoritos_view")
 
 }
