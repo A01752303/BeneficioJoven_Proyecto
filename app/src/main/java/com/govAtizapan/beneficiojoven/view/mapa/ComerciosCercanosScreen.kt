@@ -19,6 +19,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -42,10 +43,10 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.*
-import com.govAtizapan.beneficiojoven.R // Asegúrate que este import sea correcto
+import com.govAtizapan.beneficiojoven.R
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.UserRepository
-import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily // Importa PoppinsFamily
+import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
 import com.govAtizapan.beneficiojoven.view.navigation.AppScreens
 import kotlinx.coroutines.Dispatchers
@@ -55,11 +56,11 @@ import kotlinx.coroutines.tasks.await
 
 data class Business(val name: String, val latLng: LatLng, val address: String?)
 
-@OptIn(ExperimentalMaterial3Api::class) // Añadido para ModalBottomSheet
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComerciosCercanosScreen(navController: NavController) {
-    // Propiedades del mapa (sin cambios)
-    val defaultLocation = LatLng(19.4326, -99.1332)
+    // Propiedades del mapa
+    val defaultLocation = LatLng(19.4326, -99.1332) // Ciudad de México por defecto
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 15f)
     }
@@ -67,28 +68,25 @@ fun ComerciosCercanosScreen(navController: NavController) {
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Estado para permisos, negocios y Google Play Services (sin cambios)
+    // Estado para permisos, negocios y Google Play Services
     var hasLocationPermission by remember { mutableStateOf(checkLocationPermission(context)) }
     var businesses by remember { mutableStateOf<List<Business>>(emptyList()) }
     var isGooglePlayServicesAvailable by remember { mutableStateOf(checkGooglePlayServices(context)) }
     var isPlacesInitialized by remember { mutableStateOf(Places.isInitialized()) }
     val placesClient = remember { Places.createClient(context) }
 
-    // Estado para manejar la navegación a Google Maps (sin cambios)
+    // Estado para manejar la navegación a Google Maps
     var selectedBusiness by remember { mutableStateOf<Business?>(null) }
 
-    // --- INICIO DE CAMBIOS ---
-    // 1. Estados para el BottomSheet y UserData
+    // Estados para el BottomSheet y UserData
     var showBottomSheet by remember { mutableStateOf(false) }
     val userRepository = remember { UserRepository() }
     var userData by remember { mutableStateOf<ObtenerUsuarioResponseGET?>(null) }
-    // --- FIN DE CAMBIOS ---
 
-    // Lanzador para permisos (sin cambios)
+    // Lanzador para permisos
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // ... (lógica sin cambios)
         hasLocationPermission = isGranted
         if (isGranted) {
             Log.d("ComerciosCercanos", "Permiso concedido, intentando obtener ubicación")
@@ -114,16 +112,15 @@ fun ComerciosCercanosScreen(navController: NavController) {
         }
     }
 
-    // Lanzador para abrir Google Maps (sin cambios)
+    // Lanzador para abrir Google Maps
     val mapsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { _ ->
         Log.d("ComerciosCercanos", "Google Maps intent launched")
     }
 
-    // Efecto para manejar la selección de un negocio y abrir Google Maps (sin cambios)
+    // Efecto para manejar la selección de un negocio y abrir Google Maps
     LaunchedEffect(selectedBusiness) {
-        // ... (lógica sin cambios)
         selectedBusiness?.let { business ->
             try {
                 val gmmIntentUri = Uri.parse("google.navigation:q=${business.latLng.latitude},${business.latLng.longitude}")
@@ -143,7 +140,7 @@ fun ComerciosCercanosScreen(navController: NavController) {
         }
     }
 
-    // Verificar servicios y permisos al cargar (lógica de mapa sin cambios)
+    // Verificar servicios y permisos al cargar
     LaunchedEffect(Unit) {
         if (!isGooglePlayServicesAvailable) {
             Log.e("ComerciosCercanos", "Google Play Services no está disponible o está desactualizado")
@@ -180,19 +177,14 @@ fun ComerciosCercanosScreen(navController: NavController) {
         }
     }
 
-    // --- INICIO DE CAMBIOS ---
-    // 2. LaunchedEffect para cargar userData
+    // Efecto para cargar userData
     LaunchedEffect(userRepository) {
         userData = userRepository.fetchUserData()
     }
 
-    // 3. Envolvemos el Scaffold en un Box para mostrar el ModalBottomSheet
+    // Envolvemos el Scaffold en un Box para el ModalBottomSheet
     Box(modifier = Modifier.fillMaxSize()) {
-        // --- FIN DE CAMBIOS ---
-
         Scaffold(
-            // --- INICIO DE CAMBIOS ---
-            // 4. REEMPLAZO DEL BOTTOMBAR
             bottomBar = {
                 NavigationBar(
                     containerColor = Color.White,
@@ -226,9 +218,9 @@ fun ComerciosCercanosScreen(navController: NavController) {
                         },
                         icon = {
                             Icon(
-                                painter = painterResource(id = R.drawable.logo_sinnombre), // Tu logo
+                                painter = painterResource(id = R.drawable.logo_sinnombre),
                                 contentDescription = "Tarjeta",
-                                modifier = Modifier.size(24.dp), // Tamaño
+                                modifier = Modifier.size(24.dp)
                             )
                         },
                         label = { Text("Tarjeta", fontFamily = PoppinsFamily) },
@@ -262,12 +254,11 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     )
                 }
             }
-            // --- FIN DE CAMBIOS ---
         ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding) // El padding del Scaffold se aplica aquí
+                    .padding(innerPadding)
             ) {
                 Text(
                     text = "Mapa de Ubicación",
@@ -329,19 +320,18 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     }
                 }
 
-                // Panel inferior con controles (sin cambios)
-                Surface(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp),
-                    tonalElevation = 4.dp
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .background(Color.White)
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         if (!hasLocationPermission) {
                             Button(
@@ -352,14 +342,16 @@ fun ComerciosCercanosScreen(navController: NavController) {
                                     .weight(1f)
                                     .padding(end = 8.dp)
                             ) {
-                                Text("Permiso de ubicación")
+                                Text("Reintentar permiso de ubicación")
                             }
                         }
                         Button(
                             onClick = {
                                 if (!hasLocationPermission) {
+                                    Log.d("ComerciosCercanos", "Solicitando permiso para recentrar")
                                     permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                                 } else {
+                                    Log.d("ComerciosCercanos", "Intentando recentrar mapa")
                                     coroutineScope.launch(Dispatchers.IO) {
                                         try {
                                             val location = fusedLocationClient.lastLocation.await()
@@ -368,7 +360,12 @@ fun ComerciosCercanosScreen(navController: NavController) {
                                                 withContext(Dispatchers.Main) {
                                                     cameraPositionState.position = CameraPosition.fromLatLngZoom(userLocation, 15f)
                                                 }
+                                                Log.d("ComerciosCercanos", "Mapa recentrado a: $userLocation")
+                                            } else {
+                                                Log.w("ComerciosCercanos", "Ubicación nula al recentrar")
                                             }
+                                        } catch (e: SecurityException) {
+                                            Log.e("ComerciosCercanos", "SecurityException al recentrar: ${e.message}")
                                         } catch (e: Exception) {
                                             Log.e("ComerciosCercanos", "Error al recentrar: ${e.message}")
                                         }
@@ -379,29 +376,26 @@ fun ComerciosCercanosScreen(navController: NavController) {
                                 .weight(1f)
                                 .padding(start = if (hasLocationPermission) 0.dp else 8.dp)
                         ) {
-                            Text("Mi ubicación")
+                            Text("Volver a mi ubicación")
                         }
                     }
                 }
             }
-        } // Fin del Scaffold
+        }
 
-        // --- INICIO DE CAMBIOS ---
-        // 5. AÑADIMOS EL MODALBOTTOMSHEET (dentro del Box, después del Scaffold)
+        // ModalBottomSheet
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    showBottomSheet = false // Para que se cierre al tocar afuera
+                    showBottomSheet = false
                 }
             ) {
-                // Contenido del panel
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // 1. Título
                     Text(
                         text = "MI TARJETA BENEFICIO JOVEN",
                         fontSize = 18.sp,
@@ -413,7 +407,6 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // 2. Imagen de la Tarjeta
                     Card(
                         modifier = Modifier
                             .fillMaxWidth(0.85f)
@@ -429,8 +422,6 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 3. Código Generado
-                    // ¡OJO! Asegúrate que 'userData?.id' sea el campo correcto (ej: userData?.id_usuario)
                     val userId = userData?.id ?: 0
                     val cardNumber = generateCardNumber(userId)
 
@@ -454,7 +445,6 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 4. Datos de Contacto
                     Text(
                         text = "Atención a Clientes",
                         fontSize = 16.sp,
@@ -480,14 +470,11 @@ fun ComerciosCercanosScreen(navController: NavController) {
                 }
             }
         }
-        // --- FIN DE CAMBIOS ---
-
-    } // Fin del Box
+    }
 }
 
-// Las funciones auxiliares del mapa (sin cambios)
+// Las funciones auxiliares permanecen igual
 fun checkLocationPermission(context: Context): Boolean {
-    // ... (lógica sin cambios)
     val result = ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -497,7 +484,6 @@ fun checkLocationPermission(context: Context): Boolean {
 }
 
 fun checkGooglePlayServices(context: Context): Boolean {
-    // ... (lógica sin cambios)
     val googleApiAvailability = GoogleApiAvailability.getInstance()
     val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
     val isAvailable = resultCode == ConnectionResult.SUCCESS
@@ -512,7 +498,6 @@ suspend fun fetchUserLocationAndBusinesses(
     cameraPositionState: CameraPositionState,
     updateBusinesses: (List<Business>) -> Unit
 ) {
-    // ... (lógica sin cambios)
     if (!checkLocationPermission(context)) {
         Log.w("ComerciosCercanos", "No hay permiso de ubicación. Abortando.")
         updateBusinesses(emptyList())
@@ -534,6 +519,9 @@ suspend fun fetchUserLocationAndBusinesses(
             Log.w("ComerciosCercanos", "Ubicación nula. Servicios de ubicación desactivados?")
             updateBusinesses(emptyList())
         }
+    } catch (e: SecurityException) {
+        Log.e("ComerciosCercanos", "SecurityException al obtener ubicación: ${e.message}")
+        updateBusinesses(emptyList())
     } catch (e: Exception) {
         Log.e("ComerciosCercanos", "Error al obtener ubicación: ${e.message}")
         updateBusinesses(emptyList())
@@ -541,7 +529,6 @@ suspend fun fetchUserLocationAndBusinesses(
 }
 
 suspend fun fetchNearbyBusinesses(placesClient: PlacesClient, location: LatLng): List<Business> {
-    // ... (lógica sin cambios)
     Log.d("ComerciosCercanos", "Buscando negocios cerca de: $location")
     val placeFields = listOf(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.TYPES)
     val request = FindCurrentPlaceRequest.newInstance(placeFields)
@@ -563,25 +550,21 @@ suspend fun fetchNearbyBusinesses(placesClient: PlacesClient, location: LatLng):
             .take(10)
         Log.d("ComerciosCercanos", "Negocios encontrados: ${businesses.size}")
         businesses
+    } catch (e: SecurityException) {
+        Log.e("ComerciosCercanos", "SecurityException en Places API: ${e.message}")
+        emptyList()
+    } catch (e: com.google.android.gms.common.api.ApiException) {
+        Log.e("ComerciosCercanos", "ApiException en Places API: ${e.statusCode} - ${e.message}")
+        emptyList()
     } catch (e: Exception) {
         Log.e("ComerciosCercanos", "Error en Places API: ${e.message}")
         emptyList()
     }
 }
 
-// --- INICIO DE CAMBIOS ---
-// 6. AÑADIMOS LA FUNCIÓN PARA GENERAR EL CÓDIGO
 private fun generateCardNumber(id: Int): String {
-    // 1. Define el número base
     val baseNumber = 1234567890120000L
-
-    // 2. Suma el ID del usuario al número base
     val fullCode = baseNumber + id.toLong()
-
-    // 3. Convierte a String, asegurando que tenga 16 dígitos (rellenando con 0s a la izquierda si fuera necesario)
     val codeString = fullCode.toString().padStart(16, '0')
-
-    // 4. Agrupa en bloques de 4 dígitos
     return codeString.chunked(4).joinToString(" ")
 }
-// --- FIN DE CAMBIOS ---
