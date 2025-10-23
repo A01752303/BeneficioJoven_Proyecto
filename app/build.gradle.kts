@@ -115,5 +115,6 @@ dependencies {
     implementation("io.coil-kt:coil-svg:2.6.0")
 
     implementation("androidx.security:security-crypto-ktx:1.1.0")
+
 }
 

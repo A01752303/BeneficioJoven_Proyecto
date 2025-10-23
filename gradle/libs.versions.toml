@@ -22,6 +22,7 @@ benchmarkTraceprocessor = "1.4.1"
 foundation = "1.9.2"
 playServicesIdentity = "19.2.0"
 playServicesIdentityVersion = "18.1.0"
+riobottomnavigation = "1.0.2"
 uiGraphics = "1.9.2"
 animationCoreLint = "1.9.2"
 googleGmsGoogleServices = "4.4.3"
@@ -71,6 +72,7 @@ androidx-benchmark-traceprocessor = { group = "androidx.benchmark", name = "benc
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 lottie-compose-v6610 = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieComposeVersion" }
 play-services-identity-v1810 = { module = "com.google.android.gms:play-services-identity", version.ref = "playServicesIdentityVersion" }
+riobottomnavigation = { module = "com.github.0xRahad:RioBottomNavigation", version.ref = "riobottomnavigation" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 androidx-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }

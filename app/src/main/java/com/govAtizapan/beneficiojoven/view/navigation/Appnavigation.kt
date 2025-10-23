@@ -174,6 +174,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     // Compose se encargará de instanciar FavoritosViewModel por sí mismo
                 )
             }
+
         }
     }
 }

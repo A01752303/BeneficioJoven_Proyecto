@@ -2,6 +2,7 @@ package com.govAtizapan.beneficiojoven.view.home.homeViews
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,11 +18,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.* // Importa navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
@@ -60,6 +62,7 @@ import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Info
@@ -73,8 +76,9 @@ import androidx.compose.material3.rememberDrawerState
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.ObtenerUsuarioResponseGET
 import com.govAtizapan.beneficiojoven.model.obtenerDatosUsuario.UserRepository
 import com.govAtizapan.beneficiojoven.model.promocionesapartar.ApartarPromocionRepository
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.em
+import com.govAtizapan.beneficiojoven.R
 
 val TealPrimary = Color(0xFF5d548f)
 val TealLight = Color(0xFF5d548f)
@@ -121,6 +125,8 @@ fun HomeView(
     var userData by remember { mutableStateOf<ObtenerUsuarioResponseGET?>(null) }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (promociones.isEmpty()) {
@@ -210,7 +216,7 @@ fun HomeView(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.AccountCircle,
+                            painter = painterResource(R.drawable.img_0),
                             contentDescription = "Perfil",
                             tint = White,
                             modifier = Modifier.size(50.dp)
@@ -252,28 +258,12 @@ fun HomeView(
 
                 Spacer(Modifier.height(12.dp))
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Perfil") },
-                    label = { Text("Mi Perfil", fontFamily = PoppinsFamily) },
-                    selected = false,
-                    onClick = {
-                        coroutineScope.launch { drawerState.close() }
-                    }
-                )
-                NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
                     label = { Text("Favoritos", fontFamily = PoppinsFamily) },
                     selected = false,
                     onClick = {
                         coroutineScope.launch { drawerState.close() }
                         navController.navigate("favoritos")
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
-                    label = { Text("Ajustes", fontFamily = PoppinsFamily) },
-                    selected = false,
-                    onClick = {
-                        coroutineScope.launch { drawerState.close() }
                     }
                 )
                 NavigationDrawerItem(
@@ -290,7 +280,7 @@ fun HomeView(
                     color = DividerDefaults.color
                 )
                 NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión") },
+                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Cerrar sesión") },
                     label = { Text("Cerrar Sesión", fontFamily = PoppinsFamily) },
                     selected = false,
                     onClick = {
@@ -336,112 +326,83 @@ fun HomeView(
                 )
             },
             bottomBar = {
-                // BOTTOM BAR MODIFICADA - Solo Home y Maps con diseño mejorado
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp),
-                    tonalElevation = 8.dp,
-                    shadowElevation = 8.dp
+                // Usamos NavigationBar, el componente estándar
+                NavigationBar(
+                    containerColor = Color.White,
+                    tonalElevation = 8.dp
+                    // Este componente ya respeta los insets (la barra de gestos) por defecto
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White)
-                    ) {
-                        // FAB Central - Botón de acción central
-                        FloatingActionButton(
-                            onClick = {
-                                Log.d("HomeView", "Botón central presionado")
-                            },
-                            modifier = Modifier
-                                .size(56.dp)
-                                .align(Alignment.TopCenter)
-                                .offset(y = (-28).dp),
-                            containerColor = TealPrimary,
-                            contentColor = White
-                        ) {
+                    // 1. Botón Home
+                    NavigationBarItem(
+                        selected = true, // Le decimos que Home está seleccionado
+                        onClick = { Log.d("HomeView", "Ya en Home") },
+                        icon = {
                             Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Buscar",
-                                modifier = Modifier.size(24.dp)
+                                Icons.Default.Home,
+                                contentDescription = "Home"
                             )
-                        }
+                        },
+                        label = { Text("Home", fontFamily = PoppinsFamily) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = TealPrimary, // <-- Tu color principal
+                            selectedTextColor = TealPrimary, // <-- Tu color principal
+                            indicatorColor = Color.Transparent, // <-- O un color de fondo si quieres
+                            unselectedIconColor = Color.Gray,
+                            unselectedTextColor = Color.Gray
+                        )
+                    )
 
-                        // Navegación inferior - Solo Home y Maps
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            // Botón Home (izquierda) - Ya estamos en Home
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        Log.d("HomeView", "Ya en Home")
-                                    },
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Home,
-                                        contentDescription = "Home",
-                                        tint = TealPrimary,
-                                        modifier = Modifier.size(28.dp)
-                                    )
-                                }
-                                Text(
-                                    "Home",
-                                    fontSize = 12.sp,
-                                    color = TealPrimary,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = PoppinsFamily
-                                )
-                            }
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = {
+                            showBottomSheet = true // <-- ESTE ES EL CAMBIO
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.logo_sinnombre), // O el ícono que hayas elegido
+                                contentDescription = "Tarjeta",
+                                modifier = Modifier.size(24.dp),
+                                // --- 2. AÑADE EL TINTE FIJO ---
+                            )
+                        },
+                        label = { Text("Tarjeta", fontFamily = PoppinsFamily) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = TealPrimary, // <-- Tu color principal
+                            selectedTextColor = TealPrimary, // <-- Tu color principal
+                            indicatorColor = Color.Transparent, // <-- O un color de fondo si quieres
+                            unselectedIconColor = Color.Gray,
+                            unselectedTextColor = Color.Gray
+                        )
+                    )
 
-                            // Espacio para el FAB
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            // Botón Mapa (derecha)
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        navController.navigate(AppScreens.ComerciosCercanosScreen.route)
-                                    },
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.LocationOn,
-                                        contentDescription = "Mapa",
-                                        tint = TealPrimary,
-                                        modifier = Modifier.size(28.dp)
-                                    )
-                                }
-                                Text(
-                                    "Mapa",
-                                    fontSize = 12.sp,
-                                    color = TealPrimary,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = PoppinsFamily
-                                )
-                            }
-                        }
-                    }
+                    // 3. Botón Mapa
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = { navController.navigate(AppScreens.ComerciosCercanosScreen.route) },
+                        icon = {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = "Mapa"
+                            )
+                        },
+                        label = { Text("Mapa", fontFamily = PoppinsFamily) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = TealPrimary, // <-- Tu color principal
+                            selectedTextColor = TealPrimary, // <-- Tu color principal
+                            indicatorColor = Color.Transparent, // <-- O un color de fondo si quieres
+                            unselectedIconColor = Color.Gray,
+                            unselectedTextColor = Color.Gray
+                        )
+                    )
                 }
             },
             containerColor = BackgroundGray
         ) { innerPadding ->
+            // --- INICIO DE LA CORRECCIÓN 2 ---
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding())
+                    .padding(innerPadding) // <-- LÍNEA MODIFICADA
             ) {
                 Box(
                     modifier = Modifier
@@ -531,8 +492,9 @@ fun HomeView(
                 ) {
                     when {
                         isLoading -> {
+                            // --- CORRECCIÓN 3.1 ---
                             SkeletonList(
-                                PaddingValues(bottom = innerPadding.calculateBottomPadding())
+                                PaddingValues() // <-- Padding limpiado
                             )
                         }
                         errorState != null && promociones.isEmpty() -> {
@@ -541,15 +503,17 @@ fun HomeView(
                                 onRetry = { viewModel.cargarPromociones() },
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(bottom = innerPadding.calculateBottomPadding())
+                                // --- CORRECCIÓN 3.2 ---
+                                // Padding inferior eliminado
                             )
                         }
                         else -> {
                             LazyColumn(
                                 state = lazyListState,
                                 modifier = Modifier.fillMaxSize(),
+                                // --- CORRECCIÓN 3.3 ---
                                 contentPadding = PaddingValues(
-                                    bottom = innerPadding.calculateBottomPadding() + 12.dp
+                                    bottom = 12.dp // <-- Padding limpiado
                                 ),
                             ) {
                                 item(key = "category_row") {
@@ -636,7 +600,124 @@ fun HomeView(
                 }
             }
         }
+        // --- INICIO DEL NUEVO BLOQUE DE BOTTOM SHEET ---
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showBottomSheet = false // Para que se cierre al tocar afuera
+                }
+            ) {
+                // Usamos una Columna para organizar el contenido verticalmente
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp), // Espacio inferior
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    // --- 1. TÍTULO ---
+                    Text(
+                        text = "Mi tarjeta BENEFICIO JOVEN",
+                        fontSize = 18.sp,
+                        fontFamily = PoppinsFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = TealPrimary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f) // 85% del ancho
+                            .aspectRatio(1.586f), // Proporción de tarjeta
+                        elevation = CardDefaults.cardElevation(8.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.tarjeta),
+                            contentDescription = "Mi Tarjeta",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    val userId = userData?.id ?: 0 // Usa 0 si 'userData' es nulo
+                    val cardNumber = generateCardNumber(userId)
+
+                    Surface(
+                        shape = RoundedCornerShape(50), // Redondeado
+                        color = Color.White, // Blanco
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                    ) {
+                        Text(
+                            text = cardNumber,
+                            fontSize = 18.sp,
+                            fontFamily = PoppinsFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black,
+                            letterSpacing = 0.1.em, // Espacio entre letras
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // --- 4. DATOS DE CONTACTO ---
+                    Text(
+                        text = "¡Contáctanos!",
+                        fontSize = 16.sp,
+                        fontFamily = PoppinsFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Tel: 55-16-68-17-48",
+                        fontSize = 14.sp,
+                        fontFamily = PoppinsFamily,
+                        color = Color.Gray
+                    )
+
+                    Text(
+                        text = " Avenida del parque SN," +
+                                " Jardines de Atizapán," +
+                                " Atizapán de Zaragoza",
+                        fontSize = 14.sp,
+                        fontFamily = PoppinsFamily,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
+                }
+            }
+        }
     }
+}
+
+// ===================================================================
+// --- EL RESTO DEL ARCHIVO (HELPERS) SE MANTIENE 100% IGUAL ---
+// ===================================================================
+
+private fun generateCardNumber(id: Int): String {
+    // 1. Define el número base
+    val baseNumber = 1234567890120000L
+
+    // 2. Suma el ID del usuario al número base
+    val fullCode = baseNumber + id.toLong()
+
+    // 3. Convierte a String, asegurando que tenga 16 dígitos (rellenando con 0s a la izquierda si fuera necesario)
+    val codeString = fullCode.toString().padStart(16, '0')
+
+    // 4. Agrupa en bloques de 4 dígitos
+    return codeString.chunked(4).joinToString(" ")
 }
 
 @Composable
@@ -993,12 +1074,12 @@ private fun FilterChipsRow(
         }
 
         item {
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .height(30.dp)
                     .width(1.dp)
                     .padding(vertical = 4.dp),
-                color = Color.LightGray
+                thickness = DividerDefaults.Thickness, color = Color.LightGray
             )
         }
 
