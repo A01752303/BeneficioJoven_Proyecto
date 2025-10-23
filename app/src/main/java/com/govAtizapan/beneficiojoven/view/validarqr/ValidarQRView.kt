@@ -24,6 +24,10 @@ import com.govAtizapan.beneficiojoven.viewmodel.validaqr.QrResultType
 import com.govAtizapan.beneficiojoven.viewmodel.validaqr.ValidarQRViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily // 👈 asegúrate de importar esto
+
+// 🎨 Color principal morado
+val TealPrimary = Color(0xFF5d548f)
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -47,8 +51,15 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Validar Código QR", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0096A6))
+                title = {
+                    Text(
+                        "Validar Código QR",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontFamily = PoppinsFamily
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = TealPrimary)
             )
         }
     ) { innerPadding ->
@@ -66,15 +77,17 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        // 🔲 Icono en negro
                         Icon(
                             imageVector = Icons.Default.QrCodeScanner,
                             contentDescription = "Escanear",
-                            tint = Color(0xFF0096A6),
+                            tint = Color.Black,
                             modifier = Modifier.size(120.dp)
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
 
+                        // 🔘 Botón morado
                         Button(
                             onClick = {
                                 val options = ScanOptions()
@@ -86,15 +99,21 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
                             modifier = Modifier
                                 .fillMaxWidth(0.8f)
                                 .height(60.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0096A6))
+                            colors = ButtonDefaults.buttonColors(containerColor = TealPrimary)
                         ) {
-                            Text("Escanear QR", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                "Escanear QR",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontFamily = PoppinsFamily
+                            )
                         }
                     }
                 }
 
                 QrResultType.SUCCESS -> {
-                    // 🟩 Pantalla verde con palomita
+                    // 🟩 Pantalla verde
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -110,7 +129,8 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
                             text = "Canje válido",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = Color.White
+                            color = Color.White,
+                            fontFamily = PoppinsFamily
                         )
 
                         Spacer(modifier = Modifier.height(40.dp))
@@ -119,13 +139,18 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
                             onClick = { viewModel.resetearEstado() },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                         ) {
-                            Text("Volver", color = Color.Black, fontWeight = FontWeight.Bold)
+                            Text(
+                                "Volver",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = PoppinsFamily
+                            )
                         }
                     }
                 }
 
                 QrResultType.ERROR -> {
-                    // 🟥 Pantalla roja con X
+                    // 🟥 Pantalla roja
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -141,7 +166,8 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
                             text = "Cupón inválido",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = Color.White
+                            color = Color.White,
+                            fontFamily = PoppinsFamily
                         )
 
                         Spacer(modifier = Modifier.height(40.dp))
@@ -150,7 +176,12 @@ fun ValidarQRView(viewModel: ValidarQRViewModel = viewModel()) {
                             onClick = { viewModel.resetearEstado() },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                         ) {
-                            Text("Volver", color = Color.Black, fontWeight = FontWeight.Bold)
+                            Text(
+                                "Volver",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = PoppinsFamily
+                            )
                         }
                     }
                 }
