@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -74,14 +76,14 @@ fun InicioSesionComercio(
     loginViewModel: LoginUserVM
 ) {
     val navigationState by authViewModel.navigationState.collectAsStateWithLifecycle()
-    // 5. `LaunchedEffect` reacciona a los cambios en el estado de navegación del ViewModel
+
     LaunchedEffect(key1 = navigationState) {
         when (navigationState) {
             is LoginNavigationState.NavigateToNewUserProfile -> {
                 navController.navigate(AppScreens.NuevaCuentaVista.route) {
                     popUpTo(AppScreens.LoginView.route) { inclusive = true }
                 }
-                authViewModel.resetNavigationState() // Resetea el evento para no volver a navegar
+                authViewModel.resetNavigationState()
             }
             is LoginNavigationState.NavigateToHome -> {
                 navController.navigate(AppScreens.HomeView.route) {
@@ -89,32 +91,64 @@ fun InicioSesionComercio(
                 }
                 authViewModel.resetNavigationState()
             }
-            is LoginNavigationState.Idle -> { /* No hacer nada */ }
+            is LoginNavigationState.Idle -> { }
         }
     }
 
-    // 6. Llama a tu Composable de UI, pasándole la función que debe ejecutar al hacer clic
     InicioSesionComercioView(
         onLoginClicked = { email, pass ->
             val requestBody = LoginUserRequest(email = email, contrasena = pass)
-            // Llamamos a la función del ViewModel que se encarga del login en tu backend.
+
             loginViewModel.attemptLogin(
                 body = requestBody,
-                expectedRole = UserRole.Colaborador, // Asumimos que esta vista es para el rol "Usuario".
+                expectedRole = UserRole.Colaborador,
                 navController = navController)
-            // authViewModel.onEvent(AuthEvent.SignInWithEmail(email, pass))
         },
-
-        onBusinessLoginClick = {
-            navController.navigate(AppScreens.InicioSesionComercio.route)
-        }
     )
 }
 
 @Composable
-fun InicioSesionComercioView(onLoginClicked: (String, String) -> Unit,
-          onBusinessLoginClick: () -> Unit = {}) {
+fun InicioSesionComercioView(onLoginClicked: (String, String) -> Unit) {
     val scrollState = rememberScrollState()
+
+    var showInfoDialog by remember { mutableStateOf(false) }
+
+    if (showInfoDialog) {
+        AlertDialog(
+            onDismissRequest = { showInfoDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showInfoDialog = false }) {
+                    Text("Entendido", fontFamily = PoppinsFamily, fontWeight = FontWeight.SemiBold)
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Información",
+                    tint = TealPrimary,
+                    modifier = Modifier.size(40.dp)
+                )
+            },
+            title = {
+                Text(
+                    text = "Aviso",
+                    fontFamily = PoppinsFamily,
+                    fontWeight = FontWeight.Bold,
+                    color = TealPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Para iniciar sesión necesitas tus credenciales que utilizaste para hacer tu solicitud.",
+                    fontFamily = PoppinsFamily,
+                    fontSize = 15.sp
+                )
+            },
+            containerColor = White,
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -164,14 +198,14 @@ fun InicioSesionComercioView(onLoginClicked: (String, String) -> Unit,
         CustomTextField(
             label = "Contraseña",
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it }, // <- AQUÍ ESTABA EL ERROR
             textStyle = TextStyle(fontFamily = PoppinsFamily, fontWeight = FontWeight.Light) ,
             isPasswordField = true,
             isPasswordVisible = isPasswordVisible,
             onVisibilityChange = { isPasswordVisible = !isPasswordVisible }
         )
         TextButton(
-            onClick = { /* Lógica para recuperar contraseña */ },
+            onClick = { },
             modifier = Modifier.align(Alignment.End).height(36.dp)
         ) {
             Text("Olvidé mi contraseña",
@@ -200,13 +234,12 @@ fun InicioSesionComercioView(onLoginClicked: (String, String) -> Unit,
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Texto para el inicio de sesión de comercios
         val businessAnnotatedString = buildAnnotatedString {
-            append("¿Eres comercio? ")
+            append("¿Quieres empezar a crear? ")
             withLink(
                 link = LinkAnnotation.Url(
-                    url = "BUSINESS_LOGIN", // Identificador único
-                    linkInteractionListener = { onBusinessLoginClick() } // La acción va aquí
+                    url = "BUSINESS_LOGIN",
+                    linkInteractionListener = { showInfoDialog = true }
                 )
             ) {
                 withStyle(style = SpanStyle(
@@ -215,7 +248,7 @@ fun InicioSesionComercioView(onLoginClicked: (String, String) -> Unit,
                     fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.None)
                 ) {
-                    append("Inicia sesión aquí")
+                    append("Obtener información")
                 }
             }
         }
@@ -279,17 +312,17 @@ fun CustomTextField(
             shape = RoundedCornerShape(16.dp),
             singleLine = true,
             visualTransformation = if (isPasswordField && !isPasswordVisible) {
-                PasswordVisualTransformation() // Oculta el texto si es campo de contraseña y no es visible
+                PasswordVisualTransformation()
             } else {
-                VisualTransformation.None // Muestra el texto en cualquier otro caso
+                VisualTransformation.None
             },
             keyboardOptions = if (isPasswordField) {
-                KeyboardOptions(keyboardType = KeyboardType.Password) // Teclado de contraseña
+                KeyboardOptions(keyboardType = KeyboardType.Password)
             } else {
-                KeyboardOptions.Default // Teclado normal
+                KeyboardOptions.Default
             },
             trailingIcon = {
-                if (isPasswordField) { // Muestra el ícono solo si es un campo de contraseña
+                if (isPasswordField) {
                     val image = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
                     IconButton(onClick = onVisibilityChange) {
                         Icon(imageVector = image,
