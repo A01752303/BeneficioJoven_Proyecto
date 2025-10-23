@@ -265,7 +265,8 @@ fun ComerciosCercanosScreen(navController: NavController) {
                     modifier = Modifier.padding(16.dp),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TealPrimary
+                    color = TealPrimary,
+                    fontFamily = PoppinsFamily
                 )
 
                 if (isGooglePlayServicesAvailable && isPlacesInitialized) {
@@ -376,7 +377,10 @@ fun ComerciosCercanosScreen(navController: NavController) {
                                 .weight(1f)
                                 .padding(start = if (hasLocationPermission) 0.dp else 8.dp)
                         ) {
-                            Text("Volver a mi ubicación")
+                            Text(
+                                text = "Volver a mi ubicación",
+                                fontFamily = PoppinsFamily
+                            )
                         }
                     }
                 }
