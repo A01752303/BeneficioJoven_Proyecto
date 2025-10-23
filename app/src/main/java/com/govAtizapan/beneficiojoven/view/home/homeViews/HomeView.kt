@@ -295,6 +295,7 @@ fun HomeView(
                 )
             }
         }
+
     ) {
         Scaffold(
             topBar = {
