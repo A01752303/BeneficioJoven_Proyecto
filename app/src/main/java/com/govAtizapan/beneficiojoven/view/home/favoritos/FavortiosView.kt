@@ -11,13 +11,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.govAtizapan.beneficiojoven.view.home.homeViews.PromoCard
 import androidx.navigation.NavController
+import com.govAtizapan.beneficiojoven.ui.theme.PoppinsFamily
 import com.govAtizapan.beneficiojoven.viewmodel.favoritosvm.FavoritosViewModel
-import com.govAtizapan.beneficiojoven.view.home.homeViews.HomeView // 👈 Usa tu mismo componente de Home
-import com.govAtizapan.beneficiojoven.ui.theme.TealPrimary
+import com.govAtizapan.beneficiojoven.view.home.homeViews.TealPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,12 +37,13 @@ fun FavoritosView(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mis Favoritos") },
+                title = { Text("Mis Favoritos", fontFamily = PoppinsFamily) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = "Volver",
+                            tint = White
                         )
                     }
                 },

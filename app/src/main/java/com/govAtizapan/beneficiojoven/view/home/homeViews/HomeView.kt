@@ -60,9 +60,7 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.DrawerValue
