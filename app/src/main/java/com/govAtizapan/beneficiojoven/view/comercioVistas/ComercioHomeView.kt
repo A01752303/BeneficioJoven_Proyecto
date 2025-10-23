@@ -80,6 +80,7 @@ fun ComercioHome(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
+
         ) {
             // --- Búsqueda (idéntico layout a HomeView) ---
             Box(

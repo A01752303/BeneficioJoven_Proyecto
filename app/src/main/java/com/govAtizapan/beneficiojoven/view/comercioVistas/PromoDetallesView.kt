@@ -59,6 +59,7 @@ fun PromoDetallesView(
                 .padding(inner)
                 .padding(horizontal = 24.dp)
                 .fillMaxSize()
+                .safeDrawingPadding()
         ) {
             Spacer(Modifier.height(8.dp))
             Text(

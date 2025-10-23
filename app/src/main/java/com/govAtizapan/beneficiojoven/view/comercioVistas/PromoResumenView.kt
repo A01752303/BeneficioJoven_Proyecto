@@ -116,6 +116,7 @@ fun PromoResumenView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 12.dp)
+                        .safeDrawingPadding()
                 ) {
                     OutlinedButton(
                         onClick = {
@@ -168,6 +169,7 @@ fun PromoResumenView(
                 .padding(horizontal = 24.dp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()) // contenido hace scroll, botones fijos
+                .safeDrawingPadding()
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -260,7 +262,8 @@ fun PromoResumenView(
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Column(Modifier.fillMaxWidth()) {
+    Column(Modifier.fillMaxWidth()
+    ) {
         Text(
             text = label,
             fontFamily = PoppinsFamily,

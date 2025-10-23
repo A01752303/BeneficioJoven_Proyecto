@@ -55,6 +55,7 @@ fun PromoLimitesView(
                 .padding(inner)
                 .padding(horizontal = 24.dp)
                 .fillMaxSize()
+                .safeDrawingPadding()
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -83,7 +84,7 @@ fun PromoLimitesView(
                     AppStandardTextField(
                         value = ui.limiteTotalTxt,
                         onValueChange = { vm.onEvent(CreatePromotionEvent.LimiteTotalChanged(it)) },
-                        label = "Límite total (opcional)",
+                        label = "Total (opcional)",
                         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
@@ -96,7 +97,7 @@ fun PromoLimitesView(
                     AppStandardTextField(
                         value = ui.limitePorUsuarioTxt,
                         onValueChange = { vm.onEvent(CreatePromotionEvent.LimitePorUsuarioChanged(it)) },
-                        label = "Límite por usuario (opcional)",
+                        label = "Usuario (opcional)",
                         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Done
