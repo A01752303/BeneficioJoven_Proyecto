@@ -88,3 +88,10 @@ class LoginUserVM : ViewModel() {
         }
     }
 }
+
+// ⛔️ NOTA: Asumo que tu enum 'UserRole' se ve algo así:
+// enum class UserRole {
+//    Usuario,
+//    Colaborador
+// }
+// Si 'Colaborador' no es el nombre correcto, ajústalo en el 'when' de arriba.

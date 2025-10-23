@@ -27,7 +27,7 @@ import com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM.CreatePromotio
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PromoNombreView(
-    onBack: () -> Unit,
+    onBack: () -> Unit,          // 👈 nuevo callback de regreso
     onNext: () -> Unit,
     vm: CreatePromotionViewModel
 ) {
