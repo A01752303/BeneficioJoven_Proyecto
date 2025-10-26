@@ -1,3 +1,43 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define la pantalla/formulario `PromoFechasView`, que corresponde
+ * al paso donde el comercio especifica:
+ * 1. El rango de vigencia de la promoción.
+ * 2. (Opcional) La imagen promocional.
+ *
+ * Funcionalidad principal:
+ * * Usa `AppDateRangeField` para permitir seleccionar fecha de inicio y fin con un
+ * `DateRangePicker` de Material 3. Cuando el usuario confirma el rango, se manda
+ * `CreatePromotionEvent.StartEndChanged(start, end)` al ViewModel.
+ *
+ * * Valida que:
+ * * Ambas fechas tengan formato `YYYY-MM-DD`.
+ * * La fecha de inicio no sea posterior a la fecha de fin.
+ * Esta validación controla si el botón "Siguiente" está habilitado.
+ *
+ * * Muestra la sección `PromoImagenSection`, que permite al usuario elegir una imagen
+ * opcional desde la galería y previsualizarla antes de hacer el POST final.
+ *
+ * Navegación:
+ * * Botón "Atrás": ejecuta `onBack()`.
+ * * Botón "Siguiente": ejecuta `onNext()` sólo si las fechas son válidas.
+ *
+ * Integración con estado:
+ * * Consume el `CreatePromotionViewModel` (inyectado externamente; no se crea aquí).
+ * * Observa `vm.ui.collectAsState()` para leer valores actuales como `startDate`,
+ * `endDate` e `imagenUri`.
+ *
+ * Estilo:
+ * * Uso de tipografía Poppins y color `TealPrimary` para mantener consistencia visual
+ * con las demás pantallas del módulo de comercio.
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.foundation.layout.*

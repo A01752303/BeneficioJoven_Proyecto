@@ -1,3 +1,45 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define la pantalla principal del módulo de Comercio: `ComercioHome`.
+ *
+ * Objetivo de la pantalla:
+ * * Mostrar todas las promociones registradas por el comercio autenticado.
+ * * Permitir filtrar, buscar y refrescar las promociones.
+ * * Dar acceso rápido a acciones clave como crear una nueva promoción y validar un QR.
+ *
+ * Componentes y comportamiento:
+ * * `TopAppBar` con título "Mis promociones" y un botón de refresco que llama `vm.refrescar()`.
+ * * Barra de búsqueda (similar al estilo de HomeView) que filtra por nombre y descripción.
+ * * Chips de filtro (`ComercioFiltersRow`) con el mismo look&feel que Home:
+ * "Todas", "Activas", "Inactivas".
+ * * Lista scrollable (`LazyColumn`) que usa `ComercioPromotionCard` para renderizar cada promoción.
+ * * Estados vacíos / cargando / error manejados visualmente:
+ * * Spinner inicial si aún no hay datos.
+ * * Mensaje de error con botón "Reintentar".
+ * * Mensaje "Sin resultados" cuando el filtro o la búsqueda no coinciden con ninguna promo.
+ * * Botones de acción iniciales:
+ * * "Promoción Nueva" → dispara `onCrearPromo`.
+ * * "Validar QR" → dispara `onValidarQR`.
+ *
+ * Integración con ViewModel:
+ * * Consume `ComercioHomeViewModel` y observa su estado (`vm.ui.collectAsState()`),
+ * que incluye:
+ * * `promociones`: lista ya mapeada al modelo de dominio.
+ * * `isLoading`: indica si se está cargando/refrescando.
+ * * `error`: mensaje de error si falló la carga.
+ *
+ * Nota:
+ * Esta vista mantiene consistencia visual con la pantalla Home del cliente final,
+ * reutilizando colores (`TealPrimary`, `CardBackground`), tipografía Poppins y
+ * esquinas redondeadas para tarjetas y contenedores.
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.foundation.background

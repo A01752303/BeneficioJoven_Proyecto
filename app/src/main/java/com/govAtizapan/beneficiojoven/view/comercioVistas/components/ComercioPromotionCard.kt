@@ -1,3 +1,35 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define el componente Compose `ComercioPromotionCard`, que muestra la información
+ * de una promoción de un comercio con el mismo estilo visual usado en Home:
+ *
+ * * Usa `ElevatedCard` con esquinas redondeadas de 16.dp.
+ * * Tipografía Poppins en todos los textos.
+ * * Chip de beneficio (porcentaje, precio fijo o tipo de promo) con colores `TealLight` y `TealPrimary`.
+ * * Imagen opcional en la parte superior de la tarjeta (si la promo tiene `imagenUrl`).
+ *
+ * Contenido mostrado:
+ * * Nombre de la promoción.
+ * * Beneficio principal (ej. "30% OFF", "$85 MXN", "2x1", etc.).
+ * * Descripción (truncada a 3 líneas).
+ * * Vigencia de la promoción (`fechaInicioIso – fechaFinIso`).
+ * * Número de canjes (`numeroCanjeados`).
+ * * Estado actual ("Activa" / "Inactiva").
+ *
+ * Interacción:
+ * * `onClick`: callback opcional si la tarjeta debe ser presionable completa (por ejemplo para ver detalles o editar).
+ * * `actionLabel` + `onActionClick`: botón de acción secundaria alineado a la derecha (por ejemplo "Editar", "Desactivar").
+ *
+ * Uso:
+ * Se utiliza en listados de promociones dentro de la vista de comercio para que el dueño/colaborador
+ * pueda visualizar rápidamente el rendimiento y estado de cada promoción.
+ */
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas.components
 
 import androidx.compose.foundation.Image

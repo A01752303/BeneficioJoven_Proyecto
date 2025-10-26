@@ -1,3 +1,40 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define la pantalla/formulario `PromoLimitesView`, donde el comercio
+ * puede especificar límites de uso de la promoción antes de confirmarla.
+ *
+ * Funcionalidad principal:
+ * * Captura dos valores opcionales:
+ * * `limiteTotalTxt`: cuántas veces se puede canjear la promo en total.
+ * * `limitePorUsuarioTxt`: cuántas veces la puede canjear cada usuario individual.
+ * Si el campo está vacío o es "0", se interpreta como "sin límite".
+ *
+ * * Valida la relación entre los dos límites:
+ * * Si ambos son > 0, entonces `limitePorUsuario` no puede ser mayor que `limiteTotal`.
+ * * Si la validación falla, se resalta el campo y se muestra un mensaje de error.
+ * * Esta validación controla si el botón "Siguiente" está habilitado.
+ *
+ * * Usa `CreatePromotionViewModel` para leer/escribir el estado vía `CreatePromotionEvent`,
+ * sin recrear el estado localmente.
+ *
+ * * Muestra `AppLoadingOverlay` cuando `ui.isLoading` es true (por ejemplo,
+ * mientras se guarda o se prepara la siguiente fase).
+ *
+ * Navegación:
+ * * "Atrás": llama `onBack()`.
+ * * "Siguiente": llama `onNext()` sólo si la relación de límites es válida.
+ *
+ * Estilo:
+ * * Tipografía Poppins, color `TealPrimary`, botones redondeados de 14.dp,
+ * consistente con el resto del flujo de creación de promociones.
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.foundation.layout.*

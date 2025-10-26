@@ -1,3 +1,47 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define el sub-grafo de navegación `promo_graph`, que controla
+ * todo el flujo paso a paso para registrar una nueva promoción dentro del módulo
+ * de comercio.
+ *
+ * Flujo de pantallas:
+ * 1. `PromoNombre`   -> Captura nombre/título y tipo de promoción.
+ * 2. `PromoDetalles` -> Captura mecánica, porcentaje/precio según tipo.
+ * 3. `PromoFechas`   -> Captura rango de vigencia e imagen opcional.
+ * 4. `PromoLimites`  -> Captura límites de canje (totales / por usuario).
+ * 5. `PromoResumen`  -> Muestra resumen final y confirma el envío.
+ *
+ * Aspectos clave:
+ * * `PROMO_GRAPH_ROUTE` es la ruta raíz del sub-grafo.
+ * * Cada pantalla se registra con `composable(...)` dentro de `navigation(...)`.
+ * * Se usa `remember { navController.getBackStackEntry(PROMO_GRAPH_ROUTE) }`
+ * para obtener siempre el mismo `NavBackStackEntry` padre.
+ * * Con ese `parentEntry`, se instancia el mismo `CreatePromotionViewModel`
+ * vía `viewModel(parentEntry)` en TODAS las pantallas.
+ *
+ * ¿Por qué eso importa?
+ * * El ViewModel (`CreatePromotionViewModel`) vive a nivel del sub-grafo,
+ * no de cada pantalla individual. Eso significa que los datos capturados
+ * en pantallas anteriores (por ejemplo, nombre, fechas, imagen) se conservan
+ * mientras el usuario navega adelante/atrás en el flujo.
+ *
+ * Navegación de salida:
+ * * En `PromoResumenView.onFinish`, se navega a `AppScreens.ComercioHome`
+ * y se hace `popUpTo(PROMO_GRAPH_ROUTE) { inclusive = true }` para sacar
+ * todo el flujo del back stack, de modo que al terminar el registro de promoción
+ * ya no se pueda volver al wizard con "Back".
+ *
+ * Uso:
+ * Llamar `addPromoGraph(navController)` dentro del `NavHost` principal para
+ * montar este flujo de creación de promociones en la app.
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.runtime.remember

@@ -1,3 +1,72 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define la última pantalla del flujo de creación de promociones:
+ * `PromoResumenView`, junto con el helper `InfoRow`.
+ *
+ * Objetivo de `PromoResumenView`:
+ * * Mostrar un resumen legible de TODOS los datos capturados en pasos anteriores:
+ * * Título de la promoción.
+ * * Tipo de promoción (descuento, precio fijo, 2x1, etc.).
+ * * Porcentaje o precio a enviar al backend (según el tipo).
+ * * Descripción / mecánica final.
+ * * Rango de fechas (vigencia).
+ * * Límites totales y por usuario.
+ * * Imagen seleccionada, si existe.
+ *
+ * * Permitir al usuario:
+ * * Regresar a pantallas anteriores (`onBack`) para corregir algo.
+ * * Enviar la promoción (`CreatePromotionEvent.Submit`) al backend.
+ *
+ * Comportamiento importante:
+ * * Escucha el estado del ViewModel (`CreatePromotionViewModel`) vía `vm.ui.collectAsState()`.
+ * * `ui.isValid` y `ui.isLoading` controlan el botón "Enviar".
+ * * `ui.successMessage` y `ui.errorMessage` activan `AlertDialog`:
+ * ```
+- En caso de éxito:
+```
+ * ```
+- Muestra mensaje.
+```
+ * ```
+- Llama `ClearForm`.
+```
+ * ```
+- Ejecuta `onFinish()` para regresar a la pantalla principal de comercio
+```
+ * ```
+y cerrar el flujo de registro.
+```
+ * ```
+- En caso de error:
+```
+ * ```
+- Muestra mensaje.
+```
+ * ```
+- Permite descartarlo con `ConsumeMessages`.
+```
+ *
+ * UI:
+ * * Usa `Scaffold` con `bottomBar` fija para los botones "Atrás" y "Enviar".
+ * El contenido hace scroll independiente con `verticalScroll(...)`.
+ * * Estilo consistente con el módulo de comercio:
+ * * Tipografía Poppins.
+ * * Colores `TealPrimary`.
+ * * Botones redondeados de 14.dp.
+ *
+ * Helper `InfoRow`:
+ * * Pequeño composable reutilizable para mostrar un par (etiqueta/valor) con estilo.
+ *
+ * Resultado:
+ * Esta pantalla es la confirmación final antes del POST real de la promoción.
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.foundation.Image

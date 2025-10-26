@@ -1,3 +1,36 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define el componente Compose `PromoImagenSection`, encargado de manejar
+ * toda la UI relacionada con la imagen de una promoción mientras se está creando o editando.
+ *
+ * Funcionalidad principal:
+ * * Permite al usuario seleccionar una imagen desde la galería usando
+ * `rememberLauncherForActivityResult(ActivityResultContracts.GetContent)`.
+ * * Muestra el estado actual de la imagen seleccionada (nombre del botón cambia entre
+ * "Elegir imagen" / "Cambiar imagen").
+ * * Ofrece un botón "Quitar" para eliminar la imagen elegida.
+ * * Renderiza una vista previa (`Image`) con esquinas redondeadas si hay imagen seleccionada.
+ *
+ * Integración con ViewModel:
+ * * Se conecta al `CreatePromotionViewModel` y observa su estado (`vm.ui.collectAsState()`).
+ * * Envía eventos al ViewModel usando `CreatePromotionEvent`, por ejemplo:
+ * * `ImagenSeleccionada(uri)` cuando se elige una imagen.
+ * * `QuitarImagen` para limpiar la selección.
+ * * `SetContentResolver` vía `LaunchedEffect`, para que el VM pueda construir
+ * ```
+el multipart/form-data al momento de hacer el POST al backend.
+```
+ *
+ * Uso:
+ * Esta sección se utiliza dentro del flujo de creación de promoción de un comercio para
+ * adjuntar una imagen opcional que será enviada al backend junto con el resto de los datos.
+ */
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas.components
 
 import android.net.Uri

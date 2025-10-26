@@ -1,3 +1,85 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define el `CreatePromotionViewModel`, que orquesta todo el flujo
+ * de creación de una promoción (wizard multi-pantalla) y realiza el envío final
+ * al backend en formato multipart/form-data.
+ *
+ * Responsabilidades principales:
+ *
+ * 1. Manejo de estado:
+ * * Expone `ui: StateFlow<CreatePromotionUiState>`.
+ * * Actualiza el estado mediante `onEvent(CreatePromotionEvent)`, siguiendo
+ * ```
+un patrón tipo MVI/intento-reductor.
+```
+ * * Valida continuamente los campos ingresados por el usuario con `validate()`
+ * ```
+para habilitar/deshabilitar acciones como "Siguiente" o "Enviar".
+```
+ *
+ * 2. Normalización de datos:
+ * * Convierte porcentaje y precio a enteros según el tipo de promoción
+ * ```
+(`PromotionType.DESCUENTO`, `PRECIO_FIJO`, etc.).
+```
+ * * Ajusta la descripción final según el tipo ("2x1: ...", "Trae un amigo: ...").
+ * * Valida fechas en formato ISO (YYYY-MM-DD) y orden cronológico.
+ * * Aplica reglas de límites totales vs por usuario.
+ *
+ * 3. Manejo de imagen opcional:
+ * * Recibe un `ContentResolver` desde la UI (vía `SetContentResolver`) para poder
+ * ```
+leer el contenido de la imagen seleccionada por el usuario.
+```
+ * * Convierte la `uri` de la imagen en un archivo temporal y construye
+ * ```
+un `MultipartBody.Part` (`buildImagePartFromUriString`) con el campo `file`
+```
+ * ```
+para enviarlo al backend.
+```
+ *
+ * 4. Envío al backend:
+ * * `submitMultipart()` arma todas las partes del formulario (texto + imagen)
+ * ```
+y llama a `RetrofitClient.promotionsApi.crearPromocionMultipart(...)`.
+```
+ * * Usa el token de sesión obtenido de `SessionManager.fetchAuthToken()` para
+ * ```
+autenticarse (el interceptor HTTP inyecta el header Authorization).
+```
+ * * Actualiza `ui.isLoading`, `ui.successMessage` y `ui.errorMessage` según el
+ * ```
+resultado de la petición.
+```
+ * * Si el envío es exitoso, limpia el formulario con `clearForm()` y deja listo
+ * ```
+el mensaje de éxito para que la UI muestre un diálogo y regrese a la pantalla
+```
+ * ```
+principal de comercio.
+```
+ *
+ * 5. Flujo de eventos clave:
+ * * `TituloChanged`, `DescripcionChanged`, `TipoChanged`, etc.: actualizan campos.
+ * * `StartEndChanged`: guarda el rango de fechas.
+ * * `ImagenSeleccionada` / `QuitarImagen`: controlan la imagen.
+ * * `Submit`: dispara la creación de la promoción en el backend.
+ * * `ClearForm`: resetea todo tras un submit exitoso.
+ * * `ConsumeMessages`: limpia mensajes de éxito/error ya mostrados.
+ *
+ * Este ViewModel centraliza la lógica de negocio del registro de promociones:
+ * la UI sólo dispara eventos y lee el estado reactivo. El ViewModel se encarga
+ * de validar, preparar payload, adjuntar imagen y hacer la llamada HTTP.
+ */
+
+
+
+
+
 package com.govAtizapan.beneficiojoven.viewmodel.createPromotionVM
 
 import android.content.ContentResolver

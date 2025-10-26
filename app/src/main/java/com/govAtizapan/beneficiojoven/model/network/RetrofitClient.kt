@@ -1,3 +1,29 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define `RetrofitClient`, un objeto singleton responsable de:
+ *
+ * * Configurar Retrofit con la URL base del backend y el convertidor Gson.
+ * * Construir y compartir una única instancia de OkHttpClient con:
+ * * Interceptor de logging (`HttpLoggingInterceptor`) para depurar peticiones/respuestas HTTP.
+ * * Interceptor de autenticación (`authInterceptor`) que inyecta el header Authorization: Bearer <token>
+ * ```
+usando el token obtenido desde `SessionManager`.
+```
+ * * Timeouts aumentados (30s) y `retryOnConnectionFailure(true)` para mayor tolerancia a red inestable.
+ * * `ConnectionPool` para reutilizar conexiones HTTP/1.1 y evitar reconexiones constantes.
+ *
+ * * Exponer interfaces de la API (`PromotionsApi`, `UserLoginApi`, `QrApi`, etc.) ya listas para ser usadas
+ * en repositorios, ViewModels o casos de uso.
+ *
+ * Nota:
+ * `BASE_URL` apunta al backend Django/FastAPI del proyecto Beneficio Joven. Cambiarla si el servidor
+ * se desplaza o si se usan entornos diferentes (desarrollo, staging, producción).
+ */
+
+
 package com.govAtizapan.beneficiojoven.model.network
 
 import okhttp3.ConnectionPool

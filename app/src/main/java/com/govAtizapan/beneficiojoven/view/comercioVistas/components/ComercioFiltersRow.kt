@@ -1,3 +1,31 @@
+
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define:
+ *
+ * 1. El enum `ComercioFilter`, que representa las categorías de filtro para la vista
+ * de promociones de un comercio: "Todas", "Activas" e "Inactivas".
+ *
+ * 2. El componente Compose `ComercioFiltersRow`, que dibuja una fila horizontal (LazyRow)
+ * de chips de filtro con estilo consistente con la pantalla Home:
+ * * `TealLight` como fondo cuando está seleccionado.
+ * * Texto blanco cuando está seleccionado.
+ * * Borde con `TealPrimary` y esquinas redondeadas de 16.dp.
+ *
+ * Comportamiento:
+ * * Resalta visualmente el filtro actualmente seleccionado.
+ * * Notifica el cambio de selección mediante el callback `onSelected`.
+ *
+ * Uso:
+ * Este componente se utiliza en la vista de comercio para permitirle al usuario
+ * alternar entre ver todas las promociones, sólo las activas o sólo las inactivas,
+ * manteniendo coherencia visual con el resto de la app.
+ */
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas.components
 
 import androidx.compose.foundation.layout.Arrangement

@@ -1,3 +1,32 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define el componente Compose `AppDateRangeField`, junto con la función
+ * auxiliar `millisToIso`.
+ *
+ * `AppDateRangeField`:
+ * * Muestra un botón que abre un diálogo de pantalla casi completa con un `DateRangePicker`.
+ * * Permite al usuario seleccionar una fecha de inicio y una fecha de fin.
+ * * Al confirmar, devuelve ambas fechas al caller en formato `"YYYY-MM-DD"` mediante `onChange`.
+ * * Maneja el estado interno (abrir/cerrar diálogo y selección de rango) con `remember`.
+ *
+ * Detalles importantes de UI:
+ * * Usa `Dialog` con `usePlatformDefaultWidth = false` para simular un modal amplio/centrado.
+ * * Limita la altura del `DateRangePicker` con `heightIn(...)` en lugar de usar `verticalScroll`,
+ * para evitar problemas de contenido cortado en pantallas pequeñas.
+ * * Muestra un preview del rango (`start – end`) tanto en el botón como en el encabezado del picker.
+ *
+ * `millisToIso`:
+ * * Convierte milisegundos de epoch a una fecha local (`YYYY-MM-DD`)
+ * usando `kotlinx-datetime`, compatible con API < 26.
+ *
+ * Uso típico:
+ * Se usa en pantallas donde el colaborador / comercio necesita elegir la vigencia de una promoción.
+ */
+
+
 package com.govAtizapan.beneficiojoven.ui.theme.uiComponents
 
 import androidx.compose.foundation.layout.*

@@ -1,3 +1,43 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define la pantalla inicial del flujo de creación de una promoción:
+ * `PromoNombreView`, junto con el selector reutilizable `TipoPromocionSelector`.
+ *
+ * `PromoNombreView`:
+ * * Paso 1 del wizard de registro de promoción.
+ * * Captura:
+ * * Título / nombre comercial de la promoción.
+ * * Tipo de promoción (`PromotionType`), por ejemplo "Descuento", "2x1", etc.
+ * * Habilita el botón "Siguiente" sólo si el título no está vacío.
+ * * Muestra botón de regreso en el `TopAppBar` para volver a la vista anterior
+ * (por ejemplo, a la pantalla principal de comercio).
+ * * Usa el `CreatePromotionViewModel` para leer y actualizar el estado vía
+ * `CreatePromotionEvent`, y muestra un overlay de carga (`AppLoadingOverlay`)
+ * cuando `ui.isLoading` es true.
+ *
+ * `TipoPromocionSelector`:
+ * * Composable privado que implementa un menú desplegable (`ExposedDropdownMenuBox`)
+ * con estilos personalizados (bordes redondeados, fondo celeste).
+ * * Muestra las distintas opciones de `PromotionType` con etiquetas entendibles
+ * para el usuario ("Descuento (%)", "2x1", etc.).
+ * * Llama `onSelected` cuando el usuario elige un tipo, lo que actualiza el VM.
+ *
+ * Estilo:
+ * * Tipografía Poppins en títulos y botones.
+ * * Colores consistentes con el resto del módulo de comercio (`TealPrimary`,
+ * fondos claros, esquinas redondeadas).
+ *
+ * Navegación:
+ * * `onBack()`: regresa a la pantalla anterior (por ejemplo ComercioHome).
+ * * `onNext()`: avanza al siguiente paso del flujo (detalles/mecánica).
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.foundation.border

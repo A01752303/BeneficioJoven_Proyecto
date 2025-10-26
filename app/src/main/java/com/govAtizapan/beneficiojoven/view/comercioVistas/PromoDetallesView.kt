@@ -1,3 +1,45 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define la pantalla/formulario `PromoDetallesView`, que corresponde
+ * a la etapa de captura de detalles de una nueva promoción (paso intermedio del flujo
+ * de creación).
+ *
+ * Funcionalidad principal:
+ * * Muestra campos dinámicos según el tipo de promoción seleccionado previamente
+ * (`PromotionType`):
+ * * DESCUENTO: pide porcentaje (%).
+ * * PRECIO_FIJO: pide precio fijo en MXN.
+ * * Otros tipos (2x1, trae amigo, etc.): sólo requieren descripción/mecánica.
+ *
+ * * Valida en tiempo real:
+ * * Porcentaje válido: entero de 1 a 100.
+ * * Precio válido: entero > 0.
+ * * Descripción no vacía.
+ * Estas validaciones controlan si el botón "Siguiente" está habilitado.
+ *
+ * * Usa `CreatePromotionViewModel` y envía eventos (`CreatePromotionEvent`) para
+ * actualizar el estado del formulario conforme el usuario escribe.
+ *
+ * UI / Interacción:
+ * * `Atrás`: dispara `onBack()` y limpia el foco.
+ * * `Siguiente`: dispara `onNext()` sólo si los campos cumplen las validaciones.
+ * * Estilo visual consistente con el tema de la app:
+ * * Tipografía Poppins.
+ * * Colores `TealPrimary`.
+ * * Botones redondeados.
+ *
+ * Uso:
+ * Se renderiza después de que el usuario selecciona el tipo de promoción. Su salida
+ * prepara los datos necesarios (porcentaje/precio/descrición) para pasos posteriores,
+ * como vigencia e imagen.
+ */
+
+
+
+
 package com.govAtizapan.beneficiojoven.view.comercioVistas
 
 import androidx.compose.foundation.layout.*

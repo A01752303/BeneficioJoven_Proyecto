@@ -1,3 +1,26 @@
+/**
+
+ * Autor: Tadeo Emanuel Arellano Conde
+ *
+ * Descripción:
+ * Este archivo define el repositorio `ComercioPromotionsRepository`, el modelo de dominio `ComercioPromotion`
+ * y las funciones de mapeo utilizadas para transformar las respuestas de la API a objetos listos para UI.
+ *
+ * Responsabilidades principales:
+ * * Consumir el endpoint remoto (ComercioPromotionsApi) para obtener las promociones del comercio autenticado.
+ * * Manejar errores HTTP, excepciones de red y cancelaciones de corrutinas de forma segura.
+ * * Convertir los datos crudos del backend (por ejemplo, números representados como String y snake_case)
+ * a un modelo de dominio Kotlin fuertemente tipado y amigable para la capa de presentación.
+ * * Exponer `ComercioPromotion`, que contiene información de cada promoción: nombre, tipo,
+ * vigencia, estado activo, número de canjeos y URL opcional de imagen.
+ *
+ * Nota:
+ * Las fechas se mantienen tal cual llegan en formato ISO (por ejemplo "2025-10-25T18:40:00Z") y la vista decide
+ * el formateo final. Los campos numéricos como `porcentaje` y `precio` se convierten a Double con fallback 0.0.
+ */
+
+
+
 package com.govAtizapan.beneficiojoven.model.comercio
 
 
